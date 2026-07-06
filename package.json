@@ -1,0 +1,20 @@
+{
+  "name": "job-hunt-workspace-private",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Private job-hunt workspace with tracker reconciliation, resume assets, and agent policy.",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "bin": {
+    "job-hunt-workspace": "scripts/bootstrap.js"
+  },
+  "scripts": {
+    "setup": "node scripts/bootstrap.js --local",
+    "verify": "node scripts/verify-workspace.js",
+    "agent:context": "node scripts/agent-context.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
+
