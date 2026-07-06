@@ -1,0 +1,18 @@
+Metric	Value
+Master leads	=COUNTA('Master Leads'!C2:C)
+Unique email-bearing rows	"=COUNTIF('Master Leads'!G2:G,""*@*"")"
+Agencies	"=COUNTIF('Master Leads'!B2:B,""Agency"")"
+Direct employers	"=COUNTIF('Master Leads'!B2:B,""Direct Employer"")"
+Forms	"=COUNTIF('Master Leads'!B2:B,""Form"")"
+LinkedIn / needs-search rows	=COUNTA('LinkedIn Search'!C2:C)
+Phone / WhatsApp rows	=COUNTA('Phone / WhatsApp'!C2:C)
+Applied	"=COUNTIF('Master Leads'!J2:J,""Applied"")"
+Followed up	"=COUNTIF('Master Leads'!J2:J,""Followed Up"")"
+Needs review	"=COUNTIF('Master Leads'!P2:P,""Yes"")"
+Replies	"=COUNTIF('Master Leads'!N2:N,""Replied*"")"
+Bounced	"=COUNTIF('Master Leads'!N2:N,""Bounced"")"
+Rejected	"=COUNTIF('Master Leads'!N2:N,""Rejected"")+COUNTIF('Master Leads'!J2:J,""Rejected*"")"
+Follow-ups due	"=COUNTIFS('Master Leads'!M2:M,""<=""&TODAY(),'Master Leads'!M2:M,""<>"",'Master Leads'!J2:J,""<>Rejected*"")"
+Last Gmail scan	2026-06-07
+Source rows before dedupe	1065
+Dedupe merge hits	587

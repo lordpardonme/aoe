@@ -1,0 +1,34 @@
+# Local/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.temp
+~$*
+
+# Python/runtime caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+Job Hunt/pymupdf-venv/
+
+# JavaScript dependency caches
+node_modules/
+.pnpm-store/
+
+# Nested/exported git internals
+Job Hunt/.git/
+
+# Local secrets
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+token.json
+Job Hunt/.git-nested-backup/

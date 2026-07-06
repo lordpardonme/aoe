@@ -1,0 +1,60 @@
+{
+  "input_rows_total_before_dedupe": 1065,
+  "dedupe_merge_hits": 587,
+  "master_rows": 478,
+  "agencies_rows": 165,
+  "direct_employers_rows": 257,
+  "forms_rows": 1,
+  "linkedin_search_rows": 140,
+  "phone_whatsapp_rows": 31,
+  "email_bearing_master_rows": 342,
+  "unique_emails_in_master": 213,
+  "unique_phones_in_master": 18,
+  "gmail_observation_rows": 30,
+  "status_counts": {
+    "To Contact": 442,
+    "Applied": 29,
+    "Delivery Failed": 1,
+    "Needs Review": 2,
+    "Followed Up": 1,
+    "Rejected / Appeal Sent": 1,
+    "Networking": 2
+  },
+  "reply_counts": {
+    "Blank": 448,
+    "No Reply": 23,
+    "Bounced": 2,
+    "Replied": 3,
+    "Replied / Active Process": 1,
+    "Rejected": 1
+  },
+  "type_counts": {
+    "Agency": 165,
+    "Direct Employer": 257,
+    "LinkedIn Search": 48,
+    "Form": 1,
+    "Phone / WhatsApp Lead": 7
+  },
+  "country_counts_top": {
+    "UAE / Dubai": 214,
+    "Worldwide / Remote": 107,
+    "UAE / GCC": 54,
+    "Germany": 40,
+    "India": 28,
+    "Netherlands": 9,
+    "United Kingdom": 6,
+    "India / Bangalore": 3,
+    "India / Remote": 2,
+    "India / needs verification": 2,
+    "India / Noida": 1,
+    "India / Delhi": 1,
+    "Germany / USA / Remote / Hybrid": 1,
+    "France / Remote": 1,
+    "China / Global": 1,
+    "Canada": 1,
+    "Egypt": 1,
+    "Jordan / MENA": 1,
+    "Mumbai / Hybrid": 1,
+    "Spain": 1
+  }
+}

@@ -1,0 +1,4 @@
+proposed_tab,country_or_region,lead_name,category,email,phone,website_or_domain,source_screenshot,verification_source,confidence,notes
+Phone / WhatsApp Leads,India,Freelance Video Editor lead,Phone-only creative job lead,,9511116204,,IMG_8494.HEIC,OCR screenshot only,Low,Only a phone number was captured; keep out of email tables.
+Phone / WhatsApp Leads,India / needs verification,BSD / Amlanjyoti UX UI lead,Phone plus malformed email,amlanjyotibharali@bsd.ed,6000236346; 9620045916,bsd.edu.in,IMG_9183.HEIC,"https://in.linkedin.com/in/amlanjyoti-bharali ; https://www.bsd.edu.in/",Low,OCR email appears malformed; verify image before outreach.
+Phone / WhatsApp Leads,India / needs verification,Reslink lead,Phone plus domain mismatch,team@reslink.org,+91 8303982425,reslink.org,IMG_8744.HEIC,"Search found reslink.io, not reslink.org; verify manually.",Low,Do not merge with reslink.io without visual/web confirmation.

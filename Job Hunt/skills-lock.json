@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "caveman-compress": {
+      "source": "juliusbrussee/caveman",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-compress/SKILL.md",
+      "computedHash": "6a1722a4381909febe8c8b23e87e3396e3688c05c302f625143e194b447f5bd2"
+    },
+    "cv-creator": {
+      "source": "erichowens/some_claude_skills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/cv-creator/SKILL.md",
+      "computedHash": "4dfb869542a478b6e413a4b96024d9c5626096b8bee1df033fe13a20a9a5180e"
+    },
+    "resume-ats-optimizer": {
+      "source": "paramchoudhary/resumeskills",
+      "sourceType": "github",
+      "skillPath": "skills/resume-ats-optimizer/SKILL.md",
+      "computedHash": "150c30874a940b934f1c7155ba5cdc6021e5cf4f6be5a25b2b7332f94b9c002c"
+    },
+    "resume-tailoring": {
+      "source": "varunr89/resume-tailoring-skill",
+      "sourceType": "github",
+      "skillPath": "skills/resume-tailoring/SKILL.md",
+      "computedHash": "a7bd74f2fb69a33236c80ca89b2f1a46fb14edf32891a7695c795066e5f3709e"
+    }
+  }
+}
