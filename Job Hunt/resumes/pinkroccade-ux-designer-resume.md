@@ -1,25 +1,25 @@
 # Mohd Hayaat Ali
 
-## Lead Product Designer | UI/UX, Product Design, Design Systems & Digital Experiences
+## UX Designer | Complex Workflows, Research, Validation & Public-Service Software
 
-mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to Gurugram  
+mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to Netherlands / hybrid discussion  
 Portfolio: https://workofhayaat.framer.website
 
 ## Professional Summary
 
-Lead Product Designer with 6+ years of experience designing user-centered digital products, responsive web/mobile interfaces, B2B workflows, dashboards, design systems, brand-led product surfaces, and conversion-focused experiences. Strong in product thinking, HCI fundamentals, journey mapping, information architecture, user flows, wireframes, high-fidelity UI, prototyping, visual hierarchy, accessibility awareness, design QA, and cross-functional collaboration. Experienced across healthcare, logistics, fintech-adjacent products, education/learning, AI finance operations, websites, marketplaces, internal tools, and SaaS-style workflows.
+UX Designer with 6+ years of experience turning complex workflows into clear user journeys, information architecture, wireframes, prototypes, validated product decisions, and scalable design systems. Experienced in regulated and operational domains including healthcare, logistics, B2B platforms, dashboards, internal tools, field operations, records, payments, reporting, and back-office workflows. Strong in user research, usability testing, Discover/Define work, stakeholder facilitation, journey mapping, interaction design, Figma prototyping, design QA, and AI-assisted concept exploration.
 
 ## Core Skills
 
-**Product and UX:** Product design, UI/UX, HCI, user research, journey mapping, empathy mapping, information architecture, user flows, wireframes, prototypes, usability testing, product iteration
+**UX Research and Validation:** User interviews, usability testing, observation-based insights, journey mapping, persona context, user problems, testable prototypes, iterative design
 
-**Visual and Interaction Design:** High-fidelity UI, typography, layout, color, spacing, visual hierarchy, responsive composition, interaction design, micro-interaction thinking, accessibility awareness
+**Complex Process UX:** Regulated workflows, operational systems, back-office tools, dashboards, records, account controls, reporting, field operations, data-heavy interfaces
 
-**Design Systems and Delivery:** Figma, FigJam, Auto Layout, components, variants, UI states, reusable patterns, design-system documentation, developer handoff, design QA
+**Interaction and IA:** Information architecture, user flows, wireframes, clickable prototypes, interaction models, content structure, first-time-right task design, adoption-focused UX
 
-**Digital Experience Breadth:** Website design, mobile app design, B2B portals, dashboards, conversion flows, onboarding, brand/product interfaces, pitch/presentation assets, product storytelling
+**Collaboration:** Discover/Define facilitation, product and engineering collaboration, stakeholder alignment, requirement clarification, sprint preparation, design decision documentation
 
-**Tools:** Figma, FigJam, Framer, Wix, Adobe Photoshop, Illustrator, After Effects, Rive, Miro, Adobe XD, Google Analytics, Hotjar
+**Tools:** Figma, FigJam, Auto Layout, components, variants, Adobe XD, Miro, Framer, Wix, Photoshop, Illustrator, Google Analytics, Hotjar, AI-assisted design exploration
 
 ## Professional Experience
 
@@ -45,7 +45,7 @@ Gurgaon, India | July 2023 - June 2024
 - Redesigned diesel ordering from a 20-22 step journey into a focused location, quantity, schedule, and payment flow, improving completion from 62% to 78%.
 - Reduced payment transaction errors by 38% through wallet improvements, delegated access, secondary-user controls, and configurable spend limits.
 - Built the FuelBuddy design system from scratch across consumer, B2B, franchise, field, and operational products.
-- Replaced spreadsheet-heavy operational patterns with structured product workflows for drivers, trucks, routes, shifts, delivery planning, corrections, reporting, and live operations.
+- Replaced spreadsheet-heavy operational patterns with structured workflows for drivers, trucks, routes, shifts, delivery planning, corrections, reporting, and live operations.
 
 ### Product Designer | Uncover by Meddo
 Gurgaon, India | March 2022 - May 2023
@@ -54,7 +54,6 @@ Gurgaon, India | March 2022 - May 2023
 - Redesigned doctor profiles, increasing profile views by 28% and appointment requests by 15% in a 5,000-user A/B test.
 - Designed patient, doctor, and back-office experiences spanning discovery, appointments, lab tests, records, and early ABHA integration interfaces.
 - Conducted usability testing with 12 patients and 8 doctors, translating findings into product, design-system, and engineering priorities.
-- Created Uncover's visual identity foundation and carried it into responsive web, mobile, and reusable UI patterns.
 
 ### UI Designer | AcadPlaza
 Remote | June 2020 - March 2022
@@ -65,11 +64,11 @@ Remote | June 2020 - March 2022
 ## Selected Work
 
 - Portfolio: https://workofhayaat.framer.website
-- Maximor AI: Enterprise AI finance-operations landing page and conversion experience. https://www.maximor.ai/offer
-- FuelBuddy Customer Web App: Customer and B2B fuel-ordering/account experience across web and mobile. https://app.fuelbuddy.in/
-- TS Logix Peru: Logistics website and WMS-oriented digital experience. https://tslogixperu.com/
+- FuelBuddy Customer Web App: B2B/customer fuel-ordering and account workflows across web and mobile. https://app.fuelbuddy.in/
+- TS Logix Peru: Logistics website and WMS-oriented operational experience. https://tslogixperu.com/
+- Uncover / Meddo: Healthcare product UX, booking flows, patient experience, usability testing, and back-office work. https://uncover.co.in/
 - Vgen23: Genomics reporting platform and healthcare workflow product. https://vgen23.com/
-- Kama Capital: Trading website and onboarding journeys. https://kama-capital.com/
+- Maximor AI: Enterprise AI finance-operations landing page and conversion experience. https://www.maximor.ai/offer
 
 ## Education
 

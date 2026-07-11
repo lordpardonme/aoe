@@ -1,25 +1,27 @@
 # Mohd Hayaat Ali
 
-## Lead Product Designer | UI/UX, Product Design, Design Systems & Digital Experiences
+## UI/UX Designer | Healthcare, Digital Creatives, Figma & Adobe Suite
 
-mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to Gurugram  
+mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to Bangalore discussion  
 Portfolio: https://workofhayaat.framer.website
 
 ## Professional Summary
 
-Lead Product Designer with 6+ years of experience designing user-centered digital products, responsive web/mobile interfaces, B2B workflows, dashboards, design systems, brand-led product surfaces, and conversion-focused experiences. Strong in product thinking, HCI fundamentals, journey mapping, information architecture, user flows, wireframes, high-fidelity UI, prototyping, visual hierarchy, accessibility awareness, design QA, and cross-functional collaboration. Experienced across healthcare, logistics, fintech-adjacent products, education/learning, AI finance operations, websites, marketplaces, internal tools, and SaaS-style workflows.
+UI/UX Designer with 6+ years of experience across healthcare, digital products, responsive web/mobile interfaces, brand assets, social creatives, product imagery, and design systems. Strong in Figma, Adobe Photoshop, Illustrator, Adobe XD, presentation-ready visual work, typography, layout, color, stakeholder coordination, and design handoff. Healthcare experience includes patient, doctor, back-office, booking, lab-test, records, and genomics workflow interfaces through Uncover/Meddo and Vgen23-adjacent portfolio work. Current creative role adds practical digital creative, website, campaign, and print-adjacent production experience.
 
 ## Core Skills
 
-**Product and UX:** Product design, UI/UX, HCI, user research, journey mapping, empathy mapping, information architecture, user flows, wireframes, prototypes, usability testing, product iteration
+**UI/UX Design:** User flows, wireframes, high-fidelity UI, responsive web/mobile design, interaction design, usability testing, design systems, developer handoff
 
-**Visual and Interaction Design:** High-fidelity UI, typography, layout, color, spacing, visual hierarchy, responsive composition, interaction design, micro-interaction thinking, accessibility awareness
+**Adobe and Visual Design:** Adobe Photoshop, Illustrator, Adobe XD, After Effects, layout design, typography, color, spacing, visual hierarchy, brand assets, product imagery
 
-**Design Systems and Delivery:** Figma, FigJam, Auto Layout, components, variants, UI states, reusable patterns, design-system documentation, developer handoff, design QA
+**Digital and Print-Adjacent Creatives:** Social creatives, campaign assets, website banners, product visuals, presentation graphics, print-basic layout awareness, marketing collateral support
 
-**Digital Experience Breadth:** Website design, mobile app design, B2B portals, dashboards, conversion flows, onboarding, brand/product interfaces, pitch/presentation assets, product storytelling
+**Healthcare / Pharma Adjacent:** Patient journeys, doctor profiles, appointment booking, lab tests, records, back-office workflows, clinical/genomics reporting interfaces
 
-**Tools:** Figma, FigJam, Framer, Wix, Adobe Photoshop, Illustrator, After Effects, Rive, Miro, Adobe XD, Google Analytics, Hotjar
+**Collaboration:** Stakeholder coordination, requirement clarification, product and engineering collaboration, client feedback, cross-functional delivery, presentation support
+
+**Tools:** Figma, FigJam, Adobe Photoshop, Illustrator, Adobe XD, After Effects, Framer, Wix, Rive, Miro, PowerPoint, Google Analytics, Hotjar
 
 ## Professional Experience
 
@@ -29,14 +31,14 @@ Delhi NCR, India | June 2026 - Present
 - Create graphics, videos, social content, product imagery, website assets, and campaign material across multiple client brands and fast deadlines.
 - Design and build responsive website experiences in Wix, covering page structure, product presentation, visual direction, brand consistency, and launch-ready assets.
 - Edit podcast videos, product images, and campaign content while keeping visual systems consistent across web, social, and marketing touchpoints.
+- Support brands including Mymy, Al Yamin, Klay Consultants, ATK shoe manufacturer, and other client projects with visual, web, and campaign assets.
 
 ### Product Designer | I-DOD
 New Delhi, India | July 2025 - March 2026
 
-- Translated ambiguous founder and stakeholder requirements into user flows, wireframes, prototypes, high-fidelity interfaces, and practical release decisions.
+- Translated founder and stakeholder requirements into user flows, wireframes, prototypes, high-fidelity interfaces, and practical release decisions.
 - Built a reusable Figma design system from scratch with components, interaction patterns, UI states, and implementation-ready documentation.
 - Designed onboarding, profile creation, verification, matching, and beta feedback journeys for an early-stage product.
-- Collaborated with stakeholders and developers to clarify requirements, refine flows, and prepare screens for implementation.
 
 ### Product Designer | FuelBuddy
 Gurgaon, India | July 2023 - June 2024
@@ -45,7 +47,6 @@ Gurgaon, India | July 2023 - June 2024
 - Redesigned diesel ordering from a 20-22 step journey into a focused location, quantity, schedule, and payment flow, improving completion from 62% to 78%.
 - Reduced payment transaction errors by 38% through wallet improvements, delegated access, secondary-user controls, and configurable spend limits.
 - Built the FuelBuddy design system from scratch across consumer, B2B, franchise, field, and operational products.
-- Replaced spreadsheet-heavy operational patterns with structured product workflows for drivers, trucks, routes, shifts, delivery planning, corrections, reporting, and live operations.
 
 ### Product Designer | Uncover by Meddo
 Gurgaon, India | March 2022 - May 2023
@@ -65,11 +66,10 @@ Remote | June 2020 - March 2022
 ## Selected Work
 
 - Portfolio: https://workofhayaat.framer.website
-- Maximor AI: Enterprise AI finance-operations landing page and conversion experience. https://www.maximor.ai/offer
-- FuelBuddy Customer Web App: Customer and B2B fuel-ordering/account experience across web and mobile. https://app.fuelbuddy.in/
-- TS Logix Peru: Logistics website and WMS-oriented digital experience. https://tslogixperu.com/
+- Uncover / Meddo: Healthcare product UX, booking flows, patient experience, usability testing, and design-system work. https://uncover.co.in/
 - Vgen23: Genomics reporting platform and healthcare workflow product. https://vgen23.com/
-- Kama Capital: Trading website and onboarding journeys. https://kama-capital.com/
+- FuelBuddy Customer Web App: Customer and B2B account experience across web and mobile. https://app.fuelbuddy.in/
+- Maximor AI: Enterprise AI finance-operations landing page. https://www.maximor.ai/offer
 
 ## Education
 

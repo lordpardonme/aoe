@@ -6,7 +6,7 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import HRFlowable, Paragraph, SimpleDocTemplate
 
-OUT = Path(__file__).with_name("Mohd_Hayaat_Ali_Lead_Product_Designer_Goldenflitch.pdf")
+OUT = Path(__file__).with_name("Mohd_Hayaat_Ali_UX_UI_Designer_The_Brink_Agency.pdf")
 
 INK = colors.HexColor("#17212B")
 MUTED = colors.HexColor("#56616B")
@@ -16,12 +16,12 @@ base = getSampleStyleSheet()
 styles = {
     "name": ParagraphStyle("name", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=23, leading=26, textColor=INK),
     "title": ParagraphStyle("title", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=10.2, leading=12.9, textColor=ACCENT, spaceAfter=4),
-    "contact": ParagraphStyle("contact", parent=base["Normal"], fontSize=8.55, leading=10.8, textColor=MUTED),
+    "contact": ParagraphStyle("contact", parent=base["Normal"], fontSize=8.45, leading=10.7, textColor=MUTED),
     "section": ParagraphStyle("section", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=10.7, leading=12.8, textColor=ACCENT, spaceBefore=6.0, spaceAfter=2),
-    "body": ParagraphStyle("body", parent=base["Normal"], fontSize=8.1, leading=10.45, textColor=INK, spaceAfter=1.6),
-    "role": ParagraphStyle("role", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=8.85, leading=10.6, textColor=INK, spaceBefore=2.5),
-    "meta": ParagraphStyle("meta", parent=base["Normal"], fontName="Helvetica-Oblique", fontSize=7.8, leading=9.4, textColor=MUTED, spaceAfter=1.3),
-    "bullet": ParagraphStyle("bullet", parent=base["Normal"], fontSize=7.5, leading=9.8, leftIndent=12, firstLineIndent=-8, spaceAfter=.9, textColor=INK),
+    "body": ParagraphStyle("body", parent=base["Normal"], fontSize=8.05, leading=10.35, textColor=INK, spaceAfter=1.5),
+    "role": ParagraphStyle("role", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=8.8, leading=10.5, textColor=INK, spaceBefore=2.4),
+    "meta": ParagraphStyle("meta", parent=base["Normal"], fontName="Helvetica-Oblique", fontSize=7.75, leading=9.3, textColor=MUTED, spaceAfter=1.2),
+    "bullet": ParagraphStyle("bullet", parent=base["Normal"], fontSize=7.43, leading=9.65, leftIndent=12, firstLineIndent=-8, spaceAfter=.8, textColor=INK),
 }
 
 story = []
@@ -48,17 +48,18 @@ def role(title, meta, items):
 
 
 p("Mohd Hayaat Ali", "name")
-p("LEAD PRODUCT DESIGNER | UI/UX, PRODUCT DESIGN, DESIGN SYSTEMS & DIGITAL EXPERIENCES", "title")
-p("mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to Gurugram", "contact")
+p("UX/UI DESIGNER | AI-ASSISTED DESIGN, PRODUCT INTERFACES, BRANDING & MOTION", "title")
+p("mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to Amsterdam on-site discussion", "contact")
 p("Portfolio: https://workofhayaat.framer.website", "contact")
-p("<b>Lead Product Designer with 6+ years of experience</b> designing user-centered digital products, responsive web/mobile interfaces, B2B workflows, dashboards, design systems, brand-led product surfaces, and conversion-focused experiences. Strong in product thinking, HCI fundamentals, journey mapping, information architecture, user flows, wireframes, high-fidelity UI, prototyping, visual hierarchy, accessibility awareness, design QA, and cross-functional collaboration. Experienced across healthcare, logistics, fintech-adjacent products, education/learning, AI finance operations, websites, marketplaces, internal tools, and SaaS-style workflows.")
+p("<b>UX/UI Designer with 6+ years of experience</b> creating digital products, responsive web/mobile interfaces, brand-led product surfaces, design systems, conversion-focused websites, dashboards, and motion-aware interface concepts. Strong in Figma, Adobe tools, product thinking, visual design fundamentals, user flows, wireframes, polished UI, prototyping, developer handoff, and AI-assisted exploration. Experienced working across product, brand, healthcare, logistics, fintech-adjacent products, AI finance operations, education/learning, B2B workflows, and creative production environments.")
 
 sec("Core Skills")
-p("<b>Product and UX:</b> Product design, UI/UX, HCI, user research, journey mapping, empathy mapping, information architecture, user flows, wireframes, prototypes, usability testing, product iteration")
-p("<b>Visual and Interaction Design:</b> High-fidelity UI, typography, layout, color, spacing, visual hierarchy, responsive composition, interaction design, micro-interaction thinking, accessibility awareness")
-p("<b>Design Systems and Delivery:</b> Figma, FigJam, Auto Layout, components, variants, UI states, reusable patterns, design-system documentation, developer handoff, design QA")
-p("<b>Digital Experience Breadth:</b> Website design, mobile app design, B2B portals, dashboards, conversion flows, onboarding, brand/product interfaces, pitch/presentation assets, product storytelling")
-p("<b>Tools:</b> Figma, FigJam, Framer, Wix, Adobe Photoshop, Illustrator, After Effects, Rive, Miro, Adobe XD, Google Analytics, Hotjar")
+p("<b>UX/UI and Product Design:</b> User journeys, information architecture, user flows, wireframes, high-fidelity UI, prototypes, responsive web/mobile design, usability testing, product iteration")
+p("<b>Branding and Digital Experience:</b> Website design, brand-led interfaces, landing pages, visual systems, conversion flows, presentation assets, product storytelling, campaign visuals")
+p("<b>Motion and Interaction:</b> Adobe After Effects, Rive, UI micro-interaction thinking, motion direction, animated interface concepts, visual rhythm, interaction states")
+p("<b>AI-Assisted Workflow:</b> ChatGPT/Codex-assisted design iteration, AI-assisted concept exploration, prompt-supported creative direction, production acceleration, design-to-code collaboration")
+p("<b>Systems and Delivery:</b> Figma, FigJam, Auto Layout, components, variants, design systems, UI states, developer handoff, design QA, accessibility awareness, HTML/CSS collaboration basics")
+p("<b>Tools:</b> Figma, FigJam, Adobe Photoshop, Illustrator, After Effects, Adobe XD, Framer, Wix, Rive, Miro, Google Analytics, Hotjar")
 
 sec("Professional Experience")
 role("Creative Designer | Crevia", "Delhi NCR, India | Jun 2026 - Present", [
@@ -93,8 +94,8 @@ role("UI Designer | AcadPlaza", "Remote | Jun 2020 - Mar 2022", [
 
 sec("Selected Work")
 bullet("Portfolio: https://workofhayaat.framer.website")
-bullet("Maximor AI: Enterprise AI finance-operations landing page and conversion experience. https://www.maximor.ai/offer")
-bullet("FuelBuddy Customer Web App: Customer and B2B fuel-ordering/account experience across web and mobile. https://app.fuelbuddy.in/")
+bullet("Maximor AI: AI finance-operations landing page and conversion experience. https://www.maximor.ai/offer")
+bullet("FuelBuddy Customer Web App: B2B/customer fuel-ordering and account experience across web and mobile. https://app.fuelbuddy.in/")
 bullet("TS Logix Peru: Logistics website and WMS-oriented digital experience. https://tslogixperu.com/")
 bullet("Vgen23: Genomics reporting platform and healthcare workflow product. https://vgen23.com/")
 bullet("Kama Capital: Trading website and onboarding journeys. https://kama-capital.com/")
@@ -109,6 +110,6 @@ SimpleDocTemplate(
     rightMargin=.55 * inch,
     topMargin=.45 * inch,
     bottomMargin=.45 * inch,
-    title="Mohd Hayaat Ali - Lead Product Designer - Goldenflitch",
+    title="Mohd Hayaat Ali - UX UI Designer - The Brink Agency",
 ).build(story)
 print(OUT)

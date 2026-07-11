@@ -1,25 +1,25 @@
 # Mohd Hayaat Ali
 
-## Lead Product Designer | UI/UX, Product Design, Design Systems & Digital Experiences
+## UI/UX Designer | SaaS, Web/Mobile, Figma Systems & Product UX
 
-mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to Gurugram  
+mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to Bangalore WFO discussion  
 Portfolio: https://workofhayaat.framer.website
 
 ## Professional Summary
 
-Lead Product Designer with 6+ years of experience designing user-centered digital products, responsive web/mobile interfaces, B2B workflows, dashboards, design systems, brand-led product surfaces, and conversion-focused experiences. Strong in product thinking, HCI fundamentals, journey mapping, information architecture, user flows, wireframes, high-fidelity UI, prototyping, visual hierarchy, accessibility awareness, design QA, and cross-functional collaboration. Experienced across healthcare, logistics, fintech-adjacent products, education/learning, AI finance operations, websites, marketplaces, internal tools, and SaaS-style workflows.
+UI/UX Designer with 6+ years of experience designing intuitive web and mobile products, SaaS-style workflows, dashboards, responsive interfaces, user flows, wireframes, high-fidelity UI, prototypes, and scalable Figma design systems. Strong in UX principles, visual design, typography, color, accessibility awareness, usability testing, stakeholder collaboration, and developer handoff. Experienced working with product managers, founders, developers, business teams, and clients across healthcare, logistics, fintech-adjacent products, education/learning, B2B platforms, internal tools, and customer-facing apps.
 
 ## Core Skills
 
-**Product and UX:** Product design, UI/UX, HCI, user research, journey mapping, empathy mapping, information architecture, user flows, wireframes, prototypes, usability testing, product iteration
+**UX and Product Design:** User research, journey mapping, information architecture, user flows, wireframes, prototypes, high-fidelity UI, usability testing, product iteration, stakeholder feedback
 
-**Visual and Interaction Design:** High-fidelity UI, typography, layout, color, spacing, visual hierarchy, responsive composition, interaction design, micro-interaction thinking, accessibility awareness
+**UI and Visual Design:** Responsive web design, mobile app design, typography, color theory, layout, spacing, accessibility awareness, visual hierarchy, interaction design
 
-**Design Systems and Delivery:** Figma, FigJam, Auto Layout, components, variants, UI states, reusable patterns, design-system documentation, developer handoff, design QA
+**Design Systems:** Figma, FigJam, Auto Layout, components, variants, UI states, reusable patterns, design-system documentation, consistency governance, design QA
 
-**Digital Experience Breadth:** Website design, mobile app design, B2B portals, dashboards, conversion flows, onboarding, brand/product interfaces, pitch/presentation assets, product storytelling
+**SaaS / Product Workflows:** Dashboards, B2B portals, onboarding, account controls, analytics surfaces, operational workflows, marketplace/search flows, internal tools
 
-**Tools:** Figma, FigJam, Framer, Wix, Adobe Photoshop, Illustrator, After Effects, Rive, Miro, Adobe XD, Google Analytics, Hotjar
+**Tools and Handoff:** Figma, Adobe XD, Photoshop, Illustrator, Framer, Wix, Rive, Miro, Google Analytics, Hotjar, developer handoff, HTML/CSS collaboration basics
 
 ## Professional Experience
 
@@ -45,7 +45,7 @@ Gurgaon, India | July 2023 - June 2024
 - Redesigned diesel ordering from a 20-22 step journey into a focused location, quantity, schedule, and payment flow, improving completion from 62% to 78%.
 - Reduced payment transaction errors by 38% through wallet improvements, delegated access, secondary-user controls, and configurable spend limits.
 - Built the FuelBuddy design system from scratch across consumer, B2B, franchise, field, and operational products.
-- Replaced spreadsheet-heavy operational patterns with structured product workflows for drivers, trucks, routes, shifts, delivery planning, corrections, reporting, and live operations.
+- Replaced spreadsheet-heavy operational patterns with structured workflows for drivers, trucks, routes, shifts, delivery planning, corrections, reporting, and live operations.
 
 ### Product Designer | Uncover by Meddo
 Gurgaon, India | March 2022 - May 2023
@@ -54,7 +54,6 @@ Gurgaon, India | March 2022 - May 2023
 - Redesigned doctor profiles, increasing profile views by 28% and appointment requests by 15% in a 5,000-user A/B test.
 - Designed patient, doctor, and back-office experiences spanning discovery, appointments, lab tests, records, and early ABHA integration interfaces.
 - Conducted usability testing with 12 patients and 8 doctors, translating findings into product, design-system, and engineering priorities.
-- Created Uncover's visual identity foundation and carried it into responsive web, mobile, and reusable UI patterns.
 
 ### UI Designer | AcadPlaza
 Remote | June 2020 - March 2022
@@ -65,11 +64,11 @@ Remote | June 2020 - March 2022
 ## Selected Work
 
 - Portfolio: https://workofhayaat.framer.website
+- FuelBuddy Customer Web App: B2B/customer fuel-ordering and account experience across web and mobile. https://app.fuelbuddy.in/
 - Maximor AI: Enterprise AI finance-operations landing page and conversion experience. https://www.maximor.ai/offer
-- FuelBuddy Customer Web App: Customer and B2B fuel-ordering/account experience across web and mobile. https://app.fuelbuddy.in/
-- TS Logix Peru: Logistics website and WMS-oriented digital experience. https://tslogixperu.com/
+- Uncover / Meddo: Healthcare product UX, booking flows, patient experience, usability testing, and design-system work. https://uncover.co.in/
 - Vgen23: Genomics reporting platform and healthcare workflow product. https://vgen23.com/
-- Kama Capital: Trading website and onboarding journeys. https://kama-capital.com/
+- TS Logix Peru: Logistics website and WMS-oriented digital experience. https://tslogixperu.com/
 
 ## Education
 

@@ -6,7 +6,7 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import HRFlowable, Paragraph, SimpleDocTemplate
 
-OUT = Path(__file__).with_name("Mohd_Hayaat_Ali_Lead_Product_Designer_Goldenflitch.pdf")
+OUT = Path(__file__).with_name("Mohd_Hayaat_Ali_UX_Designer_PinkRoccade.pdf")
 
 INK = colors.HexColor("#17212B")
 MUTED = colors.HexColor("#56616B")
@@ -15,13 +15,13 @@ ACCENT = colors.HexColor("#155E75")
 base = getSampleStyleSheet()
 styles = {
     "name": ParagraphStyle("name", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=23, leading=26, textColor=INK),
-    "title": ParagraphStyle("title", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=10.2, leading=12.9, textColor=ACCENT, spaceAfter=4),
-    "contact": ParagraphStyle("contact", parent=base["Normal"], fontSize=8.55, leading=10.8, textColor=MUTED),
-    "section": ParagraphStyle("section", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=10.7, leading=12.8, textColor=ACCENT, spaceBefore=6.0, spaceAfter=2),
-    "body": ParagraphStyle("body", parent=base["Normal"], fontSize=8.1, leading=10.45, textColor=INK, spaceAfter=1.6),
-    "role": ParagraphStyle("role", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=8.85, leading=10.6, textColor=INK, spaceBefore=2.5),
-    "meta": ParagraphStyle("meta", parent=base["Normal"], fontName="Helvetica-Oblique", fontSize=7.8, leading=9.4, textColor=MUTED, spaceAfter=1.3),
-    "bullet": ParagraphStyle("bullet", parent=base["Normal"], fontSize=7.5, leading=9.8, leftIndent=12, firstLineIndent=-8, spaceAfter=.9, textColor=INK),
+    "title": ParagraphStyle("title", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=10.1, leading=12.8, textColor=ACCENT, spaceAfter=4),
+    "contact": ParagraphStyle("contact", parent=base["Normal"], fontSize=8.45, leading=10.7, textColor=MUTED),
+    "section": ParagraphStyle("section", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=10.65, leading=12.7, textColor=ACCENT, spaceBefore=6.0, spaceAfter=2),
+    "body": ParagraphStyle("body", parent=base["Normal"], fontSize=8.05, leading=10.35, textColor=INK, spaceAfter=1.5),
+    "role": ParagraphStyle("role", parent=base["Normal"], fontName="Helvetica-Bold", fontSize=8.8, leading=10.5, textColor=INK, spaceBefore=2.4),
+    "meta": ParagraphStyle("meta", parent=base["Normal"], fontName="Helvetica-Oblique", fontSize=7.75, leading=9.3, textColor=MUTED, spaceAfter=1.2),
+    "bullet": ParagraphStyle("bullet", parent=base["Normal"], fontSize=7.43, leading=9.65, leftIndent=12, firstLineIndent=-8, spaceAfter=.8, textColor=INK),
 }
 
 story = []
@@ -48,17 +48,17 @@ def role(title, meta, items):
 
 
 p("Mohd Hayaat Ali", "name")
-p("LEAD PRODUCT DESIGNER | UI/UX, PRODUCT DESIGN, DESIGN SYSTEMS & DIGITAL EXPERIENCES", "title")
-p("mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to Gurugram", "contact")
+p("UX DESIGNER | COMPLEX WORKFLOWS, RESEARCH, VALIDATION & PUBLIC-SERVICE SOFTWARE", "title")
+p("mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to Netherlands / hybrid discussion", "contact")
 p("Portfolio: https://workofhayaat.framer.website", "contact")
-p("<b>Lead Product Designer with 6+ years of experience</b> designing user-centered digital products, responsive web/mobile interfaces, B2B workflows, dashboards, design systems, brand-led product surfaces, and conversion-focused experiences. Strong in product thinking, HCI fundamentals, journey mapping, information architecture, user flows, wireframes, high-fidelity UI, prototyping, visual hierarchy, accessibility awareness, design QA, and cross-functional collaboration. Experienced across healthcare, logistics, fintech-adjacent products, education/learning, AI finance operations, websites, marketplaces, internal tools, and SaaS-style workflows.")
+p("<b>UX Designer with 6+ years of experience</b> turning complex workflows into clear user journeys, information architecture, wireframes, prototypes, validated product decisions, and scalable design systems. Experienced in regulated and operational domains including healthcare, logistics, B2B platforms, dashboards, internal tools, field operations, records, payments, reporting, and back-office workflows. Strong in user research, usability testing, Discover/Define work, stakeholder facilitation, journey mapping, interaction design, Figma prototyping, design QA, and AI-assisted concept exploration.")
 
 sec("Core Skills")
-p("<b>Product and UX:</b> Product design, UI/UX, HCI, user research, journey mapping, empathy mapping, information architecture, user flows, wireframes, prototypes, usability testing, product iteration")
-p("<b>Visual and Interaction Design:</b> High-fidelity UI, typography, layout, color, spacing, visual hierarchy, responsive composition, interaction design, micro-interaction thinking, accessibility awareness")
-p("<b>Design Systems and Delivery:</b> Figma, FigJam, Auto Layout, components, variants, UI states, reusable patterns, design-system documentation, developer handoff, design QA")
-p("<b>Digital Experience Breadth:</b> Website design, mobile app design, B2B portals, dashboards, conversion flows, onboarding, brand/product interfaces, pitch/presentation assets, product storytelling")
-p("<b>Tools:</b> Figma, FigJam, Framer, Wix, Adobe Photoshop, Illustrator, After Effects, Rive, Miro, Adobe XD, Google Analytics, Hotjar")
+p("<b>UX Research and Validation:</b> User interviews, usability testing, observation-based insights, journey mapping, persona context, user problems, testable prototypes, iterative design")
+p("<b>Complex Process UX:</b> Regulated workflows, operational systems, back-office tools, dashboards, records, account controls, reporting, field operations, data-heavy interfaces")
+p("<b>Interaction and IA:</b> Information architecture, user flows, wireframes, clickable prototypes, interaction models, content structure, first-time-right task design, adoption-focused UX")
+p("<b>Collaboration:</b> Discover/Define facilitation, product and engineering collaboration, stakeholder alignment, requirement clarification, sprint preparation, design decision documentation")
+p("<b>Tools:</b> Figma, FigJam, Auto Layout, components, variants, Adobe XD, Miro, Framer, Wix, Photoshop, Illustrator, Google Analytics, Hotjar, AI-assisted design exploration")
 
 sec("Professional Experience")
 role("Creative Designer | Crevia", "Delhi NCR, India | Jun 2026 - Present", [
@@ -77,14 +77,13 @@ role("Product Designer | FuelBuddy", "Gurgaon, India | Jul 2023 - Jun 2024", [
     "Redesigned diesel ordering from a 20-22 step journey into a focused location, quantity, schedule, and payment flow, improving completion from 62% to 78%.",
     "Reduced payment transaction errors by 38% through wallet improvements, delegated access, secondary-user controls, and configurable spend limits.",
     "Built the FuelBuddy design system from scratch across consumer, B2B, franchise, field, and operational products.",
-    "Replaced spreadsheet-heavy operational patterns with structured product workflows for drivers, trucks, routes, shifts, delivery planning, corrections, reporting, and live operations.",
+    "Replaced spreadsheet-heavy operational patterns with structured workflows for drivers, trucks, routes, shifts, delivery planning, corrections, reporting, and live operations.",
 ])
 role("Product Designer | Uncover by Meddo", "Gurgaon, India | Mar 2022 - May 2023", [
     "Reduced appointment booking from six steps to four, improving completion from 71% to 83% over eight weeks using analytics and user feedback.",
     "Redesigned doctor profiles, increasing profile views by 28% and appointment requests by 15% in a 5,000-user A/B test.",
     "Designed patient, doctor, and back-office experiences spanning discovery, appointments, lab tests, records, and early ABHA integration interfaces.",
     "Conducted usability testing with 12 patients and 8 doctors, translating findings into product, design-system, and engineering priorities.",
-    "Created Uncover's visual identity foundation and carried it into responsive web, mobile, and reusable UI patterns.",
 ])
 role("UI Designer | AcadPlaza", "Remote | Jun 2020 - Mar 2022", [
     "Redesigned course catalog and search for a learning marketplace, increasing enrollments by 18% quarter over quarter.",
@@ -93,11 +92,11 @@ role("UI Designer | AcadPlaza", "Remote | Jun 2020 - Mar 2022", [
 
 sec("Selected Work")
 bullet("Portfolio: https://workofhayaat.framer.website")
-bullet("Maximor AI: Enterprise AI finance-operations landing page and conversion experience. https://www.maximor.ai/offer")
-bullet("FuelBuddy Customer Web App: Customer and B2B fuel-ordering/account experience across web and mobile. https://app.fuelbuddy.in/")
-bullet("TS Logix Peru: Logistics website and WMS-oriented digital experience. https://tslogixperu.com/")
+bullet("FuelBuddy Customer Web App: B2B/customer fuel-ordering and account workflows across web and mobile. https://app.fuelbuddy.in/")
+bullet("TS Logix Peru: Logistics website and WMS-oriented operational experience. https://tslogixperu.com/")
+bullet("Uncover / Meddo: Healthcare product UX, booking flows, patient experience, usability testing, and back-office work. https://uncover.co.in/")
 bullet("Vgen23: Genomics reporting platform and healthcare workflow product. https://vgen23.com/")
-bullet("Kama Capital: Trading website and onboarding journeys. https://kama-capital.com/")
+bullet("Maximor AI: Enterprise AI finance-operations landing page and conversion experience. https://www.maximor.ai/offer")
 
 sec("Education")
 p("<b>BBA, Business Administration</b> | Sam Higginbottom University of Agriculture, Technology and Sciences | 2017 - 2020")
@@ -109,6 +108,6 @@ SimpleDocTemplate(
     rightMargin=.55 * inch,
     topMargin=.45 * inch,
     bottomMargin=.45 * inch,
-    title="Mohd Hayaat Ali - Lead Product Designer - Goldenflitch",
+    title="Mohd Hayaat Ali - UX Designer - PinkRoccade",
 ).build(story)
 print(OUT)

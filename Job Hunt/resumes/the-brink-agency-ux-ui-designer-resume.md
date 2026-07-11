@@ -1,25 +1,27 @@
 # Mohd Hayaat Ali
 
-## Lead Product Designer | UI/UX, Product Design, Design Systems & Digital Experiences
+## UX/UI Designer | AI-Assisted Design, Product Interfaces, Branding & Motion
 
-mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to Gurugram  
+mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to Amsterdam on-site discussion  
 Portfolio: https://workofhayaat.framer.website
 
 ## Professional Summary
 
-Lead Product Designer with 6+ years of experience designing user-centered digital products, responsive web/mobile interfaces, B2B workflows, dashboards, design systems, brand-led product surfaces, and conversion-focused experiences. Strong in product thinking, HCI fundamentals, journey mapping, information architecture, user flows, wireframes, high-fidelity UI, prototyping, visual hierarchy, accessibility awareness, design QA, and cross-functional collaboration. Experienced across healthcare, logistics, fintech-adjacent products, education/learning, AI finance operations, websites, marketplaces, internal tools, and SaaS-style workflows.
+UX/UI Designer with 6+ years of experience creating digital products, responsive web/mobile interfaces, brand-led product surfaces, design systems, conversion-focused websites, dashboards, and motion-aware interface concepts. Strong in Figma, Adobe tools, product thinking, visual design fundamentals, user flows, wireframes, polished UI, prototyping, developer handoff, and AI-assisted exploration. Experienced working across product, brand, healthcare, logistics, fintech-adjacent products, AI finance operations, education/learning, B2B workflows, and creative production environments.
 
 ## Core Skills
 
-**Product and UX:** Product design, UI/UX, HCI, user research, journey mapping, empathy mapping, information architecture, user flows, wireframes, prototypes, usability testing, product iteration
+**UX/UI and Product Design:** User journeys, information architecture, user flows, wireframes, high-fidelity UI, prototypes, responsive web/mobile design, usability testing, product iteration
 
-**Visual and Interaction Design:** High-fidelity UI, typography, layout, color, spacing, visual hierarchy, responsive composition, interaction design, micro-interaction thinking, accessibility awareness
+**Branding and Digital Experience:** Website design, brand-led interfaces, landing pages, visual systems, conversion flows, presentation assets, product storytelling, campaign visuals
 
-**Design Systems and Delivery:** Figma, FigJam, Auto Layout, components, variants, UI states, reusable patterns, design-system documentation, developer handoff, design QA
+**Motion and Interaction:** Adobe After Effects, Rive, UI micro-interaction thinking, motion direction, animated interface concepts, visual rhythm, interaction states
 
-**Digital Experience Breadth:** Website design, mobile app design, B2B portals, dashboards, conversion flows, onboarding, brand/product interfaces, pitch/presentation assets, product storytelling
+**AI-Assisted Workflow:** ChatGPT/Codex-assisted design iteration, AI-assisted concept exploration, prompt-supported creative direction, production acceleration, design-to-code collaboration
 
-**Tools:** Figma, FigJam, Framer, Wix, Adobe Photoshop, Illustrator, After Effects, Rive, Miro, Adobe XD, Google Analytics, Hotjar
+**Systems and Delivery:** Figma, FigJam, Auto Layout, components, variants, design systems, UI states, developer handoff, design QA, accessibility awareness, HTML/CSS collaboration basics
+
+**Tools:** Figma, FigJam, Adobe Photoshop, Illustrator, After Effects, Adobe XD, Framer, Wix, Rive, Miro, Google Analytics, Hotjar
 
 ## Professional Experience
 
@@ -65,8 +67,8 @@ Remote | June 2020 - March 2022
 ## Selected Work
 
 - Portfolio: https://workofhayaat.framer.website
-- Maximor AI: Enterprise AI finance-operations landing page and conversion experience. https://www.maximor.ai/offer
-- FuelBuddy Customer Web App: Customer and B2B fuel-ordering/account experience across web and mobile. https://app.fuelbuddy.in/
+- Maximor AI: AI finance-operations landing page and conversion experience. https://www.maximor.ai/offer
+- FuelBuddy Customer Web App: B2B/customer fuel-ordering and account experience across web and mobile. https://app.fuelbuddy.in/
 - TS Logix Peru: Logistics website and WMS-oriented digital experience. https://tslogixperu.com/
 - Vgen23: Genomics reporting platform and healthcare workflow product. https://vgen23.com/
 - Kama Capital: Trading website and onboarding journeys. https://kama-capital.com/
