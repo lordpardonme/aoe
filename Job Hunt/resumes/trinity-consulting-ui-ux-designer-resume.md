@@ -2,7 +2,7 @@
 
 ## UI/UX Designer | Web & Mobile Applications, Design Systems, Enterprise Workflows
 
-mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to relocation  
+mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to relocating to Chennai  
 Portfolio: https://workofhayaat.framer.website
 
 ## Professional Summary
