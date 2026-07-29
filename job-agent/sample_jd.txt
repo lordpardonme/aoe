@@ -1,0 +1,16 @@
+Company: Ravinsol
+Position: UI/UX Designer
+
+About the role:
+We are looking for a UI/UX Designer to own end-to-end product design for our
+B2B SaaS dashboard. You will create user flows, wireframes and high-fidelity
+prototypes in Figma, build and maintain our design system, run usability
+testing, and collaborate closely with engineering on developer handoff.
+
+Requirements:
+- 4+ years in product / UI/UX design
+- Strong Figma, prototyping and interaction design skills
+- Experience with design systems, accessibility and responsive web design
+- Bonus: fintech, payments or analytics dashboard experience
+
+To apply, email your portfolio and resume to careers@ravinsol.example.
