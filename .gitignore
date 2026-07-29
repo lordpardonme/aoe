@@ -24,6 +24,9 @@ node_modules/
 # Nested/exported git internals
 Job Hunt/.git/
 
+# Machine-local agent settings (permission grants are per-machine)
+.claude/settings.local.json
+
 # Local secrets
 .env
 .env.*
