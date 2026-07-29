@@ -1,0 +1,18 @@
+# Secrets — never commit
+.env
+credentials.json
+token.json
+
+# Generated artefacts
+generated/
+logs/
+tracker/*.json
+tracker/*.csv
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
