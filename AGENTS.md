@@ -44,7 +44,7 @@ Then read, in order:
 
 | Path | What it is |
 |---|---|
-| `Job Hunt/resumes/` | **The working directory.** Resume markdown, generated PDFs, email bodies, and the generator/sender scripts. |
+| `Job Hunt/resumes/` | **The working directory.** Resume markdown, generated PDFs, email bodies, and the generator/sender scripts. `build_branded_pdf.py` is the default builder (see §6.3); `renderers/original/` holds preserved copies of the earlier renderers. |
 | `job-agent/` | Python package wrapping Gmail + Sheets + Drive (OAuth lives here). |
 | `job-automation-mcp/` | MCP server scaffold (package.json only; not yet implemented). |
 | `reconciled-tracker-build/` | Tracker exports and Gmail reconciliation output. |
@@ -206,13 +206,15 @@ Showreel: Drive folder linked in `candidate-profile.md`, confirmed shared
 3. **Draft `<slug>-resume.md`** from the master CV + evidence bank + profile links.
    Show the full relevant range; never undersell; never fabricate. Fuzzy facts stay
    generic until the user confirms them.
-4. **Build the PDF** (root venv — takes 3 positional args):
+4. **Build the PDF** with the default builder (root venv). Pick the mode from
+   §6.3 and check the country rules in §6.4 first:
    ```bash
-   .venv/Scripts/python.exe "Job Hunt/resumes/build_pdf_from_md.py" <slug>-resume.md <Output>.pdf "<PDF title>"
+   .venv/Scripts/python.exe "Job Hunt/resumes/build_branded_pdf.py" <slug>-resume.md <Output>.pdf "<PDF title>" --preset <brand> --country <cc>
    ```
    Expects `# Name` / `## Title` / contact lines / `## Professional Summary` /
    `## Core Skills` / `## Professional Experience` / `## Selected Live Work` /
-   `## Education`. URLs auto-link.
+   `## Education`. URLs auto-link. An optional `## What I'd Bring To <Company>`
+   section renders as a highlighted card in branded mode.
 5. **Invoke the `resume-ats-optimizer` skill** — check keyword match vs the JD and
    ATS-safe formatting. Fix gaps before sending.
 6. **Write `<slug>-email.txt`** — short, specific, human. See §6.1.
@@ -248,6 +250,88 @@ The user's setting is **auto-send high-confidence, hold the rest**:
 - **Never send:** impersonation (fake Google/DreamWorks postings), CV-to-random-
   Gmail farms, anything demanding ID scans or registration fees. Mark
   `SCAM - EXCLUDED` in `Social Leads Jul 2026` and do not engage.
+
+### 6.3 Which resume to send, and how to render it
+
+**`build_branded_pdf.py` is the default builder.** `build_pdf_from_md.py` is the
+legacy house style, kept as a fallback; originals are preserved in
+`Job Hunt/resumes/renderers/original/`.
+
+Decide in this order — the first match wins:
+
+1. **Recruitment agency AND no JD supplied** → send
+   `Mohd_Hayaat_Ali_Master_Product_Designer_CV.pdf` **as-is**. Do not build, do
+   not regenerate, do not brand. This is the standing default for agencies.
+2. **Check §6.4 country rules.** They can veto branding outright.
+3. **JD supplied** → draft `<slug>-resume.md`, then choose:
+   - **Creative target** — café, studio, DTC brand, production house, small
+     creative team; or any motion / video / photography / art-direction / brand
+     role → **branded mode**.
+     ```bash
+     ... build_branded_pdf.py <slug>-resume.md <Out>.pdf "<title>" --preset nubo
+     ... build_branded_pdf.py <slug>-resume.md <Out>.pdf "<title>" --accent "#0058A3" --font clean
+     ```
+   - **Corporate, enterprise, bank, real ATS, or any recruitment agency** →
+     **ATS mode**: `--ats --preset mono` (flat black).
+4. **No JD, direct employer, vague or unnamed role** → master CV, per the
+   "irrelevant or unnamed role" rule above.
+
+**Benchmark:** `Mohd_Hayaat_Ali_Marketing_Head_nubo.pdf` for creative,
+`..._Randstad.pdf` for ATS, `..._IKEA.pdf` for a corporate-but-branded middle.
+Use them as reference for *quality*, not as templates — **research each company
+fresh; do not clone a previous build.**
+
+**Colour.** One verified hex drives accent, card tint, page wash, rules and
+bullet marks. Take it from the company's own site or brand material. **Never
+guess** — a near-miss reads as failed impersonation, which is worse than
+neutral. Unverified → `--preset default`. A contrast guard darkens light accents
+automatically so brand hue never costs legibility.
+
+**Typeface.** Search for the company's actual typeface first; use it if a system
+equivalent exists. Otherwise pick the closest pairing: `grotesque` (Arial Black
++ Segoe UI), `clean` (Segoe UI Bold + Segoe UI), `condensed` (Bahnschrift).
+Record which case applied in the tracker Notes, and never claim a match that
+wasn't verified. *Poppins, Montserrat and Inter are not installed — installing
+those three free Google Fonts is the single highest-value upgrade to output
+quality.*
+
+**Readability is the point.** Body 9.8pt/15 leading, bullets 9.5/14.6, generous
+margins. **Two to three pages is correct; cramping to fit fewer is not.** Role
+blocks never split, section headings never orphan, and the highlighted card
+flows across a page break with its background intact.
+
+**ATS mode** drops tinted cards, tables, page wash and arrow glyphs; keeps the
+accent on headings and links, standard `•` bullets, flat single column.
+
+**Verification is visual.** Page count is not proof. Rasterize with PyMuPDF
+(~100 dpi) and *look* at every page before sending — this workspace has shipped
+broken layouts (centre-floating rules, orphaned headings, a card leaving a hole)
+that page counts passed cleanly.
+
+### 6.4 Country and region CV rules
+
+Local convention is not cosmetic — a photo where one is unexpected creates bias
+exposure and can get the CV binned unread; no photo where one is expected reads
+as incomplete. `build_branded_pdf.py --country <cc>` enforces this and will
+**refuse** rather than silently comply.
+
+| Region | Photo | Notes |
+|---|---|---|
+| **US / Canada** (`us`, `ca`) | **Never** | "Resume", 1–2pp. No DOB, marital status or nationality. |
+| **UK / Ireland / Netherlands / Australia** (`uk`,`ie`,`nl`,`au`) | No | "CV", 2pp. Contact details only. |
+| **Germany** (`de`) | **Expected** | *Lebenslauf*. Headshot top-right ~35×45mm, tabular reverse-chronological. AGG makes it optional in law; the expectation persists in practice. |
+| **UAE / Saudi / Oman / Qatar** (`ae`,`sa`,`om`,`qa`) | **Expected** | Include nationality and visa status; detailed role descriptions. |
+| **Japan** (`jp`) | **Expected** | *Rirekisho* (fixed standard form) **plus** *shokumu keirekisho* (work history). **Design creativity is not appreciated — never send a branded resume.** The builder refuses branded mode for `jp`. |
+| **France** (`fr`) | Expected | Photo customary. |
+| **India** (`in`) | Optional | 1–2pp. Workspace default. |
+
+Country not listed → omit the photo, use the neutral 2-page format. **Doubt
+resolves to omission.**
+
+**Blocker to raise with the user:** there is no headshot in this workspace.
+Germany, Gulf, Japan and France applications need one (`--photo <path>`, sized
+automatically). Ask for a formal headshot rather than quietly sending a
+photo-less CV into a photo-expecting market.
 
 ---
 
@@ -378,5 +462,14 @@ Retailer Sarathi · Infoneo Global
 - **Dubai list** — `Social Leads Jul 2026` holds a reference block of ~28 Dubai/UAE
   companies that are **careers-portal only, not email-apply**. Roughly 22 more from
   that list are already tracked. Do not email the portal-only ones.
+
+**Also sent 2026-07-30:** nubo (eatnubo), `hello@eatnubo.com`, Gmail id
+`19fb34cd32edb51b` — 360 Marketing Head, first application built with the
+branded renderer.
+
+**Sheet note:** the Master Job Tracker was re-sorted and de-duplicated on
+2026-07-30 (325 → 313 rows, duplicates only — nothing lost) and the Dashboard was
+rebuilt with new metric labels. **Every "Master row N" reference in older Notes
+is now stale.** Gmail message IDs are the reliable key.
 
 Update this section whenever you finish a batch, so the next agent starts current.
