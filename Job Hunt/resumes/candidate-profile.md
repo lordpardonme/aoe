@@ -39,6 +39,11 @@ current; resumes and emails pull from this so they never drift.
 ## TODO — links the user mentioned but hasn't provided yet
 - "story links" / "my links" — awaiting the actual URLs. Add here when received.
 
-## Master resume (do not regenerate; use as-is)
-- Job Hunt/resumes/Mohd_Hayaat_Ali_Master_Product_Designer_CV.pdf
-- Source markdown: Job Hunt/resumes/master-product-designer-cv.md
+## Master resumes (do not regenerate; use as canonical references)
+- **Product / UI-UX Track Master:**
+  - PDF: Job Hunt/resumes/Mohd_Hayaat_Ali_Master_Product_Designer_CV.pdf
+  - Source markdown: Job Hunt/resumes/master-product-designer-cv.md
+- **Creative / Video & Photo Track Master:**
+  - PDF: Job Hunt/resumes/Mohd_Hayaat_Ali_Master_Creative_CV.pdf
+  - Source markdown: Job Hunt/resumes/master-creative-cv.md
+

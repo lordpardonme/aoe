@@ -208,15 +208,17 @@ photography roles ONLY. Do NOT put this on product / UI-UX / Product-Designer
 resumes (user directed keeping the two tracks separate). No public links except
 the showreel.
 
-- **Art Director — Beaux Arts, Allahabad.** Also worked as a director for ads and
-  short films.
+- **Art Director — Beaux Arts, Allahabad.** Also worked as a director for ads and short films.
 - **Directed 2 short / art films.**
-- **Junior DOP (freelance) on a music video for Crevixa.** Role was junior DOP
-  (director of photography), NOT director - phrase accordingly.
-- **Freelance ad creative, 2018 - present**, for brands including **Hero, Suzuki,
-  Red Bull, Monster, and Trojan.** Local / regional market work.
-- **Photography, 2017 - present** (freelance and with **Redhat Productions**):
-  product, events, college festivals, weddings, corporate.
+- **Junior DOP (freelance) on a music video for Crevixa.** Role was junior DOP (director of photography), NOT director - phrase accordingly.
+- **Institutional & Major College Festivals:** Captured live festival & star-night coverage across premier institutions nationwide—including **IITs, IIMs (IIM Jammu), NITs, Delhi University (DU) colleges**, and major university cultural fests across India.
+- **High-Profile Artist & Concert Shoots:** Live event, concert, and video/photography coverage for major artists & creators including **Travis Scott, Akon, Vishal-Shekhar, The Local Train, Gajendra Verma, CarryMinati, Zair Khan**, and many more.
+- **Wedding & Music-Led Storytelling:** Emotionally-paced video edits focusing on performance, relationships, candid moments, and sound design.
+- **Post-Production Setup:** Own dedicated high-performance editing workstation for Premiere Pro, DaVinci Resolve, After Effects, and color grading.
+- **Freelance ad creative, 2018 - present**, for brands including **Hero, Suzuki, Red Bull, Monster, and Trojan.** Local / regional market work.
+- **Photography, 2016 - present** (10+ years hands-on experience; freelance and with **Redhat Productions**): product, events, college festivals, weddings, corporate.
+
+
 - Ongoing **video editing** and motion across brand and social content.
 - **Showreel:** https://drive.google.com/drive/folders/1maf7S6y-WwfE3cdVNO8SvmM7H6slgpZW
   (Drive folder - user must set sharing to "anyone with link can view").
