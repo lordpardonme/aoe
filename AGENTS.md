@@ -289,13 +289,53 @@ partial words do not count. Without it, stay idle.
 
 ---
 
-## 8. Skills
+## 8. Skills — install these before working
 
-Installed and expected to be used:
+This workspace depends on 7 installed skills. They are managed by
+[`npx skills`](https://github.com/vercel-labs/skills) (Vercel Labs), which supports
+claude-code, codex, cursor, copilot, gemini, opencode, windsurf, kilo, roo, goose,
+amp, droid, trae, and others — so any agentic platform can install them.
 
-- **`resume-tailoring`** — at build time, before drafting a resume variant.
-- **`resume-ats-optimizer`** — before every send, to check the packet against the JD.
-- `cv-creator` — available for full CV builds.
+### Install everything (one command per source)
+
+```bash
+npx skills add varunr89/resume-tailoring-skill -s resume-tailoring -a '*' -y
+npx skills add paramchoudhary/resumeskills -s resume-ats-optimizer -a '*' -y
+npx skills add erichowens/some_claude_skills -s cv-creator -a '*' -y
+npx skills add juliusbrussee/caveman -s caveman,caveman-compress,caveman-stats -a '*' -y
+npx skills add vercel-labs/skills -s find-skills -a '*' -y
+```
+
+`-a '*'` installs to every agent directory found; `-y` skips prompts. Drop `-a '*'`
+and pass e.g. `-a claude-code` or `-a codex` to target one platform. Verify with
+`npx skills list`.
+
+### Or restore from the lock files
+
+```bash
+npx skills experimental_install
+```
+
+**Caveat:** this reads `skills-lock.json` from the current directory, and this repo
+has **two** — the root one pins only `caveman`, `caveman-stats`, `find-skills`,
+while `Job Hunt/skills-lock.json` pins the job-critical `resume-tailoring`,
+`resume-ats-optimizer`, `cv-creator`, `caveman-compress`. Running it from the repo
+root alone will **not** get you the resume skills. Either run it in both
+directories, or just use the explicit `add` commands above.
+
+### What each skill is for
+
+| Skill | Source (GitHub) | Used for |
+|---|---|---|
+| **`resume-tailoring`** | `varunr89/resume-tailoring-skill` | **Required** — pipeline step 2. Research the company/role and pick the resume angle before drafting. |
+| **`resume-ats-optimizer`** | `paramchoudhary/resumeskills` | **Required** — pipeline step 5. Check keyword match vs the JD and ATS-safe formatting before every send. |
+| `cv-creator` | `erichowens/some_claude_skills` | Full CV builds and multi-format export. Optional — the master CV already exists; do not regenerate it. |
+| `caveman-compress` | `juliusbrussee/caveman` | Compress a handoff note or generated artifact that has grown too large to stay readable. |
+| `caveman` / `caveman-stats` | `juliusbrussee/caveman` | Token-compressed communication mode and its usage stats. Opt-in; see `Job Hunt/AGENTS.md`. |
+| `find-skills` | `vercel-labs/skills` | Discover and install additional skills when a task needs capability that isn't here. |
+
+The two marked **Required** are non-negotiable steps in §6. The rest are available
+but not part of the send path.
 
 ---
 
