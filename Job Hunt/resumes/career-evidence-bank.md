@@ -200,6 +200,31 @@ Truth bank for CV variants. Keep claims defensible.
 - Keep existing claims.
 - Use for search/catalog, marketplace learning flows, enrollment gains.
 
+## Creative Direction / Film / Photography (user-confirmed 2026-07-29)
+
+Real freelance/studio credits, confirmed by the user. Runs ALONGSIDE the design
+career (2017-present). Use for creative / video / directing / art-direction /
+photography roles ONLY. Do NOT put this on product / UI-UX / Product-Designer
+resumes (user directed keeping the two tracks separate). No public links except
+the showreel.
+
+- **Art Director — Beaux Arts, Allahabad.** Also worked as a director for ads and
+  short films.
+- **Directed 2 short / art films.**
+- **Junior DOP (freelance) on a music video for Crevixa.** Role was junior DOP
+  (director of photography), NOT director - phrase accordingly.
+- **Freelance ad creative, 2018 - present**, for brands including **Hero, Suzuki,
+  Red Bull, Monster, and Trojan.** Local / regional market work.
+- **Photography, 2017 - present** (freelance and with **Redhat Productions**):
+  product, events, college festivals, weddings, corporate.
+- Ongoing **video editing** and motion across brand and social content.
+- **Showreel:** https://drive.google.com/drive/folders/1maf7S6y-WwfE3cdVNO8SvmM7H6slgpZW
+  (Drive folder - user must set sharing to "anyone with link can view").
+
+Positioning: 5-7+ years photography/editing/directing (photography since 2017, ad
+direction since 2018) alongside 6+ years product/UI-UX design. "Story links / my
+links" = the showreel + portfolio + live-work links already on file (no new URLs).
+
 ## Master variants
 
 ### Fintech / payments
