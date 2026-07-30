@@ -1,0 +1,17 @@
+Hi,
+
+Re: the freelance UI/UX role on the accounting software project.
+
+I noticed the post says priority to Malaysians - I'm in India, so if that's a hard requirement, no hard feelings and thanks for reading this far. If it's a preference and the work can be done remotely, I'd like to be considered.
+
+Six years designing web applications, mostly dense B2B and operational systems - fleet management, ordering and billing flows, admin consoles. Accounting and ERP interfaces are the same kind of problem: a lot of data, a lot of rules, and users who need to move fast without mistakes. At FuelBuddy I rebuilt a 20-22 step ordering journey into something people actually completed, from 62% to 78%.
+
+Figma throughout, component libraries, wireframes to handoff. I've worked fully remote for two years before.
+
+Portfolio: https://workofhayaat.framer.website
+FuelBuddy web app: https://app.fuelbuddy.in/
+
+CV attached.
+
+Mohd Hayaat Ali
++91-7905194153 | mohdhayaat1@outlook.com
