@@ -23,9 +23,14 @@ every time. Use the installed job-hunt skills at the marked steps.
 3. **Draft `<slug>-resume.md`** from master CV + evidence bank + candidate-profile
    links. Show the full relevant range; never undersell. Never fabricate — fuzzy
    facts stay generic until confirmed.
-4. **Generate the PDF:** `python build_pdf_from_md.py <slug>-resume.md <Out>.pdf "<title>"`
-   (single reusable renderer; embeds clickable links). If on a branch where this
-   file was dropped, run the copy kept in the session scratchpad.
+4. **Generate the PDF** with the default builder:
+   `python build_branded_pdf.py <slug>-resume.md <Out>.pdf "<title>" --preset <brand> --country <cc>`
+   Pick branded vs `--ats` mode and check country rules per **AGENTS.md §6.3/§6.4**
+   — that is the authoritative version, do not let these two diverge.
+   `build_pdf_from_md.py` is the legacy house style, kept as a fallback.
+
+   **Before any of this:** a recruitment agency with no JD gets
+   `Mohd_Hayaat_Ali_Master_Product_Designer_CV.pdf` as-is. Do not build.
 5. **Invoke `resume-ats-optimizer`** (skill) — verify keyword match vs the JD and
    ATS-safe formatting before sending. Fix gaps.
 6. **Write `<slug>-email.txt`** — tight, JD-specific, references the relevant
