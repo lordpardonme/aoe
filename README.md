@@ -3,9 +3,9 @@
 Private, source-controlled workspace for Mohd Hayaat Ali's job hunt operations.
 
 This repository is the portable copy of the local Job Hunt project. It contains
-the tracker reconciliation work, Gmail evidence audit outputs, resume variants,
-agency/direct-employer lead extraction, recovery notes, planning maps, and the
-rules future coding agents should follow before they touch anything.
+the tracker reconciliation work, Gmail evidence audit outputs, master and tailored
+resume variants, agency/direct-employer lead extraction, recovery notes, planning maps,
+and the rules future coding agents should follow before they touch anything.
 
 The repository is intentionally private. It contains personal career material,
 job-search evidence, recruiter/contact data, and generated resume assets.
@@ -65,15 +65,18 @@ Main job-hunt working folder.
 
 Important contents:
 
-- `Job Hunt/AGENTS.md`: local agent operating rules from the original workspace.
-- `Job Hunt/resumes/`: tailored resumes, ATS reports, email drafts, PDF outputs,
+- `Job Hunt/AGENTS.md`: complete handoff document and operating rules for AI coding agents.
+- `Job Hunt/resumes/`: master & tailored resumes, ATS reports, email drafts, PDF outputs,
   recovery material, and resume-generation scripts.
+  - **Master Product Designer CV:** `Mohd_Hayaat_Ali_Master_Product_Designer_CV.pdf` (`master-product-designer-cv.md`)
+  - **Master Creative CV (Video, Photo, Motion, Graphic Design):** `Mohd_Hayaat_Ali_Master_Creative_CV.pdf` (`master-creative-cv.md`)
+  - **Brand-Aware PDF Renderer:** `build_pdf_from_md.py` (supports `--brand <color>`, `--creative`, `--corporate`, and hyperlink formatting).
 - `Job Hunt/sheet-export.csv`: local tracker export snapshot.
-- `Job Hunt/.agents/skills/`: local skills used for resume tailoring and
-  job-hunt work.
+- `Job Hunt/.agents/skills/`: local skills used for resume tailoring and job-hunt work.
 
-The original nested Git metadata and local Python virtualenv are not tracked.
-They are machine-local implementation detail, not portable source.
+### `job-agent/`
+
+Python 3.13 CLI application agent (`main.py`) wrapping Gmail API, Google Sheets API, ReportLab PDF rendering, and Jinja2 templating.
 
 ### `reconciled-tracker-build/`
 
@@ -82,14 +85,13 @@ Tracker reconciliation outputs and scripts.
 Important contents:
 
 - `current_tracker.xlsx`: local workbook aligned with the latest reconciliation.
-- `gmail-sent-audit-2026-07-06.csv`: latest Gmail sent-mail audit created from
+- `gmail-sent-audit-2026-07-28.csv`: latest Gmail sent-mail audit created from
   live Gmail evidence.
 - `master_job_tracker_reconciled.xlsx`: reconciled workbook snapshot.
 - `*.tsv`: tab-level exports from the reconciled tracker.
 - `reconcile_tracker.py` and related scripts: local rebuild helpers.
 
-The live Google Sheet remains the authority when live state may have changed.
-Local files are a backup and working copy.
+The live Google Sheet (`1tkaUbh9iuPs9IzSya1yuJPqNyrvk8BouufIobQgXpwI`) remains the authority when live state may have changed.
 
 ### `drive-extraction/`
 
@@ -114,8 +116,8 @@ Reference material used for resumes and job-hunt positioning.
 
 The project has three important live systems:
 
-- Gmail account used for sent-mail evidence.
-- Google Sheet: `Master Job Tracker - Reconciled`.
+- Gmail account (`hayaat0806@gmail.com`) used for sent-mail evidence and outreach.
+- Google Sheet: `Master Job Tracker` (`1tkaUbh9iuPs9IzSya1yuJPqNyrvk8BouufIobQgXpwI`). Features live dynamic Dashboard, native color-coded status dropdowns, and automated sent-mail sync.
 - GitHub private repository: `lordpardonme/job-hunt-workspace-private`.
 
 Rules:
@@ -126,21 +128,18 @@ Rules:
 
 ## Latest Reconciliation Snapshot
 
-As of July 6, 2026:
+As of July 30, 2026:
 
-- Gmail sent mail was checked.
-- Latest sent application found: Nagarro, sent July 4, 2026.
-- No sent Gmail match was found for:
-  - `Orchard Lab 47`
-  - `Orchard Latch 47`
-  - `ORCHIDLAB47`
-  - `ORCHID-LATCH-47`
-  - `Orchid Lab`
-  - `Orchid Latch`
-- Live sheet tab `Gmail Sent Audit 2026-07-06` was created.
-- Local audit CSV was written to
-  `reconciled-tracker-build/gmail-sent-audit-2026-07-06.csv`.
-- Recent Gmail-confirmed rows were added or updated in `Master Leads`.
+- **Live Google Sheet Cleaned & Deduplicated:**
+  - `Master Job Tracker`: 312 clean, unique lead rows.
+  - `Agencies`: 72 unique agency rows (34 marked `Applied`, 34 `To Contact`).
+  - `Direct Employers`: 217 unique direct employer rows (62 `Applied`, 145 `To Contact`).
+  - `Sent By Me`: 203 logged outbound application entries.
+- **Outbound Sends:**
+  - July 30, 2026 batch: 11 application emails sent via Gmail API and logged to live Sheet.
+- **Master Resumes Registered:**
+  - Product & UI/UX Track: `Mohd_Hayaat_Ali_Master_Product_Designer_CV.pdf`
+  - Creative Track (Video, Photo, Motion, Graphic Design): `Mohd_Hayaat_Ali_Master_Creative_CV.pdf` (1-page A4 PDF featuring 10+ yrs photo/video, IITs/IIMs/NITs/DU festivals, and high-profile artist shoots for Travis Scott, Akon, etc.).
 
 ## Agent Operating Model
 
@@ -178,12 +177,12 @@ These are the non-negotiable rules for this workspace:
 
 ### Resume Tailoring
 
-1. Identify the exact target.
-2. Read existing evidence in `Job Hunt/resumes/`.
-3. Reuse real shipped-work evidence.
-4. Create or update target-specific Markdown.
-5. Generate ATS notes and PDF only when useful.
-6. Do not send anything until the user explicitly approves.
+1. Identify the exact target role and company.
+2. Select the relevant track master (Product UI/UX vs Creative/Video/Photo).
+3. Read existing evidence in `Job Hunt/resumes/` and `career-evidence-bank.md`.
+4. Create or update target-specific Markdown (`<slug>-resume.md`).
+5. Render PDF with brand colors: `.venv/Scripts/python.exe "Job Hunt/resumes/build_pdf_from_md.py" <slug>-resume.md <Out>.pdf "<Title>" --brand <color>`.
+6. Present packet and do not send anything until the user explicitly approves.
 
 ### Tracker Reconciliation
 
@@ -220,25 +219,6 @@ Validates that core folders and files exist.
 
 Prints a short operating brief for a coding agent.
 
-## Private NPM/NPX Bootstrap
-
-This repository defines a package binary named `job-hunt-workspace`.
-
-From a fresh machine:
-
-```powershell
-npx github:lordpardonme/job-hunt-workspace-private job-hunt-workspace-private
-```
-
-What it does:
-
-1. Uses Git to clone `https://github.com/lordpardonme/job-hunt-workspace-private.git`.
-2. Creates the target folder if needed.
-3. Runs the local verification script.
-4. Prints the next commands for the coding agent.
-
-It does not publish the project to the public npm registry.
-
 ## Rebuilding The Local Working State
 
 After cloning:
@@ -249,8 +229,7 @@ npm run verify
 ```
 
 If a future task needs Python dependencies, use the active machine's Python
-runtime rather than committing a virtualenv. The prior virtualenv was excluded
-on purpose.
+runtime rather than committing a virtualenv.
 
 ## Notes For Future Agents
 
@@ -264,4 +243,3 @@ Before doing any outreach or tracker update:
 - Confirm Gmail evidence.
 - Present the packet or change summary.
 - Wait for approval when the action changes external state.
-
