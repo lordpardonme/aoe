@@ -1,64 +1,56 @@
 # Mohd Hayaat Ali
 
-## Content Creator & Video Editor | Motion, Social & Brand Production
+## Videographer, Photographer & Content Producer | Direction, DOP & Editing
 
 mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to relocating to Abu Dhabi / Dubai  
-Portfolio: https://workofhayaat.framer.website
+Portfolio: https://workofhayaat.framer.website | Showreel: https://drive.google.com/drive/folders/1maf7S6y-WwfE3cdVNO8SvmM7H6slgpZW
 
 ## Professional Summary
 
-Creative professional with 6+ years across content, video, and visual design. My current role is hands-on production: editing videos and podcasts, creating social and motion content, and producing product and brand imagery across multiple brands. I have UAE-market experience through FuelBuddy's regional work, and I care about storytelling, pacing, and a polished final cut.
+Videographer, photographer, and content producer with 5-7+ years across shooting, directing, and editing. I have art-directed at Beaux Arts (Allahabad), directed ads and two short/art films, worked as a junior DOP, and produced freelance ad creative for brands including Hero, Suzuki, Red Bull, Monster, and Trojan. I shoot and direct, then edit and finish - so I can own content end to end. I also carry UAE-market experience through FuelBuddy's regional work.
 
 ## Core Skills
 
-**Content & Video:** Video editing, podcast editing, motion graphics, social content, visual storytelling, pacing, product and brand imagery
+**Videography & Direction:** Shooting, directing ads and short/art films, junior DOP, shot planning, on-set coordination, lighting and framing, visual storytelling
 
-**Creative Production:** Multi-brand delivery, campaign assets, art direction, brand consistency across channels
+**Photography:** Product, events, college festivals, weddings, and corporate photography (freelance and with Redhat Productions)
 
-**Visual & Web:** Brand and social creative, responsive web visuals, high-fidelity UI, Wix and Framer builds
+**Editing & Post:** Video editing, motion graphics, colour and finish, pacing, podcast editing, social and brand content
 
-**Tools:** Adobe Photoshop, Illustrator, After Effects, Rive, Figma, Framer, Wix
+**Production:** End-to-end content ownership, multi-brand delivery, campaign assets, art direction, brand consistency
 
-## Professional Experience
+## Experience
+
+### Videographer, Photographer, Director & Editor (Freelance + Studios)
+India | 2017 - Present
+
+- Art Director at Beaux Arts, Allahabad; directed ads and two short/art films.
+- Freelance ad creative (2018 - present) for brands including Hero, Suzuki, Red Bull, Monster, and Trojan - concept, shoot, and edit.
+- Junior DOP (freelance) on a music video for Crevixa.
+- Photography since 2017, freelance and with Redhat Productions: product, events, college festivals, weddings, and corporate.
 
 ### Creative Designer | Crevia
 Delhi NCR, India | June 2026 - Present
 
-- Edit videos and podcast content, create motion and social graphics, and produce product imagery across multiple client brands including Mymy, Al Yamin, Klay Consultants, and ATK.
-- Build responsive website assets in Wix and keep a consistent visual language across web and social.
-- Deliver brand and product visuals on fast cycles.
+- Edit videos and podcasts, create motion and social content, and produce brand and product imagery across multiple brands.
+- Keep a consistent visual language across web, social, and video on fast cycles.
 
-### Product Designer | FuelBuddy
-Gurgaon, India | July 2023 - June 2024
+### Product & Brand Designer | FuelBuddy, Uncover by Meddo, I-DOD
+India | 2022 - 2026
 
-- Designed and produced visual and interface content across India and the UAE, including regional web and marketing surfaces.
-- Built the FuelBuddy design system and style guide from scratch.
+- Designed and produced content and interfaces across India and the UAE (FuelBuddy regional web and marketing surfaces).
+- Created Uncover's logo, brand, and identity; built design systems from scratch.
 
-### Product Designer | Uncover by Meddo
-Gurgaon, India | March 2022 - May 2023
-
-- Created Uncover's logo, brand foundation, and visual identity, then carried it into website and app content.
-
-### Product Designer | I-DOD
-New Delhi, India | July 2025 - March 2026
-
-- Built a reusable design system and produced high-fidelity visual assets.
-
-### UI Designer | AcadPlaza
-Remote | June 2020 - March 2022
-
-- Designed responsive web and mobile interfaces and reusable visual patterns.
-
-## Selected Live Work
+## Selected Work
 
 - **Portfolio:** https://workofhayaat.framer.website
+- **Showreel (video / photography):** https://drive.google.com/drive/folders/1maf7S6y-WwfE3cdVNO8SvmM7H6slgpZW
 - **FuelBuddy UAE:** https://fuelbuddy.ae/
 - **Uncover (brand & web):** https://uncover.co.in/
-- **Maximor AI (landing page):** https://www.maximor.ai/cfo-offer-all
 
 ## Tools
 
-Adobe Photoshop, Illustrator, After Effects, Rive, Figma, FigJam, Framer, Wix, Miro
+Premiere Pro, DaVinci Resolve, After Effects, Photoshop, Illustrator, Lightroom, Rive, Figma, Framer
 
 ## Education
 

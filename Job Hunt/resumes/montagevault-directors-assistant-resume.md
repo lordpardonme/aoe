@@ -1,65 +1,58 @@
 # Mohd Hayaat Ali
 
-## Creative Generalist & Project Support | Production, Design & Coordination
+## Art Director & Creative Generalist | Film, Direction, Production & Design
 
-mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to onsite (Delhi NCR)  
-Portfolio: https://workofhayaat.framer.website
+mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India  
+Portfolio: https://workofhayaat.framer.website | Showreel: https://drive.google.com/drive/folders/1maf7S6y-WwfE3cdVNO8SvmM7H6slgpZW
 
 ## Professional Summary
 
-Creative generalist with 6+ years across design, video, and multi-brand project work, now supporting several brands end to end: graphics, video, websites, product imagery, and delivery coordination on tight timelines. I take ownership, learn processes fast, and keep projects moving across design, production, and vendors. I'm looking to work closely with someone long-term, take on real ownership, and build a solid working relationship.
+Art director and creative generalist with 5-7+ years across directing, photography, and video editing, alongside 6+ years in product and brand design. I have art-directed at Beaux Arts (Allahabad), directed ads and two short/art films, shot as a junior DOP, and produced freelance ad creative for brands including Hero, Suzuki, Red Bull, Monster, and Trojan. I move fluidly between the creative and the operational side of a project - directing and shooting, then editing and shipping - which is exactly the range a director's assistant needs. I take ownership, learn a process fast, and keep projects moving.
 
 ## Core Skills
 
-**Production & Coordination:** Multi-brand project delivery, timelines, vendor and stakeholder coordination, ownership of end-to-end work, attention to detail
+**Direction & Film:** Art direction, directing ads and short/art films, shot planning, on-set coordination, visual storytelling, creative concepting
 
-**Creative:** Graphics, video and podcast editing, motion, product imagery, brand and social content, responsive web assets
+**Photography & Video:** Photography (product, events, weddings, corporate), video editing, podcast editing, motion graphics, pacing, colour and finish
 
-**Design:** UI/UX, design systems, high-fidelity UI, Figma, Framer, Wix builds
+**Production & Coordination:** End-to-end project ownership, timelines, vendor and stakeholder coordination, multi-brand delivery, attention to detail
 
-**Ways of Working:** Fast learner, self-directed, comfortable across design/production/coordination, strong communication
+**Design:** Brand identity, responsive web and product UI, design systems, Figma, Framer, Wix
 
-## Professional Experience
+## Experience
+
+### Art Director, Director & Photographer (Freelance + Studios)
+India | 2017 - Present (alongside design work)
+
+- Art Director at Beaux Arts, Allahabad; directed ads and two short/art films.
+- Freelance ad creative (2018 - present) for brands including Hero, Suzuki, Red Bull, Monster, and Trojan - concept through shoot and edit.
+- Junior DOP (freelance) on a music video for Crevixa.
+- Photography since 2017 (freelance and with Redhat Productions): product, events, college festivals, weddings, and corporate.
 
 ### Creative Designer | Crevia
 Delhi NCR, India | June 2026 - Present
 
-- Support multiple client brands end to end: graphics, video edits, product imagery, website assets, and campaign material across Mymy, Al Yamin, Klay Consultants, and ATK.
-- Build and deliver the Mymy perfume-brand website in Wix; coordinate assets and deliverables across projects.
-- Keep a consistent visual language across web and social while managing fast delivery cycles.
+- Edit videos and podcasts, create motion and social content, and produce brand and product imagery across multiple client brands including Mymy, Al Yamin, Klay Consultants, and ATK.
+- Build the Mymy perfume-brand website in Wix; keep a consistent visual language across web, social, and video.
+- Own deliverables end to end on tight timelines.
 
-### Product Designer | I-DOD
-New Delhi, India | July 2025 - March 2026
+### Product Designer | I-DOD, FuelBuddy, Uncover by Meddo
+India | 2022 - 2026
 
 - Owned design end to end from ambiguous requirements to release, working directly with founders and engineers.
-- Built a reusable design system from scratch.
+- Built design systems from scratch; created Uncover's logo, brand, and identity.
+- Designed consumer, B2B, and operational products across India and the UAE.
 
-### Product Designer | FuelBuddy
-Gurgaon, India | July 2023 - June 2024
-
-- Designed and coordinated delivery across consumer, B2B, and operational products in India and the UAE.
-- Presented rationale to stakeholders and balanced scope against timelines.
-
-### Product Designer | Uncover by Meddo
-Gurgaon, India | March 2022 - May 2023
-
-- Created Uncover's brand and identity and carried it across website and app.
-
-### UI Designer | AcadPlaza
-Remote | June 2020 - March 2022
-
-- Delivered responsive web and mobile design with a cross-functional team.
-
-## Selected Live Work
+## Selected Work
 
 - **Portfolio:** https://workofhayaat.framer.website
+- **Showreel (film / video):** https://drive.google.com/drive/folders/1maf7S6y-WwfE3cdVNO8SvmM7H6slgpZW
 - **Uncover (brand & web):** https://uncover.co.in/
 - **Maximor AI (landing page):** https://www.maximor.ai/cfo-offer-all
-- **FuelBuddy customer web app:** https://app.fuelbuddy.in/
 
 ## Tools
 
-Figma, FigJam, Framer, Wix, Adobe Photoshop, Illustrator, After Effects, Rive, Miro, Adobe XD
+Adobe Premiere Pro, After Effects, Photoshop, Illustrator, Lightroom, DaVinci Resolve, Rive, Figma, Framer, Wix
 
 ## Education
 

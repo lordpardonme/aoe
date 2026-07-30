@@ -1,63 +1,55 @@
 # Mohd Hayaat Ali
 
-## Video Editor & Motion Designer | Storytelling, Pacing & Social Content
+## Video Editor & Director | Editing, Direction, DOP & Motion
 
 mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Open to onsite (Delhi)  
-Portfolio: https://workofhayaat.framer.website
+Portfolio: https://workofhayaat.framer.website | Showreel: https://drive.google.com/drive/folders/1maf7S6y-WwfE3cdVNO8SvmM7H6slgpZW
 
 ## Professional Summary
 
-Video editor and motion designer with 6+ years in creative and visual work, currently editing videos and podcasts and producing motion and social content across multiple brands. I have a strong sense of storytelling, pacing, and finish, and I keep a consistent visual language across web and social. My design background means I think about the whole brand, not just the cut.
+Video editor and director with 5-7+ years across editing, directing, and shooting. I have art-directed at Beaux Arts (Allahabad), directed ads and two short/art films, worked as a junior DOP, and edited content for brands including Hero, Suzuki, Red Bull, Monster, and Trojan. Because I direct and shoot as well as cut, I edit with the whole story in mind - pacing, rhythm, and finish - not just the timeline. I deliver fast across multiple brands and keep a consistent look across web and social.
 
 ## Core Skills
 
-**Video & Motion:** Video editing, podcast editing, motion graphics, visual storytelling, pacing, sound-aware editing, social video
+**Editing & Post:** Video editing, motion graphics, colour and finish, pacing and rhythm, podcast editing, social and brand video, sound-aware cutting
 
-**Creative Production:** Multi-brand delivery, product imagery, campaign assets, brand consistency, fast cycles
+**Direction & Camera:** Directing ads and short/art films, junior DOP, shot planning, on-set coordination, visual storytelling
 
-**Visual & Web:** Brand and social creative, responsive web visuals, high-fidelity UI, Wix and Framer builds
+**Photography & Content:** Product, event, wedding, and corporate photography; multi-brand content delivery; art direction
 
-**Tools:** Adobe Photoshop, Illustrator, After Effects, Rive, Figma, Framer, Wix
+**Tools:** Premiere Pro, DaVinci Resolve, After Effects, Photoshop, Illustrator, Lightroom, Rive
 
-## Professional Experience
+## Experience
+
+### Video Editor, Director & Photographer (Freelance + Studios)
+India | 2017 - Present
+
+- Edited and directed ads for brands including Hero, Suzuki, Red Bull, Monster, and Trojan (freelance, 2018 - present).
+- Art Director at Beaux Arts, Allahabad; directed two short/art films.
+- Junior DOP (freelance) on a music video for Crevixa.
+- Photography since 2017 (freelance and with Redhat Productions): product, events, college festivals, weddings, and corporate.
 
 ### Creative Designer | Crevia
 Delhi NCR, India | June 2026 - Present
 
-- Edit videos and podcast content and create motion and social graphics across multiple client brands including Mymy, Al Yamin, Klay Consultants, and ATK.
-- Produce product imagery and brand visuals; build responsive website assets in Wix.
+- Edit videos and podcasts, create motion and social content, and produce brand and product imagery across multiple client brands.
 - Keep a consistent visual language across web and social on fast delivery cycles.
 
-### Product Designer | Uncover by Meddo
-Gurgaon, India | March 2022 - May 2023
+### Product & Brand Designer | FuelBuddy, Uncover by Meddo, I-DOD
+India | 2022 - 2026
 
-- Created Uncover's logo, brand foundation, and visual identity, then carried it into website and app content.
+- Created Uncover's logo, brand, and identity; built design systems and responsive interfaces from scratch.
 
-### Product Designer | FuelBuddy
-Gurgaon, India | July 2023 - June 2024
-
-- Built the FuelBuddy design system and produced responsive interface and marketing visuals.
-
-### Product Designer | I-DOD
-New Delhi, India | July 2025 - March 2026
-
-- Built a reusable design system and produced high-fidelity visual assets.
-
-### UI Designer | AcadPlaza
-Remote | June 2020 - March 2022
-
-- Designed responsive web and mobile interfaces and reusable visual patterns.
-
-## Selected Live Work
+## Selected Work
 
 - **Portfolio:** https://workofhayaat.framer.website
+- **Showreel (edits / films):** https://drive.google.com/drive/folders/1maf7S6y-WwfE3cdVNO8SvmM7H6slgpZW
 - **Uncover (brand & web):** https://uncover.co.in/
 - **Maximor AI (landing page):** https://www.maximor.ai/cfo-offer-all
-- **Kama Capital (website):** https://kama-capital.com/
 
 ## Tools
 
-Adobe Photoshop, Illustrator, After Effects, Rive, Figma, FigJam, Framer, Wix, Miro
+Premiere Pro, DaVinci Resolve, After Effects, Photoshop, Illustrator, Lightroom, Rive, Figma, Framer
 
 ## Education
 

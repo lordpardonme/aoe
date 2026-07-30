@@ -62,7 +62,7 @@ class Settings(BaseSettings):
     candidate_linkedin: str = ""
 
     # Email
-    sender_email: str = ""
+    sender_email: str = "hayaat0806@gmail.com"
     default_recipient: str = ""
 
     # Behaviour

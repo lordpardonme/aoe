@@ -1,63 +1,55 @@
 # Mohd Hayaat Ali
 
-## Motion & AI Creative | Video, Motion Graphics, AI-Assisted Visuals
+## Motion & AI Creative | Direction, Video, Motion Graphics & AI-Assisted Visuals
 
 mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Remote / Hybrid  
-Portfolio: https://workofhayaat.framer.website
+Portfolio: https://workofhayaat.framer.website | Showreel: https://drive.google.com/drive/folders/1maf7S6y-WwfE3cdVNO8SvmM7H6slgpZW
 
 ## Professional Summary
 
-Creative designer with 6+ years across visual design, motion, and video, now working hands-on with AI-assisted creative workflows. My current role spans video editing, motion, product imagery, and multi-brand content on fast cycles, and I use AI tools for rapid concept exploration and iteration. I translate ideas into engaging visual content and care about storytelling, pacing, and finish.
+Creative with 5-7+ years in direction, video editing, and photography, now working hands-on with AI-assisted creative workflows. I have art-directed at Beaux Arts (Allahabad), directed ads and two short/art films, shot as a junior DOP, and produced freelance ad creative for brands including Hero, Suzuki, Red Bull, Monster, and Trojan. My current role blends motion, video, and social content with AI tools for rapid concept exploration - exactly the "generate authentic, high-quality AI-led visuals and video" brief. I turn ideas into engaging, well-finished content and love experimenting with new tools.
 
 ## Core Skills
 
-**Motion & Video:** Video editing, podcast editing, motion graphics, visual storytelling, pacing, sound-aware editing, After Effects, Rive
+**Motion & Video:** Video editing, motion graphics, direction, visual storytelling, pacing, colour and finish, social and brand video
 
-**AI-Assisted Creative:** AI design and video tools, prompt-assisted ideation, rapid concept exploration, iteration, translating ideas into content
+**AI-Assisted Creative:** AI design and video tools, prompt-assisted ideation, rapid concept exploration, AI-led visuals, iteration, translating ideas into content
 
-**Visual & Brand:** Brand and social creative, product imagery, layout, typography, color, responsive web visuals
+**Direction & Photography:** Art direction, ad and short/art-film direction, junior DOP, photography, shot planning, on-set coordination
 
-**Tools:** Adobe Photoshop, Illustrator, After Effects, Rive, Figma, Framer, Wix
+**Design & Tools:** Brand and social creative, responsive web visuals; Premiere Pro, After Effects, DaVinci Resolve, Photoshop, Illustrator, Lightroom, Rive, Figma, Framer
 
-## Professional Experience
+## Experience
 
 ### Creative Designer | Crevia
 Delhi NCR, India | June 2026 - Present
 
-- Edit videos and podcast content, create motion and social graphics, and produce product imagery across multiple client brands including Mymy, Al Yamin, Klay Consultants, and ATK.
-- Use AI-assisted workflows for faster concept exploration and iteration while keeping visual quality and brand consistency.
-- Build responsive website assets in Wix and maintain a consistent look across web and social.
+- Edit videos and podcasts, create motion and social graphics, and produce multi-brand content, using AI-assisted workflows for faster concept exploration and iteration without losing quality.
+- Keep a consistent visual language across web, social, and video on fast cycles.
 
-### Product Designer | I-DOD
-New Delhi, India | July 2025 - March 2026
+### Art Director, Director & Photographer (Freelance + Studios)
+India | 2017 - Present (alongside design work)
 
-- Built a reusable design system and visual language from scratch; produced high-fidelity UI and motion-ready assets.
+- Art Director at Beaux Arts, Allahabad; directed ads and two short/art films.
+- Freelance ad creative (2018 - present) for brands including Hero, Suzuki, Red Bull, Monster, and Trojan.
+- Junior DOP (freelance) on a music video for Crevixa; ongoing photography and video editing.
 
-### Product Designer | FuelBuddy
-Gurgaon, India | July 2023 - June 2024
+### Product & Brand Designer | I-DOD, FuelBuddy, Uncover by Meddo
+India | 2022 - 2026
 
-- Designed responsive interfaces, dashboards, and marketing surfaces; built the design system and style guide from scratch.
+- Built design systems and brand identities from scratch; created Uncover's logo and brand.
+- Designed responsive web and product interfaces across consumer and B2B products.
 
-### Product Designer | Uncover by Meddo
-Gurgaon, India | March 2022 - May 2023
-
-- Created Uncover's logo and brand foundation and carried the identity into website and app visuals.
-
-### UI Designer | AcadPlaza
-Remote | June 2020 - March 2022
-
-- Designed responsive web and mobile interfaces and reusable visual patterns.
-
-## Selected Live Work
+## Selected Work
 
 - **Portfolio:** https://workofhayaat.framer.website
+- **Showreel (motion / film):** https://drive.google.com/drive/folders/1maf7S6y-WwfE3cdVNO8SvmM7H6slgpZW
 - **Maximor AI (AI-platform landing page):** https://www.maximor.ai/cfo-offer-all
 - **Uncover (brand & web):** https://uncover.co.in/
-- **Kama Capital (website):** https://kama-capital.com/
 
 ## Tools
 
-Adobe Photoshop, Illustrator, After Effects, Rive, Figma, FigJam, Framer, Wix, Miro
+Premiere Pro, After Effects, DaVinci Resolve, Photoshop, Illustrator, Lightroom, Rive, Figma, Framer, Wix
 
 ## Education
 

@@ -65,20 +65,12 @@ If a fact may have drifted, verify it live before treating it as current.
 - Keep filenames descriptive and stable.
 - Avoid unrelated refactors or cleanup while doing job-hunt execution.
 
-## Agent Handoff Policy
+## Agent Handoff
 
-Any new agent should read, in order:
+`AGENTS.md` is the complete handoff document — start there. It carries the
+operational detail (credentials, runtimes, tracker schemas, the send pipeline,
+current state) that this file deliberately does not duplicate.
 
-1. `README.md`
-2. `POLICY.md`
-3. `RULES.md`
-4. `AGENTS.md`
-5. `Job Hunt/AGENTS.md`
-
-Then run:
-
-```powershell
-npm run verify
-npm run agent:context
-```
+This file remains the authority on *policy*: the authority order above and the
+four policies below it.
 

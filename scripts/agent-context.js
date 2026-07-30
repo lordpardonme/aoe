@@ -22,11 +22,11 @@ Hard rules:
   - Keep this repository private.
 
 Start by reading:
-  README.md
+  AGENTS.md          <- start here; complete handoff doc
   POLICY.md
-  RULES.md
-  AGENTS.md
   Job Hunt/AGENTS.md
+  Job Hunt/resumes/APPLICATION-WORKFLOW.md
+  README.md
 
 Useful local files:
   reconciled-tracker-build/current_tracker.xlsx
