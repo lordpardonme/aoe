@@ -37,11 +37,10 @@ function printLocalNextSteps(root) {
   console.log("  npm run agent:context");
   console.log("");
   console.log("Important files for agents:");
-  console.log("  README.md");
+  console.log("  AGENTS.md   <- start here; complete handoff doc");
   console.log("  POLICY.md");
-  console.log("  RULES.md");
-  console.log("  AGENTS.md");
   console.log("  Job Hunt/AGENTS.md");
+  console.log("  README.md");
   console.log("");
 }
 
@@ -49,7 +48,6 @@ function verifyLocal(root) {
   const required = [
     "README.md",
     "POLICY.md",
-    "RULES.md",
     "AGENTS.md",
     "Job Hunt",
     "Job Hunt/resumes",

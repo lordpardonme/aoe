@@ -1,5 +1,10 @@
 # Project Instructions
 
+> **Read the root `AGENTS.md` first.** It is the complete handoff document —
+> credentials, runtimes, tracker schemas, the send pipeline, hard rules, and
+> current state. This file covers only what it does not: communication defaults,
+> the activation gate, batch staging, and the multi-agent / agency workflows.
+
 ## Default Communication
 
 Use the job-hunt skill stack by default for resume and application work: `resume-tailoring`, `cv-creator`, and `resume-ats-optimizer`. Keep technical accuracy, commands, code, file paths, warnings, and verification details intact. Use `gmail` and `google-sheets` only when the task specifically requires email sending/searching or tracker reads/writes. Use `caveman-compress` when a note, handoff, or generated artifact gets too large to stay readable. Use normal clarity only when terse fragments could cause risk or confusion. Stop only when user says `normal mode` or explicitly asks for a different style.

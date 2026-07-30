@@ -153,9 +153,8 @@ npm run verify
 
 Then read:
 
-- `AGENTS.md`
+- `AGENTS.md` — start here; the complete agent handoff document
 - `POLICY.md`
-- `RULES.md`
 - `Job Hunt/AGENTS.md`
 
 Do not skip these files. They define the approval boundaries, tracker rules,

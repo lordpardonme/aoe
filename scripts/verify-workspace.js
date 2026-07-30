@@ -8,7 +8,6 @@ const root = process.cwd();
 const required = [
   "README.md",
   "POLICY.md",
-  "RULES.md",
   "AGENTS.md",
   "package.json",
   "scripts/bootstrap.js",
