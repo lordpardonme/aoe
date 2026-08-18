@@ -26,6 +26,8 @@ Video Editor, Photographer, and Visual Designer with **6+ years in digital creat
 ### Creative Designer & Video Editor | Crevia
 *Delhi NCR | Jun 2026 – Present*
 - Edit podcast videos, social reels, campaign cutdowns, and product content across consumer, perfume (Mymy), and lifestyle brands.
+- Designed social posts and reels for ATK Designs and Klay Consultants that generated 30,000+ views; ad creative for La Well and Herbal Hand Jatibooti drove 10,00,000+ ad views.
+- Designed 200+ product creatives across La Well's 35-product catalog for their Amazon store and website; currently redesigning the ATK Designs website.
 - Shape pace, music, typography, motion, and image treatment for platform-specific outputs while protecting brand identity.
 - Produce supporting graphics, product imagery, and website launch assets integrated with wider campaign systems.
 

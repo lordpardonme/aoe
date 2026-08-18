@@ -141,6 +141,11 @@ Truth bank for CV variants. Keep claims defensible.
 - Creating brand and product visuals for Mymy perfume work.
 - Editing podcast videos for an industry-focused project.
 - Editing product images.
+- **Metrics (user-confirmed 2026-08-19):**
+  - Designed social media posts and edited reels for ATK Designs and Klay Consultants that generated 30,000+ views.
+  - Ad creative for La Well and Herbal Hand Jatibooti generated 10,00,000+ (10 lakh+) ad views.
+  - Designed 200+ product creatives across La Well's 35-product catalog for their Amazon store and website.
+  - Currently redesigning the ATK Designs website (in progress, not yet shipped - do not claim as completed).
 - Use for visual design, graphic design, marketing creative, website, Wix, social content, and video-editing roles.
 
 ## Additional Portfolio / Freelance / Contract Products
