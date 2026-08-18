@@ -227,6 +227,13 @@ Positioning: 5-7+ years photography/editing/directing (photography since 2017, a
 direction since 2018) alongside 6+ years product/UI-UX design. "Story links / my
 links" = the showreel + portfolio + live-work links already on file (no new URLs).
 
+## Frontend / Hands-On Development (user-confirmed 2026-08-13)
+
+- Hands-on experience with HTML, CSS, and JavaScript from working closely with development teams (not just handoff - actual build involvement).
+- Can build static websites independently.
+- Uses AI-assisted coding tools (Claude Code, Antigravity) to extend build capability beyond visual builders like Wix/Framer.
+- Use for roles that list HTML/CSS/JS fundamentals alongside design tools, or where close design-dev collaboration / technical fluency matters. Frame as hands-on frontend fundamentals + AI-assisted build capability, not as a professional frontend developer title - keep proportional to actual depth.
+
 ## Master variants
 
 ### Fintech / payments
