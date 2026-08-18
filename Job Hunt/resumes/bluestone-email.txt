@@ -1,0 +1,32 @@
+Hi Aksshat and Jayesh,
+
+Saw the post about BlueStone's new initiatives. The intersection of agentic frameworks and product building is exactly where I want to be working. Quick background: I'm a Product Designer (6+ years) who's operated at founding-member intensity across multiple products - built FuelBuddy's design system from scratch (scaled to India + UAE, 180+ cities), redesigned and rebranded a healthcare platform end-to-end (Uncover, logo through app), and currently run multi-brand product and visual work at a studio. I've been building with AI tools daily for over a year - Claude, Runway, Midjourney, Cursor - integrated into my actual design and development workflow, not as novelty.
+
+Portfolio: https://workofhayaat.framer.website
+CV attached.
+
+---
+
+ASSIGNMENT: 2040 Electronics Company
+
+THE PROBLEM: Proof of Reality
+
+By 2040, mature AI makes generating flawless synthetic content trivial - video, audio, sensor data, documents, biometric readings. Every pixel on every screen is suspect. The biggest challenge facing electronics is not computation or intelligence. It is trust. How do you know that what a camera captured actually happened? That a medical sensor's reading came from a real patient? That a drone's footage wasn't fabricated in transit?
+
+Software-only verification will always be an arms race between generators and detectors. The gap has to be closed in hardware.
+
+THE PRODUCT: Origin-sealed capture hardware
+
+An electronics company built around a single primitive: a tamper-evident cryptographic attestation chip embedded at the sensor level - camera modules, microphones, medical sensors, environmental monitors, industrial IoT. Every frame, every reading gets signed at the moment of capture with a hardware root of trust that cannot be spoofed by software. The chip records sensor hash, timestamp, device geolocation, and calibration state into an append-only ledger before the data ever reaches a processor or network.
+
+The business model is layered: (1) license the attestation chip to device manufacturers (cameras, phones, medical equipment, autonomous vehicles) as an embedded module, (2) sell verification-as-a-service APIs that any platform can call to check provenance, and (3) build a reference line of "sealed" capture devices for high-stakes verticals - journalism, courtrooms, insurance claims, clinical trials, supply chain inspection - where provenance is not optional but regulatory.
+
+In a world where AI can fabricate anything, the company that owns the hardware proof that something is real owns the trust layer of the entire electronics ecosystem.
+
+---
+
+Happy to discuss further. Looking forward to hearing from you.
+
+Mohd Hayaat Ali
++91-7905194153
+mohdhayaat1@outlook.com

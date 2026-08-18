@@ -1,0 +1,25 @@
+# Yuvika Gupta / The Reset - Email Draft
+
+**Status: DRAFT ONLY. Not sent.**
+
+**To:** mindset@yuvikagupta.com
+**Subject:** Video Editor + Graphic Designer - Mohd Hayaat Ali (portfolio + resume attached)
+**Attachment:** Mohd_Hayaat_Ali_Video_Editor_Designer_YuvikaGupta.pdf
+
+---
+
+Hi Yuvika,
+
+Saw your post looking for a full-time video editor + graphic designer - remote, with travel - and wanted to put myself forward for exactly that combination.
+
+I edit video (podcasts, social reels, pacing, sound design, colour grading in Premiere Pro and DaVinci Resolve) and design the graphics that go around it (Photoshop, Illustrator, brand and product visuals) for the same brand, which is the part of this role I think matters most for a personal brand like yours - one person who can carry the look and the cut together instead of handing it between two people. I'm currently doing this across several brands at once at my current studio, so fast turnaround and juggling multiple concurrent pieces of content is normal for me, not a stretch.
+
+A couple of things to look at:
+- Portfolio: https://workofhayaat.framer.website
+- Showreel (video editing / pacing / colour): https://drive.google.com/drive/folders/1maf7S6y-WwfE3cdVNO8SvmM7H6slgpZW
+
+Resume is attached. I'm based in Delhi NCR, open to remote full-time and to travel, and happy to send more edit samples or hop on a call whenever works.
+
+Best,
+Mohd Hayaat Ali
++91-7905194153 | mohdhayaat1@outlook.com

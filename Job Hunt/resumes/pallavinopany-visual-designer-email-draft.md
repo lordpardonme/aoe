@@ -1,0 +1,22 @@
+# Pallavi Nopany Design Studio Email Draft
+
+**To:** pallavi@pallavinopany.com
+**Subject:** Mid-level Visual Communication Designer - Mohd Hayaat Ali (portfolio inside)
+**Attachments:** Mohd_Hayaat_Ali_Visual_Communication_Designer_PallaviNopany.pdf
+**Portfolio:** https://workofhayaat.framer.website
+
+Hi Pallavi,
+
+I've followed your studio's work for a while - the typography-led identity systems you build across food, fashion, and hospitality brands are exactly the kind of design I want to be doing more of. Your hiring post for a Mid-level Visual Communication Designer caught my eye.
+
+A bit about me: I designed the logo and full brand foundation for Uncover from scratch during a rebrand, then carried that typography and identity system into the app and website. I've also built design systems for FuelBuddy and Meddo that held type, colour, and layout consistent across multiple products and two markets. Right now at Crevia I run visual identity and typography systems for several brands in parallel - Mymy, Al Yamin, Klay Consultants, and ATK - so switching type and brand voice quickly is second nature. Freelance ad creative for Hero, Suzuki, Red Bull, Monster, and Trojan since 2018 has sharpened that further.
+
+One thing I want to be upfront about: my degree is a BBA, not a Visual Communication Design degree. My path into this work has been hands-on - six-plus years building real brand and typography systems rather than a formal design education - and I understand if that's a hard requirement on your end. I'd still love the chance to show you the work.
+
+Portfolio: https://workofhayaat.framer.website
+CV attached.
+
+Regards,
+Mohd Hayaat Ali
++91-7905194153
+mohdhayaat1@outlook.com

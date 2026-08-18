@@ -16,7 +16,7 @@ Video Editor, Photographer, and Visual Designer with **6+ years in digital creat
 
 - **Video Post-Production:** Premiere Pro, DaVinci Resolve, After Effects, CapCut, timeline pacing, story editing, sound design, color correction, podcast cuts, social reels.
 - **Photography & Retouching:** Studio & location photography, lighting design, skin/texture/product retouching, Photoshop, Lightroom, Capture One.
-- **Festivals & Artist Shoots:** Covered major cultural fests across **IITs, IIMs, NITs & DU**; shot live events & content for **Travis Scott, Akon, Vishal-Shekhar, The Local Train, Gajendra Verma, CarryMinati, Zair Khan**.
+- **Festivals & Artist Shoots:** Covered major cultural fests across **IITs, IIMs, NITs & DU**; photographed 100+ Indian and international artists including **Travis Scott and Akon (as part of the official photography team)**, plus **Zakir Khan, Tanmay Bhatt, Vishal-Shekhar, The Local Train, Lucky Ali, Salim-Sulaiman**.
 - **Commercial & AI Workflows:** Ads for **Hero, Suzuki, Red Bull, Monster, Trojan**; Junior DOP for **Crevixa**; AI tools (Claude, Runway, Veo, Higgsfield).
 
 ---
@@ -33,7 +33,7 @@ Video Editor, Photographer, and Visual Designer with **6+ years in digital creat
 *India | 2016 – Present*
 - **10+ years of hands-on experience** across video editing, photography, event coverage, social content, and visual storytelling.
 - Captured major campus festivals & star nights across **IITs, IIMs, NITs, and Delhi University (DU)** colleges nationwide.
-- Shot live concerts & content for top artists/creators: **Travis Scott, Akon, Vishal-Shekhar, The Local Train, Gajendra Verma, CarryMinati, Zair Khan**.
+- Photographed 100+ artists across Indian and international acts, including **Travis Scott and Akon as part of the official photography team**, plus **Zakir Khan, Tanmay Bhatt, Vishal-Shekhar, The Local Train, Lucky Ali, and Salim-Sulaiman**.
 - Created commercial video ad assets for **Hero, Suzuki, Red Bull, Monster Energy, and Trojan**; Junior DOP for **Crevixa** music video.
 - Lead photographer with **Redhat Productions** (since 2017) across product, corporate, event, wedding, and editorial shoots.
 
