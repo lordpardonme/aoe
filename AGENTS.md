@@ -206,6 +206,10 @@ Showreel: Drive folder linked in `candidate-profile.md`, confirmed shared
 3. **Draft `<slug>-resume.md`** from the master CV + evidence bank + profile links.
    Show the full relevant range; never undersell; never fabricate. Fuzzy facts stay
    generic until the user confirms them.
+3.5. **Gate against `Job Hunt/resumes/resume-writing-standards.md`.** Score the draft
+   1/10 per point; below 7, revise and re-score before continuing. Applies to the resume
+   now and to the email in step 6 (points 7 and 10 especially). This is a standing gate,
+   not a one-off check — user-confirmed 2026-08-19.
 4. **Build the PDF** with the default builder (root venv). Pick the mode from
    §6.3 and check the country rules in §6.4 first:
    ```bash
@@ -217,7 +221,10 @@ Showreel: Drive folder linked in `candidate-profile.md`, confirmed shared
    section renders as a highlighted card in branded mode.
 5. **Invoke the `resume-ats-optimizer` skill** — check keyword match vs the JD and
    ATS-safe formatting. Fix gaps before sending.
-6. **Write `<slug>-email.txt`** — short, specific, human. See §6.1.
+6. **Write `<slug>-email.txt`** — short, specific, human. See §6.1. Re-run the
+   resume-writing-standards.md gate against the email specifically for points 7 (no
+   pick-me tone) and 10 (cold outreach is a short email, never a cover letter, never an
+   unsolicited full resume dump).
 7. **Send** (agent venv — the readable sender, never the `.pyc`):
    ```bash
    job-agent/.venv/Scripts/python.exe "Job Hunt/resumes/send_application.py" --to <email> --subject "<subject>" --body-file <slug>-email.txt --attachment <Output>.pdf
@@ -339,7 +346,7 @@ photo-less CV into a photo-expecting market.
 
 **Activation.** Do not start any job-hunt work — agent spawning, research,
 drafting, tracker updates, follow-ups — unless the user's first command contains
-the exact, case-sensitive standalone phrase `OrchardLab47`. Near-matches and
+the exact, case-sensitive standalone phrase `fuck this shit`. Near-matches and
 partial words do not count. Without it, stay idle.
 
 **External actions need explicit user intent:**
