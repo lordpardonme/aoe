@@ -222,6 +222,10 @@ story.extend(
         [
             "Create graphics, videos, social content, product imagery, website assets, and campaign material across "
             "brands including Mymy, Al Yamin, Klay Consultants, ATK Shoe Manufacturer, and other client projects.",
+            "Designed social posts and reels for ATK Designs and Klay Consultants that generated 30,000+ views; "
+            "ad creative for La Well and Herbal Hand Jatibooti drove 10,00,000+ ad views.",
+            "Designed 200+ product creatives across La Well's 35-product catalog for their Amazon store and "
+            "website; currently redesigning the ATK Designs website.",
             "Design and build the Mymy perfume-brand website in Wix, covering responsive page structure, product "
             "presentation, visual direction, and launch-ready assets.",
             "Edit podcast videos, product images, and campaign content while maintaining consistent visual systems "
