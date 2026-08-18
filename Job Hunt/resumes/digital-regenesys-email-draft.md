@@ -1,6 +1,6 @@
 # Digital Regenesys - Email Draft
 
-**Status: DRAFT ONLY. Not sent. Awaiting explicit approval.**
+**Status: SENT**
 
 **To:** kundann@regenesys.net  
 **CC:** none  
