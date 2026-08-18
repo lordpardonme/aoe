@@ -11,7 +11,7 @@ Use the job-hunt skill stack by default for resume and application work: `resume
 
 ## Activation Trigger
 
-Do not start any job-hunt work, agent spawning, research, drafting, tracker updates, or follow-up actions unless the user's first command contains the exact, case-sensitive standalone phrase `OrchardLab47`.
+Do not start any job-hunt work, agent spawning, research, drafting, tracker updates, or follow-up actions unless the user's first command contains the exact, case-sensitive standalone phrase `fuck this shit`.
 
 - If the phrase is absent, stay idle and do nothing job-hunt related.
 - If the phrase is present, switch to caveman style first, then treat it as the single start signal for the current session and begin from the orchestrator / queue selector.

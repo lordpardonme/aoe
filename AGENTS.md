@@ -346,7 +346,7 @@ photo-less CV into a photo-expecting market.
 
 **Activation.** Do not start any job-hunt work — agent spawning, research,
 drafting, tracker updates, follow-ups — unless the user's first command contains
-the exact, case-sensitive standalone phrase `OrchardLab47`. Near-matches and
+the exact, case-sensitive standalone phrase `fuck this shit`. Near-matches and
 partial words do not count. Without it, stay idle.
 
 **External actions need explicit user intent:**

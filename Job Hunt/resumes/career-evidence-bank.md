@@ -212,7 +212,10 @@ the showreel.
 - **Directed 2 short / art films.**
 - **Junior DOP (freelance) on a music video for Crevixa.** Role was junior DOP (director of photography), NOT director - phrase accordingly.
 - **Institutional & Major College Festivals:** Captured live festival & star-night coverage across premier institutions nationwide—including **IITs, IIMs (IIM Jammu), NITs, Delhi University (DU) colleges**, and major university cultural fests across India.
-- **High-Profile Artist & Concert Shoots:** Live event, concert, and video/photography coverage for major artists & creators including **Travis Scott, Akon, Vishal-Shekhar, The Local Train, Gajendra Verma, CarryMinati, Zair Khan**, and many more.
+- **High-Profile Artist & Concert Shoots (user-confirmed 2026-07-31, extended 2026-08-19):** Photographed 100+ artists across Indian and international acts at college fests and concerts. For **Travis Scott** and **Akon**, worked as part of a team of official photographers - not solo/personal access. Other confirmed acts: **Zakir Khan, Tanmay Bhatt** (comedians), **Vishal-Shekhar, The Local Train, Lucky Ali, Salim-Sulaiman** (musicians), and others the user could not immediately recall.
+  - Phrasing rule: for Travis Scott/Akon specifically, always say "as part of the official photography team" - never imply sole or personal access. This is the credible, checkable version of the claim.
+  - **Gajendra Verma — reconfirmed 2026-08-19:** user directly confirmed working with Gajendra Verma through the Accomplice ("Accombliss") team. Safe to use; if the team affiliation is worth naming, phrase as "with the Accomplice team," matching the Travis Scott/Akon official-team pattern.
+  - **CarryMinati — reconfirmed 2026-08-19:** user directly confirmed freelance photography/videography work covering CarryMinati, with footage on file in the showreel. Safe to use as freelance festival/concert coverage, consistent with the rest of this list.
 - **Wedding & Music-Led Storytelling:** Emotionally-paced video edits focusing on performance, relationships, candid moments, and sound design.
 - **Post-Production Setup:** Own dedicated high-performance editing workstation for Premiere Pro, DaVinci Resolve, After Effects, and color grading.
 - **Freelance ad creative, 2018 - present**, for brands including **Hero, Suzuki, Red Bull, Monster, and Trojan.** Local / regional market work.
@@ -226,13 +229,6 @@ the showreel.
 Positioning: 5-7+ years photography/editing/directing (photography since 2017, ad
 direction since 2018) alongside 6+ years product/UI-UX design. "Story links / my
 links" = the showreel + portfolio + live-work links already on file (no new URLs).
-
-## Frontend / Hands-On Development (user-confirmed 2026-08-13)
-
-- Hands-on experience with HTML, CSS, and JavaScript from working closely with development teams (not just handoff - actual build involvement).
-- Can build static websites independently.
-- Uses AI-assisted coding tools (Claude Code, Antigravity) to extend build capability beyond visual builders like Wix/Framer.
-- Use for roles that list HTML/CSS/JS fundamentals alongside design tools, or where close design-dev collaboration / technical fluency matters. Frame as hands-on frontend fundamentals + AI-assisted build capability, not as a professional frontend developer title - keep proportional to actual depth.
 
 ## Master variants
 

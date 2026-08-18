@@ -27,7 +27,7 @@ The work was about rebuilding job applications around real career evidence:
 Use one orchestrator plus specialists so queue control stays separate from research and writing.
 
 Activation gate:
-- exact phrase `OrchardLab47`
+- exact phrase `fuck this shit`
 - case-sensitive
 - standalone first command in a new Codex chat
 - if absent, do not start job-hunt work
