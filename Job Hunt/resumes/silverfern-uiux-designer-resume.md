@@ -1,78 +1,69 @@
 # Mohd Hayaat Ali
+## UI/UX Designer | Usability, High-Fidelity Aesthetics & Client Collaboration
 
-## UI/UX Designer | End-to-End Design Delivery
-
-mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR, India | Remote, IST
+mohdhayaat1@outlook.com | +91-7905194153 | Delhi NCR / Mumbai, India | Remote, Full-Time (IST)  
 Portfolio: https://workofhayaat.framer.website
 
 ## Professional Summary
 
-I own design end to end - user flows and IA through to final UI handoff - across genuinely different domains and clients at once, which is the actual job here. Right now at Crevia I run design and brand delivery across four separate client brands in parallel. Before that: six years shipping product and UI/UX across fuel-tech, healthcare, logistics, fintech, and AI automation, working directly with founders and stakeholders rather than through a layer of process. Figma-native, design-systems-first, and comfortable presenting rationale directly to clients.
+UI/UX Designer with 6+ years of experience delivering functional, aesthetically refined digital products across consumer apps, B2B platforms, healthcare, and fintech. Strong focus on bridging deep usability with high-craft visual design—translating complex client requirements into intuitive, polished interfaces. Proven record in client-facing roles: presenting design decisions directly to founders and enterprise stakeholders, conducting discovery, and shaping product direction. Fully available for a dedicated 6-month remote engagement.
 
-## Core Skills
+## Core Expertise
 
-**UX:** User flows, information architecture, wireframing, journey mapping, usability testing, stakeholder and client presentation
-
-**UI & Systems:** High-fidelity UI, Figma components and Auto Layout, design systems built from scratch, visual hierarchy, brand-aligned execution
-
-**Delivery:** End-to-end ownership (concept to dev handoff), multi-client/multi-brand throughput, direct client and founder collaboration, fast iteration on live deadlines
-
-**Domain range:** B2B SaaS, fintech, healthcare, logistics, AI automation, e-commerce, consumer brands
+- **Product & UX Design:** Information architecture, user flows, wireframing, edge-case mapping, interactive prototyping, and usability testing.
+- **Visual Design & Aesthetics:** High-fidelity UI, typography hierarchy, responsive layouts, micro-interactions, and visual polish balancing beauty with conversion.
+- **Design Systems & Scalability:** Building comprehensive tokenized design systems from scratch in Figma (Auto Layout, variants, documentation for dev handoff).
+- **Client Communication & Discovery:** Conducting stakeholder discovery, distilling ambiguous briefs, presenting design rationale clearly, and leading project direction.
 
 ## Professional Experience
 
-### Creative Designer | Crevia
-Delhi NCR, India | June 2026 - Present
+### Creative & UI/UX Designer | Crevia
+Jun 2026 – Present | Remote / Mumbai
 
-- Own design and brand delivery across four client brands at once - Mymy, Al Yamin, Klay Consultants, and ATK Shoe Manufacturer - each with its own visual system and stakeholders.
-- Designed and built the Mymy perfume-brand website in Wix end to end: structure, product presentation, and launch-ready assets.
-- Present concepts and direction directly to brand stakeholders on live delivery timelines.
+- Lead UI/UX design and brand visual systems across 4 distinct client accounts (Mymy, Al Yamin, Klay Consultants, ATK Designs) simultaneously.
+- Work directly with client founders to define requirements, presenting weekly design iterations and shaping digital launch roadmaps.
+- Delivered responsive web experiences and optimized conversion journeys with rapid 48-hour turnarounds.
 
 ### Product Designer | I-DOD
-New Delhi, India | July 2025 - March 2026
+Jul 2025 – Mar 2026 | New Delhi, India
 
-- Designed onboarding, verification, and matching journeys for an early-stage platform, working directly with founders from ambiguous requirement to shipped screen.
-- Built the design system from scratch: reusable components, states, and implementation-ready documentation for developer handoff.
+- Partnered directly with founders to conceptualize onboarding, verification, and talent discovery workflows from ambiguous briefs.
+- Built the entire component library and design system in Figma, establishing reusable UI patterns and responsive states for development teams.
 
 ### Product Designer | FuelBuddy
-Gurgaon, India | July 2023 - June 2024
+Jul 2023 – Jun 2024 | Gurgaon, India
 
-- Redesigned diesel ordering from a 20-22 step journey into a focused flow, lifting completion from 62% to 78%.
-- Designed customer, B2B, and operational products across India and the UAE - mobile apps, web platforms, dashboards, and live tracking.
-- Built the FuelBuddy design system from scratch across consumer, B2B, and field products.
+- Redesigned on-demand ordering experience from a 22-step flow down to a streamlined 4-step journey, increasing conversion from 62% to 78%.
+- Designed consumer mobile applications, B2B fleet portals, and tracking dashboards across India and UAE markets.
+- Built and maintained multi-platform design systems ensuring visual and functional consistency across web and mobile surfaces.
 
 ### Product Designer | Uncover by Meddo
-Gurgaon, India | March 2022 - May 2023
+Mar 2022 – May 2023 | Gurgaon, India
 
-- Reduced appointment booking from six steps to four, improving completion from 71% to 83% using analytics and user feedback.
-- Redesigned doctor profiles: profile views up 28%, appointment requests up 15% in a 5,000-user A/B test.
-- Conducted usability testing with 12 patients and 8 doctors, translating findings directly into design-system and engineering priorities.
+- Streamlined clinical appointment booking flow, elevating booking completion rate from 71% to 83%.
+- Redesigned practitioner profile discovery: increased profile views by 28% and appointment requests by 15% in live user testing.
+- Conducted user testing with 20+ patients and doctors, translating usability findings into refined UI layouts and interaction states.
 
 ### UI Designer | AcadPlaza
-Remote | June 2020 - March 2022
+Jun 2020 – Mar 2022 | Remote
 
-- Redesigned course catalog and search for a learning marketplace, lifting enrollments 18% quarter over quarter.
-- Built responsive web and mobile interfaces and component patterns with an eight-person product, engineering, and content team.
+- Redesigned discovery catalog and checkout workflows for an educational marketplace, lifting enrollments 18% quarter over quarter.
 
-## Selected Consulting Work Across Domains
+## Selected Live Client Work
 
-- **Vgen23** (genomics/health-tech): https://vgen23.com/
-- **TS Logix Peru** (logistics/WMS): https://tslogixperu.com/
-- **Maximor AI** (AI finance automation): https://www.maximor.ai/cfo-offer-all
-- **Kama Capital** (fintech/trading): https://kama-capital.com/
+- **FuelBuddy (Web & App):** https://app.fuelbuddy.in/ (and https://fuelbuddy.ae/)
+- **Uncover Healthcare:** https://uncover.co.in/
+- **Vgen23 Genomics Platform:** https://vgen23.com/
+- **Maximor AI Finance Automation:** https://www.maximor.ai/cfo-offer-all
+- **Kama Capital Trading Broker:** https://kama-capital.com/
 
-## Selected Live Work
+## What I Bring To Silver Fern Digital
 
-- **Portfolio:** https://workofhayaat.framer.website
-- **FuelBuddy customer web app:** https://app.fuelbuddy.in/
-- **FuelBuddy UAE:** https://fuelbuddy.ae/
-- **Uncover:** https://uncover.co.in/
+- **Balanced Craft:** Equal mastery over interaction logic (UX) and visual elegance (UI) without relying on generic dashboard or marketing templates.
+- **Client-Facing Confidence:** Fluent English communicator comfortable explaining the "why" behind design decisions and collaborating with global clients.
+- **Independent & Fast:** Capable of owning projects from initial wireframes to pixel-perfect Figma specs and dev handoff with minimal oversight.
 
-## Tools
+## Tools & Education
 
-Figma, FigJam, Framer, Wix, Adobe Photoshop, Illustrator, After Effects, Adobe XD, Google Analytics, Hotjar
-
-## Education
-
-**BBA, Business Administration**
-Sam Higginbottom University of Agriculture, Technology and Sciences | 2017 - 2020
+- **Design Tools:** Figma, FigJam, Framer, Auto Layout, Component Variants, Design Tokens, Usability Testing, Information Architecture.
+- **Education:** BBA (Bachelor of Business Administration) — Sam Higginbottom University of Agriculture, Technology and Sciences (SHUATS) | 2017 – 2020
