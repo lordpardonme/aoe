@@ -6,7 +6,7 @@ Portfolio: https://workofhayaat.framer.website | Showreel: https://drive.google.
 
 ## Professional Summary
 
-Cinematographer, photographer, and visual storyteller with 10+ years of hands-on camera and post-production expertise, currently based in Mumbai and actively covering Mumbai / Delhi NCR. Extensive track record capturing high-energy live events, star nights across premier institutions (IITs, IIMs, NITs, DU), and commercial branded content for brands like Red Bull, Monster Energy, Hero, and Suzuki. Owns professional camera equipment and a dedicated high-performance editing workstation. Directs, shoots, color-grades, and edits narrative-driven content from concept to final master.
+Cinematographer, photographer, and visual storyteller with 5+ years of commercial camera and post-production experience, currently based in Mumbai and actively covering Mumbai / Delhi NCR. Track record capturing high-energy live events, star nights across premier institutions (IITs, IIMs, NITs, DU), and commercial branded content for brands like Red Bull, Monster Energy, Hero, and Suzuki. Owns professional camera equipment and a dedicated high-performance editing workstation. Directs, shoots, color-grades, and edits narrative-driven content from concept to final master.
 
 ## Core Expertise
 
@@ -26,13 +26,13 @@ Jun 2026 – Present
 - Created 200+ visual product assets across catalog lines, optimizing lighting and framing for digital storefronts.
 
 ### Cinematographer, Photographer & Visual Storyteller | Freelance & Redhat Productions
-India | 2016 – Present
+India | 2018 – Present
 
 - Captured high-energy live concerts and cultural festivals across premier national institutions including IITs, IIMs (IIM Jammu), NITs, and Delhi University colleges.
 - Photographed 100+ artists including Travis Scott and Akon (as part of official photography team), CarryMinati, Gajendra Verma (with Accomplice team), Zakir Khan, Tanmay Bhatt, Vishal-Shekhar, The Local Train, and Lucky Ali.
 - Shot and produced commercial video ad assets for brands including Red Bull, Monster Energy, Hero, Suzuki, and Trojan under tight event and campaign schedules.
 - Served as Junior DOP on music video productions for Crevixa, managing camera rigging, lighting setups, and visual consistency.
-- Lead photographer with Redhat Productions (since 2017) across commercial, corporate, fashion, and large-scale event shoots.
+- Lead photographer with Redhat Productions across commercial, corporate, fashion, and large-scale event shoots.
 
 ### Art Director & Filmmaker | Beaux Arts
 Allahabad, India | 2019 – Present

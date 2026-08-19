@@ -6,7 +6,7 @@ Portfolio: https://workofhayaat.framer.website | Showreel: https://drive.google.
 
 ## Professional Summary
 
-Post-Production Lead and Senior Video Editor with 10+ years of hands-on post-production, editing, and creative workflow leadership. Extensive experience managing multi-stream editing pipelines, setting quality control standards, and delivering high-impact video campaigns under aggressive turnaround schedules. Currently located in Mumbai with a dedicated high-performance post-production workstation. Proven track record leading post-production for major commercial brands (Red Bull, Monster Energy, Hero, Suzuki) and high-growth digital brands, driving over 10,00,000+ views.
+Post-Production Lead and Senior Video Editor with 5+ years of commercial post-production, editing, and creative workflow leadership. Extensive experience managing multi-stream editing pipelines, setting quality control standards, and delivering high-impact video campaigns under aggressive turnaround schedules. Currently located in Mumbai with a dedicated high-performance post-production workstation. Proven track record leading post-production for major commercial brands (Red Bull, Monster Energy, Hero, Suzuki) and high-growth digital brands, driving over 10,00,000+ views.
 
 ## Core Expertise
 
@@ -27,7 +27,7 @@ Jun 2026 – Present | Delhi NCR / Mumbai
 - Delivered 200+ multi-format visual and video assets across digital storefronts and social ad channels.
 
 ### Lead Video Editor & Post-Production Specialist | Freelance & Redhat Productions
-2016 – Present | India
+2018 – Present | India
 
 - Managed full post-production pipelines for commercial video ads, brand films, and music videos for clients including Hero, Suzuki, Red Bull, Monster Energy, Trojan, and Crevixa.
 - Handled high-pressure turnaround for live concert and festival recap reels across IITs, IIMs, NITs, and DU, delivering same-night social edits for 100+ national and international artist performances.
