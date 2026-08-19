@@ -31,26 +31,29 @@ def main():
     ap.add_argument("--to", required=True)
     ap.add_argument("--subject", required=True)
     ap.add_argument("--body-file", required=True)
-    ap.add_argument("--attachment", required=True)
+    ap.add_argument("--attachment", required=True, nargs="+", help="one or more PDF/file attachments")
     ap.add_argument("--dry-run", action="store_true", help="build but do not send")
     a = ap.parse_args()
 
     body = Path(a.body_file).read_text(encoding="utf-8")
-    att = Path(a.attachment)
-    if not att.exists():
-        raise SystemExit(f"attachment not found: {att}")
+    attachments = [Path(p) for p in a.attachment]
+    for att in attachments:
+        if not att.exists():
+            raise SystemExit(f"attachment not found: {att}")
 
     msg = EmailMessage()
     msg["To"] = a.to
     msg["From"] = SENDER
     msg["Subject"] = a.subject
     msg.set_content(body)
-    ctype, _ = mimetypes.guess_type(str(att))
-    maintype, subtype = (ctype or "application/pdf").split("/", 1)
-    msg.add_attachment(att.read_bytes(), maintype=maintype, subtype=subtype, filename=att.name)
+    for att in attachments:
+        ctype, _ = mimetypes.guess_type(str(att))
+        maintype, subtype = (ctype or "application/pdf").split("/", 1)
+        msg.add_attachment(att.read_bytes(), maintype=maintype, subtype=subtype, filename=att.name)
 
     if a.dry_run:
-        print(f"DRY-RUN to={a.to} subject={a.subject!r} attach={att.name} ({att.stat().st_size} B)")
+        att_names = ", ".join(f"{att.name} ({att.stat().st_size} B)" for att in attachments)
+        print(f"DRY-RUN to={a.to} subject={a.subject!r} attach=[{att_names}]")
         return
 
     creds = Credentials.from_authorized_user_file(str(TOKEN))
@@ -59,7 +62,8 @@ def main():
     svc = build("gmail", "v1", credentials=creds)
     raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
     sent = svc.users().messages().send(userId="me", body={"raw": raw}).execute()
-    print(f"SENT to={a.to} id={sent['id']} threadId={sent['threadId']} attach={att.name}")
+    att_summary = ", ".join(att.name for att in attachments)
+    print(f"SENT to={a.to} id={sent['id']} threadId={sent['threadId']} attach=[{att_summary}]")
 
 
 if __name__ == "__main__":
