@@ -1,0 +1,27 @@
+Hi Team Recepto,
+
+Your post caught me because you aren’t looking for someone to push rectangles against Jira tickets—you’re looking for someone whose thinking you can trust when there is no ticket yet.
+
+In an intent-first prospecting engine tracking messy third-party signals, the real product isn't a glossy happy-path screen. It’s how you handle latency, confidence score drops, false positives, and the edge cases that make an SDR actually trust the recommendation. 
+
+You asked for one thing owned end-to-end and the number it moved:
+• At FuelBuddy (energy delivery across 180+ cities, 50k+ businesses, 500k+ downloads), I dismantled a convoluted 20–22 step ordering maze and rebuilt it into a 4-step primitive (location, quantity, delivery window, payment). 
+• Result: End-to-end order completion jumped from 62% to 78%, while cutting transaction errors by 38%.
+• I also built the multi-platform design system from scratch that scaled 10x across India and the UAE without quarterly rewrites.
+
+I look at products from the failure states first. My natural instinct is to tear apart edge cases, understand the commercial decisions underneath the interface, and design primitives that engineering can actually build cleanly. Freelancing gave me broad exposure across domains, but I'm looking for a single high-trust in-house seat where the thinking compounds and I can own problems from the messy start to the shipped feature.
+
+My Master Product Designer CV is attached. 
+
+Portfolio: https://workofhayaat.framer.website
+Live work:
+• FuelBuddy Web: https://app.fuelbuddy.in/
+• FuelBuddy UAE: https://fuelbuddy.ae/
+• Meddo / Uncover: https://uncover.co.in/
+• Maximor AI: https://www.maximor.ai/cfo-offer-all
+
+I’d love 20 minutes to pull apart an active product problem at Recepto and show you how I think.
+
+Mohd Hayaat Ali
++91-7905194153 | mohdhayaat1@outlook.com
+Delhi NCR, India
