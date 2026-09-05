@@ -1,0 +1,29 @@
+Hi Personio Team,
+
+I've been closely following Personio's evolution into Europe's leading HR operating system and your focus on People Workflow Automation. I'm reaching out regarding Senior Product Designer opportunities across your Munich and Berlin product hubs.
+
+I'm a Product & UI/UX Designer with 6+ years of experience designing complex multi-tenant B2B SaaS platforms, enterprise workflow automation, and operational dashboards:
+
+Location, Visa & Availability:
+• Current Location: Delhi NCR, India (Available for on-site relocation to Munich/Berlin or remote start)
+• Work Permit: EU Blue Card eligible (Fachkräfteeinwanderungsgesetz)
+• Notice Period: Immediate joiner (0-day notice period)
+
+Relevant Experience for Personio:
+• Complex Workflow Automation: Replaced spreadsheet-heavy operational workflows at FuelBuddy with structured dispatch, asset tracking, and role-based access tools, reducing manual support input by 43%.
+• Measurable Journey Improvements: Redesigned multi-step checkout and appointment flows at Meddo (71% to 83% completion) and FuelBuddy (62% to 78% order completion).
+• Permissions & Multi-Tenant Controls: Architected delegated access, secondary-user permissions, and configurable spend limits, cutting financial transaction errors by 38%.
+• Design System Architecture: Built complete design systems from scratch in Figma with tokenized variables, component libraries, and seamless engineering handoff.
+
+Selected Live Work:
+• Portfolio: https://workofhayaat.framer.website
+• FuelBuddy Web App: https://app.fuelbuddy.in/
+• Maximor AI: https://www.maximor.ai/cfo-offer-all
+• Uncover: https://uncover.co.in/
+
+Attached is my Master Product Designer CV. I'd welcome the opportunity to discuss how my systems design background can support Personio's product teams.
+
+Best regards,
+Mohd Hayaat Ali
++91-7905194153
+hayaat0806@gmail.com

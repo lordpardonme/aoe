@@ -1,0 +1,16 @@
+Hi Helsing talent & design team,
+
+Designing software for live sensor processing and real-time operational intelligence requires extreme cognitive clarity under pressure—there is zero tolerance for interface lag, visual noise, or ambiguous states.
+
+I’m a Senior Product Designer with 6+ years specializing in live IoT telemetry, real-time dispatch systems, and complex multi-layer dashboards. At FuelBuddy, I designed our operational fleet dispatch and live monitoring platform from the ground up, managing real-time GPS telemetry, driver routes, and sensor feeds across hundreds of assets in high-stakes field conditions. 
+
+I’m currently based in India, eligible for the German EU Blue Card (Fachkräfteeinwanderungsgesetz), and available to relocate to Munich or Berlin immediately (0-day notice).
+
+You can review my live systems work here: https://workofhayaat.framer.website (CV attached in Lebenslauf format).
+
+Would love to learn if there’s an opening to contribute to Helsing’s mission and interface design.
+
+Best,
+Mohd Hayaat Ali
++91-7905194153
+hayaat0806@gmail.com

@@ -1,0 +1,16 @@
+Hi Siemens digital product & UX team,
+
+Industrial automation and IoT telemetry (Siemens Xcelerator / MindSphere) demand interface designs that bridge physical machinery and cloud analytics—where operators need instant anomaly detection and deep drill-down capability without cognitive overload.
+
+I’m a Senior Product Designer with 6+ years designing IoT monitoring dashboards, fleet telemetry, and mission-critical operations software. At FuelBuddy, I designed our operational mobility platform handling real-time sensor streams, asset telemetry, and automated alert resolution across hundreds of field units in India and the UAE. My focus is always on glanceable data density, robust error recovery, and modular component design.
+
+I hold qualification for the German EU Blue Card and am available to relocate to Munich, Nuremberg, or Erlangen with zero notice period.
+
+You can explore my live systems work at https://workofhayaat.framer.website (CV attached in Lebenslauf format).
+
+Are you open to product designers who can help shape industrial IoT and digital enterprise interfaces at Siemens?
+
+Best regards,
+Mohd Hayaat Ali
++91-7905194153
+hayaat0806@gmail.com

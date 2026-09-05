@@ -1,0 +1,16 @@
+Hi SAP design & product team,
+
+Scaling design consistency across enterprise software portfolios without sacrificing component flexibility is one of the toughest challenges in enterprise UX. I have immense respect for the engineering and design governance behind SAP Fiori and the Horizon visual theme.
+
+I’m a Product & UI/UX Designer with 6+ years specializing in enterprise design systems and complex B2B workflow software. Over the past several years, I’ve architected tokenized component architectures in Figma from the ground up, enforcing responsive auto-layout variables and strict developer handoff documentation to ensure zero UI drift across distributed engineering teams. At Maximor AI, I designed autonomous financial workflows structuring multi-tier reconciliation data into clear, accessible views.
+
+I am eligible for the German EU Blue Card (Fachkräfteeinwanderungsgesetz) and available to relocate to Walldorf, Berlin, or Munich immediately (0-day notice).
+
+Portfolio: https://workofhayaat.framer.website (German CV attached).
+
+Would love to connect with your design leadership regarding product design and design systems opportunities at SAP.
+
+Best regards,
+Mohd Hayaat Ali
++91-7905194153
+hayaat0806@gmail.com

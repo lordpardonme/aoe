@@ -1,0 +1,16 @@
+Hi TRUECHART team,
+
+Data visualization in enterprise BI isn't just about rendering charts—it's about cognitive speed. Applying standardized visual notation (like IBCS) inside Power BI and Qlik transforms messy reporting into immediate executive decision-making.
+
+I’m a Product Designer who specializes in dense data visualization, analytics architectures, and design systems. Over the past 6 years, I’ve designed multi-tenant operational analytics and IoT telemetry platforms at FuelBuddy and Maximor AI, turning multi-dimensional data sets into clean, glanceable visual hierarchies. I build modular component libraries in Figma with strict variable tokenization for seamless frontend implementation.
+
+I’m eligible for the German EU Blue Card and available to relocate to Germany or collaborate in a remote/hybrid setup immediately (0-day notice).
+
+Portfolio: https://workofhayaat.framer.website (German CV attached).
+
+Would love to connect on how my data visualization and design systems background can support TRUECHART's next-gen analytics extensions.
+
+Best regards,
+Mohd Hayaat Ali
++91-7905194153
+hayaat0806@gmail.com

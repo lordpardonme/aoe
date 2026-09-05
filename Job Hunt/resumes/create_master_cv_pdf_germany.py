@@ -1,10 +1,13 @@
-"""Gulf variant of the master Product Designer CV.
+"""Germany variant of the master Product Designer CV.
 
-Identical to create_master_cv_pdf.py in every visual respect - same fonts,
-colors, spacing, bullet style, section rules. The ONLY changes are: a
-headshot photo added top-right of the header, and a nationality / visa
-status line added to the contact block, per Gulf-market CV convention.
-Do not otherwise touch the formatting.
+Based on the Gulf CV builder. Key Germany-specific adaptations:
+- Photo retained (top-right, studio headshot — expected in German Lebenslauf)
+- Location changed to "Delhi NCR, India | Open to relocation: Germany"
+- Nationality/visa line updated for EU Blue Card eligibility
+- Date of birth added (standard in German CVs)
+- Language skills section added with CEFR levels
+- Clean tabular reverse-chronological format preserved
+- All content in English (targeting English-language tech roles in Germany)
 """
 from pathlib import Path
 
@@ -22,7 +25,7 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-OUT = Path(__file__).with_name("Mohd_Hayaat_Ali_Master_Product_Designer_CV_Gulf.pdf")
+OUT = Path(__file__).with_name("Mohd_Hayaat_Ali_Master_Product_Designer_CV_Germany.pdf")
 PHOTO = Path(r"C:\Users\mohdh\.claude\uploads\76c0a99d-1c30-4507-a149-5583bc1ef9ea\43f107e2-2A9C62EECB884B8A9581F1BEE6DAF8EE.png")
 
 INK = colors.HexColor("#17212B")
@@ -129,6 +132,24 @@ styles = {
         textColor=INK,
         spaceAfter=3,
     ),
+    "personal_label": ParagraphStyle(
+        "PersonalLabel",
+        parent=base["Normal"],
+        fontName="Helvetica-Bold",
+        fontSize=9.0,
+        leading=12.5,
+        textColor=MUTED,
+        spaceAfter=1,
+    ),
+    "personal_value": ParagraphStyle(
+        "PersonalValue",
+        parent=base["Normal"],
+        fontName="Helvetica",
+        fontSize=9.0,
+        leading=12.5,
+        textColor=INK,
+        spaceAfter=1,
+    ),
 }
 
 
@@ -157,24 +178,26 @@ def linked(label, url):
     return f'<link href="{url}" color="#0B666A"><u>{label}</u></link>'
 
 
-# --- Header: same paragraphs as the original, only two additions ---------
-# 1) a nationality/visa line appended to the contact block
-# 2) the whole header block placed in a 2-col table with a headshot at right
+# --- Header: Germany-specific personal data block ---
+# Photo top-right (expected in German Lebenslauf)
+# Contact details + Date of Birth + Nationality + Visa eligibility
 header_flow = [
     Paragraph("Mohd Hayaat Ali", styles["name"]),
     Paragraph("PRODUCT DESIGNER | UI/UX, INTERACTION AND VISUAL SYSTEMS", styles["title"]),
     Paragraph(
         f'{linked("mohdhayaat1@outlook.com", "mailto:mohdhayaat1@outlook.com")}  |  '
-        f'{linked("+91-7905194153", "tel:+917905194153")}  |  Dubai, UAE',
+        f'{linked("+91-7905194153", "tel:+917905194153")}  |  Delhi NCR, India',
         styles["contact"],
     ),
     Paragraph(
         f'{linked("Portfolio", "https://workofhayaat.framer.website")}  |  '
-        "Immediately Available (0-Day Notice)",
+        "Immediately Available (0-Day Notice)  |  Open to Relocation: Germany",
         styles["contact"],
     ),
     Paragraph(
-        "Nationality: Indian&nbsp;&nbsp;|&nbsp;&nbsp;Visa status: Tourist Visa (Immediate Joiner)",
+        "Date of Birth: 08 June 1998&nbsp;&nbsp;|&nbsp;&nbsp;"
+        "Nationality: Indian&nbsp;&nbsp;|&nbsp;&nbsp;"
+        "Work Permit: EU Blue Card Eligible (<i>Fachkr\u00e4fteeinwanderungsgesetz</i>)",
         styles["contact"],
     ),
 ]
@@ -342,6 +365,31 @@ story.append(
     )
 )
 
+# --- Germany-specific: Language Skills (CEFR levels) ---
+story.extend(section("Languages"))
+lang_data = [
+    ["Language", "Proficiency", "CEFR Level"],
+    ["English", "Professional / Native Proficiency", "C2"],
+    ["Hindi", "Native", "C2"],
+    ["Urdu", "Native", "C2"],
+    ["German", "Elementary (actively learning)", "A1"],
+]
+lang_table = Table(lang_data, colWidths=[120, 200, 80])
+lang_table.setStyle(TableStyle([
+    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+    ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),
+    ("FONTSIZE", (0, 0), (-1, -1), 9.2),
+    ("TEXTCOLOR", (0, 0), (-1, 0), ACCENT),
+    ("TEXTCOLOR", (0, 1), (-1, -1), INK),
+    ("LINEBELOW", (0, 0), (-1, 0), 0.5, RULE),
+    ("TOPPADDING", (0, 0), (-1, -1), 3),
+    ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+    ("LEFTPADDING", (0, 0), (-1, -1), 0),
+    ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+]))
+story.append(lang_table)
+
 story.extend(section("Education"))
 story.append(Paragraph("<b>BBA, Business Administration</b>", styles["body"]))
 story.append(
@@ -358,9 +406,10 @@ doc = SimpleDocTemplate(
     rightMargin=0.65 * inch,
     topMargin=0.58 * inch,
     bottomMargin=0.58 * inch,
-    title="Mohd Hayaat Ali - Master Product Designer CV (Gulf)",
+    title="Mohd Hayaat Ali - Master Product Designer CV (Germany / Lebenslauf)",
     author="Mohd Hayaat Ali",
     subject="Product Design, UI/UX, Interaction Design and Visual Systems",
 )
 doc.build(story)
-print(OUT)
+print(f"Germany CV built: {OUT}")
+print(f"Size: {OUT.stat().st_size:,} bytes")

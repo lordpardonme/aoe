@@ -1,0 +1,29 @@
+Hi Flix Team,
+
+I've been following how Flix continues to scale green, affordable mobility across Europe, connecting millions through smart scheduling, dynamic routing, and seamless booking. I'm reaching out regarding Product Design opportunities with your passenger and operations teams across Munich and Berlin.
+
+I'm a Product & UI/UX Designer with 6+ years of experience building complex fleet logistics software, dispatch dashboards, and high-volume mobile booking experiences:
+
+Location, Visa & Availability:
+• Current Location: Delhi NCR, India (Available for on-site relocation to Munich/Berlin or remote start)
+• Work Permit: EU Blue Card eligible (Fachkräfteeinwanderungsgesetz)
+• Notice Period: Immediate joiner (0-day notice period)
+
+Relevant Experience for Flix:
+• Fleet Operations & Dispatch Systems: Replaced spreadsheet-heavy fleet operations at FuelBuddy with integrated driver, vehicle, shift, route planning, and live IoT tracking tools—reducing manual support load by 43%.
+• Multi-Modal Booking & Checkout: Redesigned multi-step ordering from 22 steps to 4, boosting checkout completion from 62% to 78%; designed map-based live vehicle tracking for drivers and consumers.
+• Multi-Country Scale: Shipped web and mobile products operating across diverse regional requirements in India and the UAE.
+• Design Systems: Built comprehensive Figma component libraries, auto-layout tokens, and rigorous engineering handoff pipelines.
+
+Selected Live Work:
+• Portfolio: https://workofhayaat.framer.website
+• FuelBuddy Web App: https://app.fuelbuddy.in/
+• FuelBuddy FMS: https://play.google.com/store/apps/details?id=in.fuelbuddy.fms
+• Uncover: https://uncover.co.in/
+
+Attached is my Master Product Designer CV. I'd love to connect on how my operations and mobility design background can support Flix's product roadmap.
+
+Best regards,
+Mohd Hayaat Ali
++91-7905194153
+hayaat0806@gmail.com

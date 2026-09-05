@@ -1,0 +1,29 @@
+Hi Solaris Team,
+
+I've been following how Solaris empowers top European brands to build proprietary financial products through its modular Banking-as-a-Service platform and API architecture. I'm reaching out regarding Product Design opportunities with your Berlin product and platform teams.
+
+I'm a Product & UI/UX Designer with 6+ years of experience designing complex developer consoles, fintech platforms, and compliant financial journeys:
+
+Location, Visa & Availability:
+• Current Location: Delhi NCR, India (Available for on-site relocation to Berlin or remote start)
+• Work Permit: EU Blue Card eligible (Fachkräfteeinwanderungsgesetz)
+• Notice Period: Immediate joiner (0-day notice period)
+
+Relevant Experience for Solaris:
+• FinTech & Banking Platforms: Designed multi-asset trading interfaces for Kama Capital and AI finance automation tools for Maximor AI (maximor.ai).
+• Security, KYC & Wallet UX: Architected payment authorization, delegated access, and wallet controls at FuelBuddy, cutting transaction errors by 38%.
+• Complex B2B & Developer Workflows: Expert in turning dense API parameters, multi-tenant dashboards, and regulatory compliance into clear, modular interaction components.
+• Design Systems Architecture: Built comprehensive Figma component libraries with tokenized variables, responsive data tables, and strict developer handoff.
+
+Selected Live Work:
+• Portfolio: https://workofhayaat.framer.website
+• Kama Capital: https://kama-capital.com/
+• Maximor AI: https://www.maximor.ai/cfo-offer-all
+• FuelBuddy Web App: https://app.fuelbuddy.in/
+
+Attached is my Master Product Designer CV. I'd welcome the chance to discuss how my systems design background can support Solaris.
+
+Best regards,
+Mohd Hayaat Ali
++91-7905194153
+hayaat0806@gmail.com

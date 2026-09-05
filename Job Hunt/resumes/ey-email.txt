@@ -1,17 +1,23 @@
-Hi,
+Hi Sunit,
 
-Applying for the Design Led Innovation - Senior Consultant role at EY's Innovation and Experience Design practice.
+Most UI/UX applications talk about "Design Thinking" in theory without showing measurable business outcomes.
 
-I've spent 6+ years doing exactly what this role describes - customer-centric product development, design thinking, journey mapping, persona development, and UX/UI design across B2C and B2B2C products. I've built and shipped consumer products end-to-end across healthcare (Meddo/Uncover - full patient journey redesign), fuel delivery (FuelBuddy - India + UAE, 180+ cities, omnichannel experience), fintech, logistics, and e-commerce. In each case I owned the process from user research and journey mapping through design system creation and delivery.
+I’m a Delhi NCR-based Product & UI/UX Designer with 6+ years specializing in enterprise product surfaces, usability research, and scalable design systems (FuelBuddy, Uncover by Meddo, Crevia).
 
-At my current studio I work across multiple client verticals simultaneously - running workshops, developing brand and experience strategies, and delivering across digital platforms. Before that I built transformation roadmaps and design systems from scratch for startups scaling into new markets.
+A few tangible outcomes from my work:
+• User Research & Conversion: Ran usability studies with patients and clinicians at Meddo/Uncover, redesigning booking flows and lifting conversion from 71% to 83%.
+• Complex Enterprise Workflows: Replaced fragmented spreadsheet operations at FuelBuddy with unified dispatch and fleet management platforms serving 50,000+ businesses across India and UAE.
+• Production Design Systems: Built modular Figma design systems from scratch with standardized tokens, Auto Layout components, and developer handoff documentation.
 
-I'm comfortable facilitating stakeholder workshops, synthesizing research into actionable strategies, and working in cross-functional teams with PMs, engineers, and business stakeholders.
+Between 2024 and 2025, I took an intentional sabbatical to build a grassroots design community—organizing and hosting design talks and workshops inside Google, Microsoft, and Tata 1mg—while sharpening visual storytelling and creative media.
 
-Portfolio: https://workofhayaat.framer.website
+Given EY’s focus on large-scale digital transformation and human-centric enterprise solutions, I can step in immediately to bridge business requirements, rigorous user research, and executive-ready UI execution.
 
-Resume attached. Happy to discuss further.
+• Portfolio: https://workofhayaat.framer.website
 
+Attached my Master Product Designer CV. Based in Delhi NCR and ready to connect.
+
+Best,
 Mohd Hayaat Ali
 +91-7905194153
 mohdhayaat1@outlook.com

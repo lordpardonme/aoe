@@ -1,0 +1,16 @@
+Hi Lufthansa Systems team,
+
+Aviation software demands ruthless reliability—whether it’s NetLine flight scheduling under irregular operations or BoardConnect in-flight passenger digital services. Every interaction must reduce pilot and crew cognitive load while keeping airline operations running on time.
+
+I’m a Product & UI/UX Designer with 6+ years in mission-critical operations software, logistics routing, and high-volume mobile platforms. At FuelBuddy, I replaced manual spreadsheet-heavy fleet operations with structured dispatch and live asset tracking tools, cutting support tickets by 43%. I've built complete design systems from scratch in Figma with strict token governance for zero-drift engineering handoff.
+
+I hold qualification for the German EU Blue Card and am available to relocate to Frankfurt/Raunheim with 0-day notice.
+
+You can review my live product work at https://workofhayaat.framer.website (CV attached in Lebenslauf format).
+
+Would welcome a conversation on how my systems design background can support digital aviation products at Lufthansa Systems.
+
+Best regards,
+Mohd Hayaat Ali
++91-7905194153
+hayaat0806@gmail.com

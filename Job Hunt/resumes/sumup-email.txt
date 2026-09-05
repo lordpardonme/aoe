@@ -1,0 +1,29 @@
+Hi SumUp Team,
+
+I've been following how SumUp empowers millions of small businesses worldwide through frictionless card readers, companion point-of-sale tools, and business banking. I'm reaching out regarding Product Design opportunities with your merchant and payments teams in Berlin.
+
+I'm a Product & UI/UX Designer with 6+ years of experience building merchant billing dashboards, wallet interfaces, and high-conversion payment flows:
+
+Location, Visa & Availability:
+• Current Location: Delhi NCR, India (Available for on-site relocation to Berlin or remote start)
+• Work Permit: EU Blue Card eligible (Fachkräfteeinwanderungsgesetz)
+• Notice Period: Immediate joiner (0-day notice period)
+
+Relevant Experience for SumUp:
+• Payment & Wallet UX: Redesigned commercial billing and wallet controls at FuelBuddy, cutting transaction errors by 38% through delegated access, secondary-user permissions, and configurable spend limits.
+• Merchant & Operational Portals: Replaced complex manual billing and tracking with streamlined multi-tenant portals, saving 43% in manual customer support overhead.
+• Mobile & Cross-Platform UX: Designed end-to-end mobile apps serving 100k+ users, ensuring rapid task completion and error prevention at the point of sale.
+• Design Systems Architecture: Built comprehensive Figma component libraries with tokenized variables and tight engineering handoff pipelines.
+
+Selected Live Work:
+• Portfolio: https://workofhayaat.framer.website
+• FuelBuddy Web App: https://app.fuelbuddy.in/
+• Maximor AI: https://www.maximor.ai/cfo-offer-all
+• Kama Capital: https://kama-capital.com/
+
+Attached is my Master Product Designer CV. I'd love to connect with your design leadership regarding product design roles at SumUp.
+
+Best regards,
+Mohd Hayaat Ali
++91-7905194153
+hayaat0806@gmail.com

@@ -1,0 +1,16 @@
+Hi Sonarsource team,
+
+Every developer knows the dread of noisy static analysis tools that flood pull requests with false positives. Sonar stands out because it focuses on Clean Code and actionable feedback that developers actually want to fix.
+
+As a Product Designer with 6+ years in technical B2B platforms, my sweet spot is turning heavy technical data into effortless developer ergonomics. I’ve architected complete token systems in Figma and worked hand-in-hand with front-end teams to ensure zero friction between design specifications and production code. At Maximor AI, I designed automation dashboards that made complex AI logic transparent and easily reviewable.
+
+I’m eligible for the German EU Blue Card, available to relocate immediately with 0-day notice.
+
+Portfolio: https://workofhayaat.framer.website (German CV attached). 
+
+Are you open to product designers who can help level up developer experience across SonarQube / SonarCloud?
+
+Best regards,
+Mohd Hayaat Ali
++91-7905194153
+hayaat0806@gmail.com

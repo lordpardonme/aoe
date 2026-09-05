@@ -1,0 +1,29 @@
+Hi Contentful Team,
+
+I've been a close follower of Contentful's leadership in composable content platforms and how your design system powers flexible, developer-friendly editorial canvases. I'm reaching out regarding Product Design opportunities with your product and design systems teams in Berlin.
+
+I'm a Product & UI/UX Designer with 6+ years of experience architecting complex enterprise SaaS interfaces, developer handoff frameworks, and modular design systems:
+
+Location, Visa & Availability:
+• Current Location: Delhi NCR, India (Available for on-site relocation to Berlin or remote start)
+• Work Permit: EU Blue Card eligible (Fachkräfteeinwanderungsgesetz)
+• Notice Period: Immediate joiner (0-day notice period)
+
+Relevant Experience for Contentful:
+• Design Systems & Token Governance: Architected comprehensive Figma component libraries with tokenized variables, nested component logic, auto-layout variants, and clear developer documentation.
+• Complex B2B Canvases & Workflows: Designed complex operations platforms and automated financial workflows for Maximor AI (maximor.ai), structuring dense data tables and multi-state workflows into clear hierarchy.
+• Cross-Functional Collaboration: Deep experience partnering directly with front-end engineers to ensure zero design drift across React/web implementations.
+• Measurable UX Craft: Redesigned complex workflows at Meddo (71% to 83% completion) and FuelBuddy (62% to 78% order completion).
+
+Selected Live Work:
+• Portfolio: https://workofhayaat.framer.website
+• Maximor AI: https://www.maximor.ai/cfo-offer-all
+• FuelBuddy Web App: https://app.fuelbuddy.in/
+• Uncover: https://uncover.co.in/
+
+Attached is my Master Product Designer CV. I'd welcome the chance to speak with your design leadership regarding product design roles at Contentful.
+
+Best regards,
+Mohd Hayaat Ali
++91-7905194153
+hayaat0806@gmail.com

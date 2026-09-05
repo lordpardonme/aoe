@@ -1,0 +1,35 @@
+Hi Team Aumraa,
+
+I came across your opening for a Visual Designer in Gurgaon and wanted to share my work. 
+
+I’ve spent the last 6+ years working across brand identity, e-commerce packaging, performance creatives, and web visuals. I use AI tools daily not as a shortcut to generate generic stock-looking imagery, but to aggressively explore 5–10 concept directions in the time it usually takes to build one, and then apply strict design judgment to finish the work.
+
+Here is my portfolio and the three AI-assisted projects requested:
+
+1. Portfolio
+https://workofhayaat.framer.website
+
+2. AI-Assisted Projects & How I Refined Them
+
+• Maximor AI — AI Finance Platform Landing & Visual Assets (https://www.maximor.ai/cfo-offer-all)
+  - The Idea: Translate complex AI close/forecasting workflows into high-clarity visual metaphors for finance leaders.
+  - Tools Used: Midjourney + ChatGPT + Figma.
+  - Refinement & Design Judgment: Raw AI prompts produced overly sci-fi, generic circuit-board clichés. I constrained prompts to architectural lighting and tactile textures, brought the outputs into Figma and Photoshop to rebuild lighting curves, integrated custom typography hierarchies, and ensured every asset served the product narrative.
+
+• La Well & Herbal Hand — E-commerce & Performance Creatives (200+ Assets, 10L+ Views)
+  - The Idea: Build high-volume D2C catalog imagery and performance ad creatives across a 35-SKU herbal wellness line.
+  - Tools Used: Midjourney + Recraft + Adobe Photoshop.
+  - Refinement & Design Judgment: Used AI to generate varied contextual lifestyle environments and lighting setups. Every product bottle, label, typography layer, and shadow interaction was manually composited and color-graded in Photoshop to eliminate AI warping, maintain exact packaging fidelity, and ensure natural, culturally grounded aesthetics.
+
+• Mymy & Brand Visual Systems — AI-Explored Brand Concepts & Packaging Renders
+  - The Idea: Rapidly test distinct visual identities, bottle silhouettes, and mood directions for boutique consumer brands before locking the final design language.
+  - Tools Used: Midjourney + Claude + Illustrator / Photoshop.
+  - Refinement & Design Judgment: Claude helped structure thematic concept variations; Midjourney generated rapid mood boards and material studies. From there, I stripped away non-functional decorative artifacts, rebuilt clean vector logos and grid systems in Illustrator, and finalized packaging mockups with realistic material depth.
+
+I'm based in Delhi NCR, available for full-time in-office work in Gurgaon (6-day schedule), and have attached my tailored resume for your review.
+
+Best,
+Mohd Hayaat Ali
++91-7905194153
+mohdhayaat1@outlook.com
+https://workofhayaat.framer.website
