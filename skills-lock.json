@@ -55,6 +55,12 @@
       "skillPath": "skills/job-description-analyzer/SKILL.md",
       "computedHash": "5fa69b14db5dc9d8b4a018dd2cefa8b0375d4c0afb7cd7a52717ac5327b909ee"
     },
+    "jobs-to-be-done": {
+      "source": "Owl-Listener/designer-skills",
+      "sourceType": "github",
+      "skillPath": "design-research/skills/jobs-to-be-done/SKILL.md",
+      "computedHash": "92536c921e1c6effb71e0872c4215c6bc36e1298d595818402ec86427bad2938"
+    },
     "linkedin-profile-optimizer": {
       "source": "Paramchoudhary/ResumeSkills",
       "sourceType": "github",
