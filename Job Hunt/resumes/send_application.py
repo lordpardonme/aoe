@@ -22,7 +22,9 @@ from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-TOKEN = Path(r"C:\Users\mohdh\Desktop\Job Hunt\job-agent\token.json")
+TOKEN = Path(__file__).resolve().parent.parent.parent / "job-agent" / "token.json"
+if not TOKEN.exists():
+    TOKEN = Path("job-agent/token.json").resolve()
 SENDER = "hayaat0806@gmail.com"
 
 
