@@ -1,0 +1,28 @@
+{
+  "name": "AOE - Autonomous Outreach Engine",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "lts" }
+  },
+  "postCreateCommand": "cd job-agent && pip install -r requirements.txt && pip install fastapi uvicorn reportlab pandas pyyaml",
+  "forwardPorts": [8000, 8001, 8002],
+  "portsAttributes": {
+    "8000": { "label": "AOE Production", "onAutoForward": "openBrowser" },
+    "8001": { "label": "AOE UAT" },
+    "8002": { "label": "AOE Staging" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "bradlc.vscode-tailwindcss"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "editor.formatOnSave": true
+      }
+    }
+  }
+}

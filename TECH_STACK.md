@@ -1,10 +1,10 @@
 # Technology Stack Architecture & Rationale
-## CareerHero Studio — Technical Stack Specification
+## AOE (Autonomous Outreach Engine) — Technical Stack Specification
 
 **Last Updated:** September 14, 2026  
 **Project Location:** `G:\job-hunt-app`  
 
-This document provides a comprehensive technical overview of every technology, runtime, library, and API utilized across CareerHero Studio, explaining what each is used for and why it was chosen.
+This document provides a comprehensive technical overview of every technology, runtime, library, and API utilized across AOE, explaining what each is used for and why it was chosen.
 
 ---
 
@@ -34,7 +34,7 @@ This document provides a comprehensive technical overview of every technology, r
 
 ## 3. Zero-Authentication Public APIs (100% Free, Zero Key, Zero Auth)
 
-| API | Base Endpoint | Purpose in CareerHero |
+| API | Base Endpoint | Purpose in AOE |
 |---|---|---|
 | **Kickbox Open API** | `open.kickbox.com/v1/verify` | Real-time deliverability and syntax verification for hiring manager emails to prevent bounces. |
 | **Disify API** | `disify.com/api/email/` | Disposable email detection ensuring recruiter contacts are real enterprise domains. |

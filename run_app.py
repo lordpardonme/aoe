@@ -65,7 +65,7 @@ def open_browser(url: str, delay: float = 1.2):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Job Hunt Studio — Localhost Web App")
+    parser = argparse.ArgumentParser(description="AOE - Autonomous Outreach Engine — Localhost Web App")
     parser.add_argument("--env", choices=["uat", "staging", "production"], default=os.getenv("APP_ENV", "production"), help="Target runtime environment (uat, staging, production)")
     parser.add_argument("--host", default="127.0.0.1", help="Host interface (default: 127.0.0.1)")
     parser.add_argument("--port", type=int, default=None, help="Port number (defaults: uat=8001, staging=8002, production=8000)")
@@ -95,7 +95,7 @@ def main():
     badge = env_badges.get(env, "[CUSTOM ORBIT]")
 
     print("=" * 65)
-    print(f"  [+] CAREERHERO STUDIO -- {badge}")
+    print(f"  [+] AOE ENGINE -- {badge}")
     print(f"  Starting local server at: {url}")
     print(f"  Environment: {env.upper()} | DB Target: {os.getenv('DB_NAME', f'jobhunt_{env}.db')}")
     print("  Press Ctrl+C at any time to stop the server.")

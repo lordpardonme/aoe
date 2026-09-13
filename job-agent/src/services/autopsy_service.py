@@ -1,5 +1,5 @@
 """
-Application Autopsy Engine for CareerHero Studio.
+Application Autopsy Engine for AOE.
 Inspired by Project Graveyard: detects stalled applications, analyzes cause of death,
 and ranks resurrection potential with actionable follow-up advice.
 """

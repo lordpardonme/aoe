@@ -1,5 +1,5 @@
 # Product Requirements Document (PRD)
-## CareerHero Studio — Autonomous Career Intelligence & High-Conversion Application Copilot
+## AOE (Autonomous Outreach Engine) — Autonomous Career Intelligence & High-Conversion Application Copilot
 
 **Version:** 2.0.0  
 **Status:** Active Execution  
@@ -10,7 +10,7 @@
 
 ## 1. Product Overview & Vision
 
-CareerHero Studio is a standalone, local-first, autonomous AI co-pilot designed to streamline and accelerate the job acquisition lifecycle for senior professionals and specialists. 
+AOE (Autonomous Outreach Engine) is a standalone, local-first, autonomous AI co-pilot designed to streamline and accelerate the job acquisition lifecycle for senior professionals and specialists. 
 
 The application unifies multi-channel job market discovery, zero-auth public data verification, automated query expansion, visa/relocation scoring, single-page CV compilation, conversational cold outreach drafting, and inbound recruiter intent classification into a single privacy-preserving workstation tool.
 

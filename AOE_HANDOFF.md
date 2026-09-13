@@ -1,4 +1,4 @@
-# CareerHero Studio — Project State & Agent Handoff
+# AOE (Autonomous Outreach Engine) — Project State & Agent Handoff
 
 **Location:** `G:\job-hunt-app`  
 **Last Updated:** 2026-09-13  
@@ -9,7 +9,7 @@
 ---
 
 ## 1. What This Product Is
-**CareerHero Studio** is an enterprise-grade, privacy-first local web application and AI job application co-pilot. It is completely decoupled from private personal data and ready for open-source distribution:
+**AOE (Autonomous Outreach Engine)** is an enterprise-grade, privacy-first local web application and AI job application co-pilot. It is completely decoupled from private personal data and ready for open-source distribution:
 - **Local-First SQLite Architecture:** All personal profiles, leads, applications, and inbound email scans reside strictly in offline SQLite (`G:\job-hunt-app\job-agent\tracker\jobhunt.db`), which is strictly `.gitignore`d.
 - **Privacy Shield:** Default templates and source files contain zero personal identity. Candidate identity is stored locally in the offline `profile` database table.
 - **Safety Locks:** Defaults to Safe Mode (`DRY_RUN=true`). Automated live email dispatches are locked by an optional **Activation Passkey**.

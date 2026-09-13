@@ -45,7 +45,7 @@ from .db import (
     update_lead_status, bulk_insert_leads, get_leads_stats, DB_PATH
 )
 
-app = FastAPI(title="Job Hunt Agent API", version="2.0.0")
+app = FastAPI(title="AOE - Autonomous Outreach Engine API", version="2.0.0")
 
 app.add_middleware(
     CORSMiddleware,

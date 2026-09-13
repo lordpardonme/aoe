@@ -1,4 +1,4 @@
-# 🎨 CareerHero UI/UX Reference Gallery
+# 🎨 AOE UI/UX Reference Gallery
 Source Dribbble Shot: `AI SaaS Dashboard UI Chat Based Job Board Coaching App Design`
 
 | # | Filename | View / Screen | Key Components |

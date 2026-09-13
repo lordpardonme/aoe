@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CareerHero Studio — Full-Stack Environment & Release Manager.
+"""AOE (Autonomous Outreach Engine) — Full-Stack Environment & Release Manager.
 
 Provides professional lifecycle controls for switching environments (UAT, Staging, Production),
 enforcing test verification gates, and promoting releases safely.
@@ -70,7 +70,7 @@ def cmd_status():
     reset = "\033[0m"
 
     print("\n" + "=" * 65)
-    print("  CAREERHERO STUDIO -- ENVIRONMENT STATUS & CONTROLS")
+    print("  AOE ENGINE -- ENVIRONMENT STATUS & CONTROLS")
     print("=" * 65)
     print(f"  Active Environment : {col}{env.upper()}{reset}")
     print(f"  Allocated Port     : {info['port']}")
@@ -118,7 +118,7 @@ def cmd_test():
     print("  RUNNING MANDATORY PRE-FLIGHT VERIFICATION GATE")
     print("================================================================\n")
     
-    test_script = Path(r"C:\Users\hayaa\.gemini\antigravity\brain\d94b57f9-eb51-41d5-a38c-ce6eee667288\scratch\verify_complete_system.py")
+    test_script = ROOT_DIR / "tests" / "verify_system.py"
 
     py = str(VENV_PYTHON) if VENV_PYTHON.exists() else sys.executable
     cmd = [py, str(test_script)]

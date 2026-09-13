@@ -1,6 +1,6 @@
 # Architectural Decisions & Codebase Execution Flow
 
-**Project:** CareerHero Studio (`G:\job-hunt-app`)  
+**Project:** AOE (Autonomous Outreach Engine) (`G:\job-hunt-app`)  
 **Maintained By:** Autonomous Development Agent  
 **Last Updated:** 2026-09-13  
 
@@ -194,7 +194,7 @@
 ### Phase 5: Cross-Chat Memory & Public Documentation [COMPLETED]
 - **Cross-Chat Memory Bridge**: Appended non-destructive Section 11 to `g:\job-hunt-workspace-private\AGENTS.md` so that future sessions and different agent chats in Antigravity or other agent runtimes immediately understand the existence, purpose, and architecture of `G:\job-hunt-app` without disrupting existing private workflows.
 - **Product Documentation**: Authored an open-source, developer-friendly `README.md` in `G:\job-hunt-app` with architecture highlights, feature breakdown, setup steps, and environment variable references.
-- **Agent Handoff Guide**: Updated `CAREERHERO_HANDOFF.md` with complete API maps, UI specifications, verification commands, and tech stack details.
+- **Agent Handoff Guide**: Updated `AOE_HANDOFF.md` with complete API maps, UI specifications, verification commands, and tech stack details.
 - **End-to-End Verification**: Executed automated test suite verifying all 12 API endpoints (Leads Hub, CSV Import, Batch Tailoring Engine, Follow-ups, and Passkey security).
 
 ### Bugfix: Frontend Generation Error (`ReferenceError: dataEmail is not defined`) [RESOLVED]
@@ -279,4 +279,43 @@ An automated, headless Playwright test suite was executed against `http://127.0.
   - Automatically rendered when authenticated and hidden when disconnected via `checkGmailStatus()`.
   - Invokes `disconnectGmailAccount()` (`POST /api/gmail/disconnect`) with confirmation prompt, immediately unlinking `token.json` and resetting state to `⚠️ Connect Gmail`.
 * **Why this approach?** Provides instant, one-click logout accessibility from any view in the app without digging through modals.
+
+---
+
+### Phase 8: Multi-Environment Orbit Architecture (UAT, Staging, Production) [COMPLETED]
+
+#### Decision 12: Independent Database Isolation per Orbit
+* **Context**: Testing experimental scraping runs and mock records risked corrupting production application histories.
+* **Decision**:
+  - Implemented dynamic database routing in `job-agent/src/web/db.py` via `get_db_path()` and `DynamicPathProxy`.
+  - Configured three distinct orbits:
+    - **UAT** (Port 8001, `jobhunt_uat.db`): Isolated sandbox for synthetic tests.
+    - **Staging** (Port 8002, `jobhunt_staging.db`): Pre-production testing and dry-run validation.
+    - **Production** (Port 8000, `jobhunt.db`): Verified leads and authenticated Gmail staging.
+  - Created `manage_env.py` CLI supporting `status`, `switch`, `test`, and `promote`.
+  - Integrated dynamic topbar environment badge in `frontend/index.html`.
+
+---
+
+### Phase 9: Brand Renaming to AOE, GitHub Rulesets & Repository Hardening [COMPLETED]
+
+#### Decision 13: Renaming from CareerHero Studio to AOE (Autonomous Outreach Engine)
+* **Context**: The project has evolved from a single candidate assistant into an autonomous outreach engine spanning multi-board scraping, email deliverability verification, ReportLab PDF layout budgeting, and Gmail API integration.
+* **Decision**:
+  - Renamed the product and repository to **AOE (Autonomous Outreach Engine)** (`lordpardonme/aoe`).
+  - Systematically rebranded all backend services, docstrings, logger names, frontend titles, launcher scripts, and documentation across 16 files (35+ occurrences replaced, 0 residual references).
+  - Renamed handoff documentation to `AOE_HANDOFF.md`.
+
+#### Decision 14: Public Repository Lockdown & GitHub Rulesets
+* **Context**: Upon making the repository public, the codebase must be protected against unauthorized modifications, accidental force pushes, and broken releases while encouraging community contributions via pull requests.
+* **Decision**:
+  - Configured active GitHub Rulesets for `main-protection`, `staging-protection`, and `release-tag-protection`:
+    - **`main`**: Blocks deletion, blocks force-push, requires pull request with code owner review, linear history.
+    - **`staging`**: Blocks deletion, blocks force-push, requires pull request.
+    - **`v*.*.*` tags**: Immutable release tags, blocks deletion and modification.
+  - Enforced deployment branch policies for `UAT` (uat branch), `Staging` (staging branch), and `Production` (main branch).
+  - Added repository variables (`APP_ENV`, `DRY_RUN`, `PYTHON_VERSION`) and secret placeholders (`LLM_API_KEY`, `GMAIL_CREDENTIALS`) for both GitHub Actions and GitHub Codespaces.
+  - Authored complete community suite: `LICENSE` (MIT), `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `.github/CODEOWNERS`, `.github/pull_request_template.md`, and issue templates for bug reports and feature requests.
+  - Created `.devcontainer/devcontainer.json` for 1-click GitHub Codespaces development.
+
 

@@ -1,5 +1,5 @@
 """
-AuraJobs / JobSpy Native Ingestion Service for CareerHero Studio.
+AuraJobs / JobSpy Native Ingestion Service for AOE.
 Orchestrates multi-source scraping, zero-auth feed aggregation, query expansion,
 deduplication, visa analysis, and atomic writes to SQLite jobhunt.db.
 """
@@ -35,7 +35,7 @@ from ..scraper.sources import (
 )
 from ..web.db import ingest_scraped_batch, get_ingestion_history
 
-logger = logging.getLogger("careerhero.scraper_service")
+logger = logging.getLogger("aoe.scraper_service")
 
 class JobSpyService:
     """Singleton service managing background job ingestion."""

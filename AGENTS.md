@@ -1,6 +1,6 @@
-# AGENTS.md — CareerHero Studio
+# AGENTS.md — AOE (Autonomous Outreach Engine)
 
-**Welcome, Agent.** This file is the primary orientation and operating standard for **CareerHero Studio** (`G:\job-hunt-app`). Read this completely before inspecting or modifying code.
+**Welcome, Agent.** This file is the primary orientation and operating standard for **AOE (Autonomous Outreach Engine)** (`G:\job-hunt-app`). Read this completely before inspecting or modifying code.
 
 ---
 
@@ -11,13 +11,13 @@ If you are continuing work from the private workspace or an earlier session, the
 - **Source Conversation ID:** `806be952-95ef-40b0-9dbd-3500f5c1834e`
 - **Transcript Path:** `C:\Users\hayaa\.gemini\antigravity\brain\806be952-95ef-40b0-9dbd-3500f5c1834e\.system_generated\logs\transcript.jsonl`
 - **Architectural Decisions & Call Graph:** `decisions.md`
-- **Handoff Documentation:** `CAREERHERO_HANDOFF.md`
+- **Handoff Documentation:** `AOE_HANDOFF.md`
 
 ---
 
-## 1. What is CareerHero Studio?
+## 1. What is AOE?
 
-CareerHero Studio is a standalone, local-first web application and autonomous AI co-pilot designed for high-conversion job applications:
+AOE (Autonomous Outreach Engine) is a standalone, local-first web application and autonomous AI co-pilot designed for high-conversion job applications:
 
 1. **✨ Apply Studio**: Ingests JDs via URL or text, matches keywords to candidate taxonomy, enforces strict 1-page CV layout (Bahnschrift typography, WCAG AA contrast, regional protocols e.g. Middle East photo), and drafts conversational cold emails.
 2. **📊 Analytics Dashboard**: Tracks application volume, dispatches today, interview rates, and response activity heatmaps with a working zero-state reset (`POST /api/tracker/clear-all`).

@@ -1,5 +1,5 @@
 """
-First-Reader Simulation & Attention Auditor for CareerHero Studio.
+First-Reader Simulation & Attention Auditor for AOE.
 Simulates a busy hiring manager or founder reading cold outreach emails,
 evaluating hook strength, conciseness, jargon density, and cognitive drop-off points.
 """

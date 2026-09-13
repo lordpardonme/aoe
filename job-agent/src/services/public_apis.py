@@ -1,5 +1,5 @@
 """
-Zero-Authentication Public API Client for CareerHero Studio.
+Zero-Authentication Public API Client for AOE.
 All endpoints implemented here are 100% free, requiring zero auth tokens, zero API keys, and zero registration.
 """
 
@@ -10,7 +10,7 @@ import logging
 from typing import Any, Dict, List, Optional
 import requests
 
-logger = logging.getLogger("careerhero.public_apis")
+logger = logging.getLogger("aoe.public_apis")
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"

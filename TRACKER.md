@@ -1,5 +1,5 @@
 # Active Implementation & Milestone Tracker
-## CareerHero Studio + AuraJobs Integration Engine
+## AOE (Autonomous Outreach Engine) + AuraJobs Integration Engine
 
 **Status:** ✅ COMPLETE (Production Ready)  
 **Current Phase:** All Steps 0–4 Fully Implemented, Integrated & Verified  
@@ -26,7 +26,7 @@
 - [x] Audit `D:\JobSpy` source structure and dependencies.
 - [x] Protect `D:\JobSpy` from modifications (strictly read-only source).
 - [x] Install `pandas`, `pyyaml`, `python-jobspy` in `job-agent/.venv`.
-- [x] Author publication-grade System Architecture PDF (`References and Resources/CareerHero_AuraJobs_System_Architecture.pdf`).
+- [x] Author publication-grade System Architecture PDF (`References and Resources/AOE_AuraJobs_System_Architecture.pdf`).
 - [x] Author `PRD.md`, `TECH_STACK.md`, and initial `TRACKER.md`.
 
 ### Step 1: Zero-Auth Public API Integration
