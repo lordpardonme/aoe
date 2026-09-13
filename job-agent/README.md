@@ -1,193 +1,190 @@
-# Job Agent
+# Job Hunt Agent
 
-An autonomous AI job-application agent. Give it a job posting (URL or text) and it will:
+## Overview
+Job Hunt Agent is an autonomous, end-to-end job application pipeline. It takes a job description and automatically tailors a master resume, generates a targeted cover letter, drafts an outreach email, sends the application via Gmail, and logs the attempt in a Google Sheets tracker.
 
-1. Fetch & parse the job description.
-2. Analyse your **master resume** (never modifies it).
-3. Generate an **ATS-optimised, tailored resume** (DOCX + PDF).
-4. Generate a **tailored cover letter** (Markdown + DOCX + PDF).
-5. Generate a **professional application email** (Markdown + HTML).
-6. **Send** the email through the Gmail API (with PDF attachments).
-7. **Update** your Google Sheet application tracker (+ a local CSV mirror).
-8. **Save** every artefact locally under `generated/` and a JSON record under `tracker/`.
-9. **Log** every action to `logs/app.log` and every error to `logs/error.log`.
-10. **Retry** transient network failures automatically.
+## Features
+- **Resume Tailoring**: Matches your master CV against JD keywords.
+- **PDF Generation**: Creates branded, ATS-friendly PDF resumes and cover letters.
+- **Email Generation**: Drafts customized cold outreach emails.
+- **Gmail API Integration**: Sends applications directly from your Gmail account.
+- **Application Tracking**: Automatically logs applications in a remote Google Sheet and local CSV.
+- **Multi-profession Support**: Uses customizable vocabulary packs to adapt to different roles.
+- **Dry Run Mode**: Safely test the entire pipeline without sending real emails or writing to Sheets.
 
-A global `DRY_RUN` switch (on by default) lets you generate everything without
-sending mail or writing to Sheets until you're ready.
+## Prerequisites
+- Python 3.9+
+- A Google Cloud Project with the **Gmail API** and **Google Sheets API** enabled.
+- OAuth 2.0 credentials (type: Desktop App).
+- A master resume in `.docx` format (`master_resume.docx` in the root).
 
----
+## Quick Start
+1. **Clone the repo:**
+   ```bash
+   git clone <your-repo-url>
+   cd job-agent
+   ```
+2. **Create a virtual environment:**
+   ```bash
+   python -m venv .venv
+   # Windows:
+   .venv\Scripts\activate
+   # macOS/Linux:
+   source .venv/bin/activate
+   ```
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Run the setup wizard (Authentication):**
+   Place your downloaded `credentials.json` in the root directory and run:
+   ```bash
+   python authenticate.py
+   ```
+5. **Send your first application:**
+   ```bash
+   # Make sure DRY_RUN=true in .env to test safely
+   python -m src.cli apply --url "https://example.com/job/123"
+   ```
 
-## Project structure
+## Setup Guide
 
-```
-job-agent/
-├── master_resume.docx        # your master resume (read-only source of truth)
-├── credentials.json          # Google OAuth client secret
-├── token.json                # OAuth token (created by authenticate.py)
-├── .env                      # configuration (copy from .env.example)
-├── authenticate.py           # one-time Google OAuth flow
-├── main.py                   # CLI entrypoint
-├── requirements.txt
-├── templates/
-│   ├── resume_template.docx  # style base for tailored resumes
-│   ├── cover_letter.md       # Jinja2 cover-letter template
-│   └── email.md              # Jinja2 email template
-├── generated/
-│   ├── resumes/              # <company>_resume.docx / .pdf
-│   ├── coverletters/         # <company>_cover_letter.md / .docx / .pdf
-│   └── emails/               # <company>_email.md / .html
-├── logs/                     # app.log, error.log
-├── tracker/                  # applications.csv + per-application JSON records
-├── scripts/
-│   └── seed_master_resume.py # (re)generate master_resume.docx
-├── src/                      # application package
-│   ├── config.py   logger.py  utils.py
-│   ├── jobs.py     resume.py   coverletter.py  emailer.py
-│   ├── pdf.py      gmail.py    sheet.py
-│   ├── agent.py    cli.py
-└── tests/                    # pytest suite (fully offline)
-```
+### 1. GCP Project Creation
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Click the project dropdown at the top and select **New Project**.
+3. Name it "JobAgent" and click **Create**.
+4. In the sidebar, navigate to **APIs & Services > Library**.
+5. Search for and enable the **Gmail API** and **Google Sheets API**.
 
----
+### 2. OAuth Consent Screen
+1. Go to **APIs & Services > OAuth consent screen**.
+2. Choose **External** (or Internal if you have a Workspace account).
+3. Fill in the required fields (App name: Job Agent, User support email, Developer contact).
+4. Add yourself as a Test User.
+5. Save and continue.
 
-## Setup
+### 3. Credential Download
+1. Go to **APIs & Services > Credentials**.
+2. Click **Create Credentials > OAuth client ID**.
+3. Choose **Desktop app** as the application type.
+4. Name it "Job Agent Desktop" and create.
+5. Click **Download JSON** and save it as `credentials.json` in the root of the `job-agent` directory.
 
-### 1. Python
+### 4. Running the Setup Wizard
+Run `python authenticate.py`. This script will open a browser window for you to log into your Google account and authorize the app. Once authorized, a `token.json` file will be generated in the root.
 
-Requires **Python 3.13**. On Windows the interpreter is typically at
-`C:\Users\<you>\AppData\Local\Programs\Python\Python313\python.exe`.
-
-### 2. Create a virtual environment & install dependencies
-
+### 5. Manual `.env` Configuration
+Copy the provided `.env.example` to `.env`:
 ```bash
-cd job-agent
-python -m venv .venv
-# Windows PowerShell:
-.venv\Scripts\Activate.ps1
-# macOS/Linux:
-# source .venv/bin/activate
-pip install -r requirements.txt
+cp .env.example .env
 ```
-
-Playwright is optional (used only for JavaScript-heavy job pages). To enable it:
-
-```bash
-python -m playwright install chromium
-```
-
-### 3. Configure
-
-```bash
-cp .env.example .env      # then edit values
-```
-
-Key settings:
-
-| Variable | Purpose |
-| --- | --- |
-| `TRACKER_SPREADSHEET_ID` | Your Google Sheet ID. Leave blank to auto-create one on first live run. |
-| `SENDER_EMAIL` | The Gmail account that owns `token.json`. |
-| `DEFAULT_RECIPIENT` | Fallback recipient when a posting has no contact email. |
-| `DRY_RUN` | `true` = build everything but don't send/track. Set `false` to go live. |
-| `CANDIDATE_*` | Your name, contact details and portfolio for letters/emails. |
-
-### 4. Authorise Google (one time)
-
-`credentials.json` and `token.json` are already present in this workspace. If you
-ever need to re-authorise (new scopes, revoked token):
-
-```bash
-python authenticate.py
-```
-
-This opens a browser, and writes/refreshes `token.json`. Scopes used:
-`gmail.send`, `gmail.readonly`, `spreadsheets`, `drive.file`.
-
-### 5. Seed the master resume (only if missing)
-
-```bash
-python scripts/seed_master_resume.py
-```
-
----
+Fill in the values according to your needs (see [Configuration Reference](#configuration-reference)).
 
 ## Usage
 
+The Agent provides a CLI with various commands for different stages of the application process.
+
+### `apply`
+Run the full application pipeline for a single job (tailor -> cover letter -> email -> PDFs -> send -> track).
 ```bash
-# Full pipeline from a URL
-python main.py apply --url https://boards.greenhouse.io/acme/jobs/123
-
-# Full pipeline from a text file (best for reliable company/role detection)
-python main.py apply --file jd.txt --company "Acme Labs" --role "Product Designer"
-
-# Generate only the tailored resume
-python main.py resume --file jd.txt
-
-# Generate only the email
-python main.py email --file jd.txt
-
-# Add a tracker row manually
-python main.py tracker --company "Acme Labs" --role "Product Designer" --status Applied
-
-# Build documents and send the email (respects DRY_RUN)
-python main.py send --file jd.txt --to hiring@acme.com
-
-# Run self-checks (offline generation + Google connectivity probe)
-python main.py test
+python -m src.cli apply --url "https://example.com/job/123"
+python -m src.cli apply --text "Raw job description text here" --company "Acme Corp" --role "Engineer"
 ```
 
-Useful flags on `apply`:
-
-- `--company` / `--role` — override auto-detection (recommended).
-- `--to` — override the recipient email.
-- `--no-send` — build & track but don't email.
-- `--no-sheet` — build & email but don't touch the tracker.
-
-### Going live
-
-Everything runs in **DRY_RUN** by default. When you're happy with the generated
-files, set `DRY_RUN=false` in `.env`. The agent will then actually send email and
-append to your Google Sheet. Sending email and writing to Sheets are real,
-outward-facing actions — review the generated artefacts first.
-
----
-
-## How tailoring works
-
-Job Agent uses a deterministic, **truthful** tailoring engine (no fabricated
-experience):
-
-- It extracts design/product keywords from the JD against a controlled vocabulary.
-- It injects a role-specific summary line and a **Key Skills** ATS block listing
-  the matched keywords.
-- It reorders your Core Capabilities so JD-relevant strengths lead.
-- Cover-letter/email highlights are drawn from your real, quantified achievements,
-  ranked by relevance to the posting.
-
-The generation layer is modular — you can swap in an LLM by replacing the
-tailoring/generation functions in `src/resume.py`, `src/coverletter.py` and
-`src/emailer.py` without touching the pipeline.
-
----
-
-## Testing
-
+### `resume`
+Generate only the tailored resume (DOCX + PDF) without sending or tracking.
 ```bash
-pip install -r requirements.txt
-python -m pytest -q
+python -m src.cli resume --file "./sample_jd.txt"
 ```
 
-All tests are **offline** and force `DRY_RUN=true`, so they never send email or
-write to Google Sheets.
-
----
-
-## Safety notes
-
-- The **master resume is never modified** — it is opened read-only and only
-  copies are written to `generated/`.
-- `credentials.json`, `token.json` and `.env` are git-ignored.
-- `DRY_RUN` defaults to `true`; no email or Sheet write happens until you opt in.
-- Every network operation is retried with back-off and fully logged.
+### `email`
+Generate only the application email (Markdown + HTML).
+```bash
+python -m src.cli email --url "https://example.com/job/123"
 ```
+
+### `send`
+Build the application documents and send the email, but skip updating the tracker.
+```bash
+python -m src.cli send --url "https://example.com/job/123" --to "hr@example.com"
+```
+
+### `tracker`
+Append a single row to the application tracker manually.
+```bash
+python -m src.cli tracker --company "Acme" --role "Developer" --status "Applied"
+```
+
+### `test`
+Run offline self-checks and probe Google connectivity to ensure your setup is valid.
+```bash
+python -m src.cli test
+```
+
+## Configuration Reference
+
+The `.env` file controls the application's runtime behavior.
+
+| Variable | Description | Example |
+| -------- | ----------- | ------- |
+| `GOOGLE_CREDENTIALS_FILE` | Path to your GCP OAuth credentials | `credentials.json` |
+| `GOOGLE_TOKEN_FILE` | Path to the generated OAuth token | `token.json` |
+| `TRACKER_SPREADSHEET_ID` | The ID of your Google Sheet tracker | `1A2b3C4d5E...` |
+| `TRACKER_SHEET_NAME` | The specific sheet/tab name | `Applications` |
+| `CANDIDATE_NAME` | Your full name | `Mohd Hayaat Ali` |
+| `CANDIDATE_EMAIL` | Your contact email for the resume | `user@example.com` |
+| `CANDIDATE_PHONE` | Your contact phone number | `+1-555-0100` |
+| `CANDIDATE_LOCATION` | Your city/region | `Delhi NCR, India` |
+| `CANDIDATE_PORTFOLIO` | Link to your portfolio/website | `https://myportfolio.com` |
+| `CANDIDATE_LINKEDIN` | Link to your LinkedIn profile | `https://linkedin.com/in/user` |
+| `SENDER_EMAIL` | The Gmail address sending the application | `user@gmail.com` |
+| `DEFAULT_RECIPIENT` | Fallback recipient if JD has no email | `jobs@example.com` |
+| `DRY_RUN` | Disables sending emails and Sheets API writes | `true` or `false` |
+| `MAX_RETRIES` | Network retry attempts | `3` |
+| `RETRY_BACKOFF_SECONDS` | Delay between retries | `2` |
+
+## Profession Packs
+Profession packs allow the agent to understand different vocabularies and keywords specific to various roles (e.g., frontend developer vs. product designer).
+- **Usage**: The agent automatically detects the role and applies the relevant pack.
+- **Customization**: You can add new JSON packs in the `src/packs/` directory (or wherever packs are stored) to teach the agent new synonyms and required skills.
+
+## Platform Notes
+
+### Windows
+- **Venv Activation**: Use `.venv\Scripts\activate`
+- **Fonts**: Ensure necessary fonts (e.g., Arial, Helvetica, or custom fonts) are installed system-wide in `C:\Windows\Fonts` for PDF generation to work properly.
+
+### macOS
+- **Venv Activation**: Use `source .venv/bin/activate`
+- **Fonts**: PDF generation relies on fonts being available in `/Library/Fonts` or `~/Library/Fonts`.
+- **Dependencies**: You might need `brew install pango` or similar if the PDF renderer (like WeasyPrint) is used.
+
+### Linux
+- **Venv Activation**: Use `source .venv/bin/activate`
+- **Fonts**: Ensure fonts are installed in `/usr/share/fonts/`.
+- **Dependencies**: May require `sudo apt install libpango-1.0-0` or similar depending on the PDF rendering backend.
+
+## Architecture
+
+The system follows a sequential pipeline:
+1. **Acquisition**: `fetch_from_url` or `load_from_file` gets the JD text.
+2. **Parsing**: NLP/regex identifies keywords, company, role, and contact info.
+3. **Tailoring**: The `ResumeBuilder` modifies `master_resume.docx` to highlight matched keywords.
+4. **Rendering**: The tailored DOCX is converted to a branded PDF.
+5. **Drafting**: `CoverLetterBuilder` and `EmailBuilder` generate the outreach texts.
+6. **Delivery**: `GmailClient` sends the payload with attachments if `DRY_RUN=false`.
+7. **Tracking**: `SheetClient` logs the application in Google Sheets and a local JSON/CSV backup is saved.
+
+## Troubleshooting
+
+- **Google Token Expired / Invalid**: Delete `token.json` and re-run `python authenticate.py`.
+- **"Gmail OK" failed in `test` command**: Ensure you added your email as a "Test User" in the GCP OAuth consent screen if the app is still in testing mode.
+- **Emails not sending**: Check if `DRY_RUN=true` in `.env`.
+- **Missing modules**: Ensure you have activated your virtual environment and run `pip install -r requirements.txt`.
+
+## Contributing
+- **Adding Packs**: To add a new profession, create a `<role>.json` mapping keywords and synonyms.
+- **Reporting Bugs**: This is a private tool, but fixes can be submitted via direct PRs to the main repository.
+
+## License
+UNLICENSED (private)

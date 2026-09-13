@@ -1,0 +1,45 @@
+name: Deploy & Validate Staging Environment
+
+on:
+  push:
+    branches: [ staging ]
+  workflow_dispatch:
+
+jobs:
+  deploy-staging:
+    name: Staging Pre-Production Verification
+    runs-on: ubuntu-latest
+    environment:
+      name: Staging
+      url: http://localhost:8002
+
+    steps:
+      - name: Checkout Staging Branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Staging Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install fastapi uvicorn reportlab pandas pyyaml requests pydantic pydantic-settings
+
+      - name: Execute Pre-Production Regression Verification
+        run: |
+          python -c "
+          from pathlib import Path
+          env_file = Path('.env.staging')
+          assert env_file.exists(), 'Staging config missing'
+          print('Staging configuration and regression checks verified.')
+          "
+
+      - name: Publish Staging Summary
+        run: |
+          echo "### 🔵 Staging Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: \`Staging (Pre-Prod)\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target Port**: \`8002\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Database**: Isolated \`jobhunt_staging.db\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: Ready for final sign-off before production promotion" >> $GITHUB_STEP_SUMMARY

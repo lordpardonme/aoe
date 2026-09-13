@@ -56,16 +56,21 @@ class Settings(BaseSettings):
     tracker_sheet_name: str = "Applications"
 
     # Candidate identity
-    candidate_name: str = "Mohd Hayaat Ali"
-    candidate_email: str = "mohdhayaat1@outlook.com"
+    candidate_name: str = ""
+    candidate_email: str = ""
     candidate_phone: str = ""
     candidate_location: str = ""
     candidate_portfolio: str = ""
     candidate_linkedin: str = ""
 
     # Email
-    sender_email: str = "hayaat0806@gmail.com"
+    sender_email: str = ""
     default_recipient: str = ""
+
+    # Environment & Deployment
+    app_env: str = "production"  # "uat", "staging", "production"
+    port: int = 8000
+    db_name: str = ""
 
     # Behaviour
     dry_run: bool = True

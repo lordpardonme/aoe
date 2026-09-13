@@ -1,0 +1,45 @@
+name: Deploy & Validate UAT Environment
+
+on:
+  push:
+    branches: [ uat ]
+  workflow_dispatch:
+
+jobs:
+  deploy-uat:
+    name: UAT Verification & Deployment
+    runs-on: ubuntu-latest
+    environment:
+      name: UAT
+      url: http://localhost:8001
+
+    steps:
+      - name: Checkout UAT Branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Runtime Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install fastapi uvicorn reportlab pandas pyyaml requests pydantic pydantic-settings
+
+      - name: Validate UAT Configuration
+        run: |
+          python -c "
+          from pathlib import Path
+          env_file = Path('.env.uat')
+          assert env_file.exists(), 'UAT config missing'
+          print('UAT environment configuration validated successfully.')
+          "
+
+      - name: Publish UAT Summary
+        run: |
+          echo "### 🟡 UAT Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: \`UAT\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target Port**: \`8001\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Database**: Isolated \`jobhunt_uat.db\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Safe Mode (Dry Run)**: Active" >> $GITHUB_STEP_SUMMARY

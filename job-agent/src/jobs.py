@@ -132,10 +132,48 @@ def load_from_file(path: str | Path) -> str:
     return p.read_text(encoding="utf-8", errors="ignore")
 
 
-def extract_keywords(text: str) -> List[str]:
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
+def load_profession_vocabulary(profession: Optional[str] = None) -> tuple[List[str], List[str]]:
+    if not profession:
+        return SKILL_VOCABULARY, _ROLE_KEYWORDS
+        
+    from .config import PROJECT_ROOT
+    yaml_path = PROJECT_ROOT / "professions" / f"{profession}.yaml"
+    if not yaml_path.exists():
+        return SKILL_VOCABULARY, _ROLE_KEYWORDS
+        
+    data = {}
+    if yaml is not None:
+        try:
+            with open(yaml_path, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+        except Exception:
+            return SKILL_VOCABULARY, _ROLE_KEYWORDS
+    else:
+        current_list = None
+        with open(yaml_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("skill_vocabulary:"):
+                    current_list = data.setdefault("skill_vocabulary", [])
+                elif line.startswith("role_keywords:"):
+                    current_list = data.setdefault("role_keywords", [])
+                elif line.startswith("- ") and current_list is not None:
+                    current_list.append(line[2:].strip(" '\""))
+                    
+    skills = data.get("skill_vocabulary") or SKILL_VOCABULARY
+    roles = data.get("role_keywords") or _ROLE_KEYWORDS
+    return skills, roles
+
+def extract_keywords(text: str, profession: Optional[str] = None) -> List[str]:
     """Return vocabulary skills that appear in *text*, in vocabulary order."""
+    skills, _ = load_profession_vocabulary(profession)
     low = text.lower()
-    found = [skill for skill in SKILL_VOCABULARY if skill in low]
+    found = [skill for skill in skills if skill in low]
     # Prettify a few common ones for display.
     pretty = {
         "ui/ux": "UI/UX", "ux design": "UX design", "ui design": "UI design",
@@ -145,10 +183,13 @@ def extract_keywords(text: str) -> List[str]:
     return unique_terms(pretty.get(s, s) for s in found)
 
 
-def guess_role(text: str, hint: Optional[str] = None) -> str:
+def guess_role(text: str, hint: Optional[str] = None, role_keywords: Optional[List[str]] = None) -> str:
     """Guess the job title from *text*, preferring an explicit *hint*."""
     if hint:
         return hint.strip()
+
+    if role_keywords is None:
+        role_keywords = _ROLE_KEYWORDS
 
     # Look for explicit "Role:/Position:/Title:" labels first.
     for label in ("position", "role", "job title", "title"):
@@ -160,7 +201,7 @@ def guess_role(text: str, hint: Optional[str] = None) -> str:
     for line in text.splitlines():
         line = line.strip()
         if 3 <= len(line.split()) <= 8 and any(
-            kw in line.lower() for kw in _ROLE_KEYWORDS
+            kw in line.lower() for kw in role_keywords
         ):
             return line[:80]
     return "the role"
@@ -195,9 +236,11 @@ def build_job(
     url: Optional[str] = None,
     company: Optional[str] = None,
     role: Optional[str] = None,
+    profession: Optional[str] = None,
 ) -> JobDescription:
     """Assemble a :class:`JobDescription` from raw text and optional overrides."""
-    keywords = extract_keywords(text)
+    skills, roles = load_profession_vocabulary(profession)
+    keywords = extract_keywords(text, profession)
     email_match = _EMAIL_RE.search(text)
     contact = email_match.group(0) if email_match else None
     if not contact:
@@ -205,7 +248,7 @@ def build_job(
 
     job = JobDescription(
         company=guess_company(text, url, company),
-        role=guess_role(text, role),
+        role=guess_role(text, role, role_keywords=roles),
         url=url,
         text=text,
         contact_email=contact,

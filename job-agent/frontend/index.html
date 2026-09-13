@@ -1,0 +1,3345 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50 text-slate-900">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareerHero Studio — AI Application & 1-Page CV Co-Pilot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            sidebar: '#0F172A',
+            sidebarHover: '#1E293B',
+          }
+        }
+      }
+    }
+
+    // =========================================================================
+    // FLOATING TOAST NOTIFIER
+    // =========================================================================
+    function showToast(message, type = 'info') {
+      let toast = document.getElementById('ch-floating-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'ch-floating-toast';
+        toast.className = 'fixed top-5 right-5 z-[9999] px-4 py-2.5 rounded-xl shadow-xl text-xs font-bold transition-all duration-300 transform translate-y-[-20px] opacity-0 pointer-events-none flex items-center space-x-2';
+        document.body.appendChild(toast);
+      }
+      let bg = 'bg-slate-900 text-white';
+      let icon = 'ℹ️';
+      if (type === 'success') { bg = 'bg-emerald-600 text-white'; icon = '✓'; }
+      else if (type === 'error') { bg = 'bg-rose-600 text-white'; icon = '✕'; }
+      else if (type === 'warning') { bg = 'bg-amber-600 text-white'; icon = '⚠'; }
+
+      toast.className = 'fixed top-5 right-5 z-[9999] px-4 py-2.5 rounded-xl shadow-xl text-xs font-bold transition-all duration-300 transform translate-y-0 opacity-100 flex items-center space-x-2 ' + bg;
+      toast.innerHTML = '<span>' + icon + '</span><span>' + escapeHtml(message) + '</span>';
+
+      clearTimeout(window._toastTimeout);
+      window._toastTimeout = setTimeout(() => {
+        toast.className = 'fixed top-5 right-5 z-[9999] px-4 py-2.5 rounded-xl shadow-xl text-xs font-bold transition-all duration-300 transform translate-y-[-20px] opacity-0 pointer-events-none flex items-center space-x-2 ' + bg;
+      }, 3500);
+    }
+
+    // =========================================================================
+    // AURAJOBS SCRAPER & INGESTION CONTROLLER (Steps 2 & 3)
+    // =========================================================================
+    let scraperPollInterval = null;
+
+    function openScraperModal() {
+      const roleInp = document.getElementById('scraper-role');
+      const candRole = (document.getElementById('profile-target-role') ? document.getElementById('profile-target-role').value : '') || 'Product Designer';
+      if (roleInp && candRole) {
+        roleInp.value = candRole;
+      }
+      const modal = document.getElementById('scraper-modal');
+      if (modal) modal.classList.remove('hidden');
+      checkScraperStatus();
+    }
+
+    function closeScraperModal() {
+      const modal = document.getElementById('scraper-modal');
+      if (modal) modal.classList.add('hidden');
+      if (scraperPollInterval) {
+        clearInterval(scraperPollInterval);
+        scraperPollInterval = null;
+      }
+    }
+
+    async function startScraperRun() {
+      const role = (document.getElementById('scraper-role') ? document.getElementById('scraper-role').value.trim() : '') || 'Product Designer';
+      const seniority = document.getElementById('scraper-seniority') ? document.getElementById('scraper-seniority').value : 'Any';
+      const geo = document.getElementById('scraper-geo') ? document.getElementById('scraper-geo').value : 'All';
+      const freshness = parseInt(document.getElementById('scraper-freshness') ? document.getElementById('scraper-freshness').value : '72', 10) || 72;
+      const mode = document.getElementById('scraper-mode') ? document.getElementById('scraper-mode').value : 'Express';
+
+      const btn = document.getElementById('btn-run-scraper');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳</span><span>Starting Run...</span>';
+      }
+
+      try {
+        const res = await fetch(API_BASE + '/api/scraper/trigger', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            role: role,
+            seniority: seniority,
+            geography: geo,
+            freshness_hours: freshness,
+            mode: mode
+          })
+        });
+        const data = await res.json();
+        if (data.status === 'error') {
+          showToast(data.message, 'error');
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<span>🚀</span><span>Start Ingestion Run</span>';
+          }
+          return;
+        }
+
+        showToast('Job ingestion run started!', 'success');
+        startScraperPolling();
+      } catch (err) {
+        showToast('Failed to trigger scraper: ' + err.message, 'error');
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>🚀</span><span>Start Ingestion Run</span>';
+        }
+      }
+    }
+
+    function startScraperPolling() {
+      if (scraperPollInterval) clearInterval(scraperPollInterval);
+      pollScraperStatus();
+      scraperPollInterval = setInterval(pollScraperStatus, 1500);
+    }
+
+    async function pollScraperStatus() {
+      try {
+        const res = await fetch(API_BASE + '/api/scraper/status');
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        const progressBar = document.getElementById('scraper-progress-bar');
+        const statusText = document.getElementById('scraper-status-text');
+        const logTerm = document.getElementById('scraper-log-terminal');
+        const btn = document.getElementById('btn-run-scraper');
+
+        if (progressBar) progressBar.style.width = (data.progress || 0) + '%';
+        if (statusText) statusText.innerText = (data.current_step || 'Idle') + ' (' + (data.progress || 0) + '%)';
+        if (logTerm && data.logs) {
+          logTerm.innerText = data.logs.join('\n');
+          logTerm.scrollTop = logTerm.scrollHeight;
+        }
+
+        if (!data.is_running) {
+          if (scraperPollInterval) {
+            clearInterval(scraperPollInterval);
+            scraperPollInterval = null;
+          }
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<span>🚀</span><span>Start Ingestion Run</span>';
+          }
+          loadLeadsTable();
+          loadLeadsStats();
+          if (data.progress === 100) {
+            showToast('Ingestion completed! New leads added to queue.', 'success');
+          }
+        }
+      } catch (e) {
+        console.error('Error polling scraper status:', e);
+      }
+    }
+
+    async function checkScraperStatus() {
+      try {
+        const res = await fetch(API_BASE + '/api/scraper/status');
+        const data = await res.json();
+        if (data.is_running) {
+          const btn = document.getElementById('btn-run-scraper');
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳</span><span>Ingestion Running...</span>';
+          }
+          startScraperPolling();
+        } else {
+          pollScraperStatus();
+        }
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // ZERO-AUTH EMAIL DELIVERABILITY VERIFICATION (Step 1)
+    // =========================================================================
+    async function verifyLeadEmail(leadId, email, btnElem) {
+      if (btnElem) {
+        btnElem.innerText = 'Checking...';
+        btnElem.disabled = true;
+      }
+      try {
+        const res = await fetch(API_BASE + '/api/leads/verify-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lead_id: leadId, email: email })
+        });
+        const data = await res.json();
+        if (data.status === 'ok') {
+          const v = data.verification || {};
+          const isDeliv = v.is_deliverable;
+          const isBurn = v.is_disposable;
+          if (btnElem && btnElem.parentElement) {
+            if (isBurn) {
+              btnElem.parentElement.innerHTML = '<a href="mailto:' + escapeHtml(email) + '" class="text-blue-600 hover:underline">' + escapeHtml(email) + '</a> <span class="inline-flex items-center text-[10px] text-rose-600 font-bold ml-1.5 px-1.5 py-0.5 rounded bg-rose-50 border border-rose-200" title="Burner Domain">⚠ Burner</span>';
+            } else if (isDeliv) {
+              btnElem.parentElement.innerHTML = '<a href="mailto:' + escapeHtml(email) + '" class="text-blue-600 hover:underline">' + escapeHtml(email) + '</a> <span class="inline-flex items-center text-[10px] text-emerald-600 font-bold ml-1.5 px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200" title="Verified Deliverable">✓ Deliverable</span>';
+            } else {
+              btnElem.parentElement.innerHTML = '<a href="mailto:' + escapeHtml(email) + '" class="text-blue-600 hover:underline">' + escapeHtml(email) + '</a> <span class="inline-flex items-center text-[10px] text-slate-500 ml-1.5">Uncertain</span>';
+            }
+          }
+          showToast('Email deliverability verified!', 'success');
+        } else {
+          showToast('Verification: ' + (data.message || 'Unknown result'), 'warning');
+          if (btnElem) {
+            btnElem.innerText = 'Verify';
+            btnElem.disabled = false;
+          }
+        }
+      } catch (err) {
+        showToast('Verification error: ' + err.message, 'error');
+        if (btnElem) {
+          btnElem.innerText = 'Verify';
+          btnElem.disabled = false;
+        }
+      }
+    }
+
+    // =========================================================================
+    // FIRST-READER ATTENTION AUDITOR CONTROLLER (Step 4)
+    // =========================================================================
+    async function runPitchAudit() {
+      const subject = (document.getElementById('apply-email-subject') ? document.getElementById('apply-email-subject').value.trim() : '');
+      const body = (document.getElementById('apply-email-body') ? document.getElementById('apply-email-body').value.trim() : '');
+      if (!body) {
+        showToast('Please draft or generate an email body first', 'warning');
+        return;
+      }
+      try {
+        const res = await fetch(API_BASE + '/api/outreach/audit-pitch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subject: subject, body: body })
+        });
+        const data = await res.json();
+        const resultsEl = document.getElementById('first-reader-results');
+        const scoreEl = document.getElementById('audit-retention-score');
+        const hookEl = document.getElementById('audit-hook-rating');
+        const timeEl = document.getElementById('audit-scan-time');
+        const tipsEl = document.getElementById('audit-feedback-tips');
+
+        if (resultsEl) resultsEl.classList.remove('hidden');
+        if (scoreEl) {
+          scoreEl.innerText = data.attention_score + '/100';
+          scoreEl.className = 'text-lg font-black mt-0.5 ' + (data.attention_score >= 80 ? 'text-emerald-600' : (data.attention_score >= 60 ? 'text-amber-600' : 'text-rose-600'));
+        }
+        if (hookEl) hookEl.innerText = (data.breakdown && data.breakdown.hook_rating) || 'Evaluated';
+        if (timeEl) timeEl.innerText = (data.metrics && data.metrics.est_scan_seconds ? data.metrics.est_scan_seconds + 's scan' : '15s');
+
+        if (tipsEl) {
+          tipsEl.innerHTML = '';
+          const recs = data.recommendations || [];
+          if (recs.length === 0) {
+            tipsEl.innerHTML = '<div class="text-emerald-700 font-semibold">✓ Exceptional pitch! High attention retention and clean brevity.</div>';
+          } else {
+            recs.slice(0, 3).forEach(r => {
+              const div = document.createElement('div');
+              div.className = 'flex items-start space-x-1';
+              div.innerHTML = '<span class="text-indigo-500 font-bold">▪</span><span>' + escapeHtml(r) + '</span>';
+              tipsEl.appendChild(div);
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Audit pitch error:', err);
+      }
+    }
+
+    // =========================================================================
+    // APPLICATION AUTOPSY & RESURRECTION CONTROLLER (Step 4)
+    // =========================================================================
+    async function loadAutopsyReport() {
+      const container = document.getElementById('autopsy-content');
+      if (!container) return;
+      const days = document.getElementById('autopsy-days-threshold') ? document.getElementById('autopsy-days-threshold').value : 7;
+      try {
+        const res = await fetch(API_BASE + '/api/applications/autopsy?days=' + days);
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        if (!data.autopsies || data.autopsies.length === 0) {
+          container.innerHTML = '<div class="py-8 text-center text-slate-400 text-xs"><div class="text-3xl mb-1">🎉</div><div class="font-bold text-slate-700 text-sm">No Stalled Applications Found</div><p class="mt-1">All active applications are fresh or moving through the pipeline.</p></div>';
+          return;
+        }
+
+        let html = '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">';
+        html += '<div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-center"><div class="text-xs text-amber-700 font-semibold">Stalled (&ge; ' + days + 'd)</div><div class="text-xl font-black text-amber-800">' + data.total_stalled + '</div></div>';
+        html += '<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-center"><div class="text-xs text-indigo-700 font-semibold">High Resurrection Pulse</div><div class="text-xl font-black text-indigo-800">' + data.high_pulse_candidates + '</div></div>';
+        html += '<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center"><div class="text-xs text-slate-600 font-semibold">Top Cause of Death</div><div class="text-xs font-bold text-slate-800 mt-1 truncate">' + (data.dominant_cause || 'ATS Blackhole') + '</div></div>';
+        html += '</div>';
+
+        html += '<div class="overflow-x-auto"><table class="w-full text-left text-xs border-collapse"><thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200"><tr><th class="py-2 px-3">Company & Role</th><th class="py-2 px-3">Days Silent</th><th class="py-2 px-3">Autopsy Diagnosis</th><th class="py-2 px-3">Pulse Score</th><th class="py-2 px-3 text-right">Action</th></tr></thead><tbody class="divide-y divide-slate-100">';
+        
+        data.autopsies.slice(0, 10).forEach(a => {
+          let pulseClass = 'text-emerald-600 bg-emerald-50 border border-emerald-200';
+          if (a.pulse_score < 50) pulseClass = 'text-slate-500 bg-slate-100';
+          else if (a.pulse_score < 75) pulseClass = 'text-amber-600 bg-amber-50 border border-amber-200';
+
+          html += '<tr class="hover:bg-slate-50">';
+          html += '<td class="py-2.5 px-3"><div class="font-bold text-slate-900">' + escapeHtml(a.company) + '</div><div class="text-[11px] text-slate-500">' + escapeHtml(a.role) + '</div></td>';
+          html += '<td class="py-2.5 px-3 font-semibold text-slate-700">' + a.days_silent + 'd</td>';
+          html += '<td class="py-2.5 px-3"><span class="font-medium text-slate-800">' + escapeHtml(a.cause_of_death) + '</span><div class="text-[10px] text-slate-400">' + escapeHtml(a.recommended_action || '') + '</div></td>';
+          html += '<td class="py-2.5 px-3"><span class="px-2 py-0.5 text-[10px] font-bold rounded-md ' + pulseClass + '">' + a.pulse_score + '%</span></td>';
+          html += '<td class="py-2.5 px-3 text-right"><button onclick="openFollowUpForLead(' + a.id + ', \'' + escapeHtml(a.company) + '\', \'' + escapeHtml(a.role) + '\', \'' + escapeHtml(a.contact_email || '') + '\')" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-lg transition-all shadow-sm">📬 Resurrect</button></td>';
+          html += '</tr>';
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+      } catch (err) {
+        console.error('Error loading autopsy report:', err);
+      }
+    }
+
+
+    // =========================================================================
+    // MULTI-ENVIRONMENT STATUS CONTROLLER (UAT / STAGING / PROD)
+    // =========================================================================
+    async function checkAppEnvironment() {
+      try {
+        const res = await fetch(API_BASE + '/api/config');
+        if (!res.ok) return;
+        const data = await res.json();
+        const env = (data.app_env || 'production').toLowerCase();
+        const badge = document.getElementById('topbar-env-badge');
+        const text = document.getElementById('topbar-env-text');
+        const dot = document.getElementById('topbar-env-dot');
+        if (!badge || !text || !dot) return;
+
+        if (env === 'uat') {
+          badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-amber-50 text-amber-800 border border-amber-300 flex items-center space-x-1 shadow-sm";
+          dot.className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
+          text.innerText = "UAT (Port " + (data.port || 8001) + ")";
+        } else if (env === 'staging') {
+          badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-blue-50 text-blue-800 border border-blue-300 flex items-center space-x-1 shadow-sm";
+          dot.className = "w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse";
+          text.innerText = "STAGING (Port " + (data.port || 8002) + ")";
+        } else {
+          badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-1 shadow-sm";
+          dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse";
+          text.innerText = "PROD (Live Orbit)";
+        }
+      } catch (e) {
+        console.error("Could not fetch environment info:", e);
+      }
+    }
+
+  </script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Pure CSS 4-square grid loader with keyframe blue pulse */
+    .grid-loader {
+      display: grid;
+      grid-template-columns: repeat(2, 11px);
+      gap: 3px;
+    }
+    .grid-loader-square {
+      width: 11px;
+      height: 11px;
+      background-color: #2563eb;
+      border-radius: 2.5px;
+      animation: bluePulse 1.2s infinite ease-in-out;
+    }
+    .grid-loader-square:nth-child(1) { animation-delay: 0s; }
+    .grid-loader-square:nth-child(2) { animation-delay: 0.2s; }
+    .grid-loader-square:nth-child(3) { animation-delay: 0.4s; }
+    .grid-loader-square:nth-child(4) { animation-delay: 0.6s; }
+    @keyframes bluePulse {
+      0%, 100% { opacity: 0.25; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.05); background-color: #3b82f6; }
+    }
+
+    /* Page transition progress bar */
+    #page-loading-bar {
+      transition: width 0.25s ease-out, opacity 0.3s ease-out;
+    }
+
+    /* Speedometer Arc transition */
+    #speedo-arc {
+      transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body class="h-full flex overflow-hidden bg-slate-50 relative">
+
+  <!-- ==================== FULL-PAGE INITIAL SPLASH LOADER ==================== -->
+  <div id="app-splash-loader" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center space-y-4 transition-opacity duration-500">
+    <div class="grid-loader scale-150">
+      <div class="grid-loader-square"></div>
+      <div class="grid-loader-square"></div>
+      <div class="grid-loader-square"></div>
+      <div class="grid-loader-square"></div>
+    </div>
+    <div class="text-center pt-3">
+      <h2 class="text-base font-extrabold text-white tracking-tight">CareerHero Studio</h2>
+      <p class="text-xs text-slate-400 font-mono mt-1" id="splash-status-text">Initializing live pipeline & evidence bank...</p>
+    </div>
+  </div>
+
+  <!-- Micro-interaction Top Progress Sweep Line -->
+  <div id="page-loading-bar" class="fixed top-0 left-0 h-1 bg-blue-600 z-40 w-0 opacity-0"></div>
+
+  <!-- ==================== LEFT SIDEBAR (Dark Slate #0F172A) ==================== -->
+  <aside class="w-64 bg-sidebar text-slate-300 flex flex-col justify-between shrink-0 select-none border-r border-slate-800 z-30">
+    <div>
+      <!-- Brand Header -->
+      <div class="h-16 flex items-center justify-between px-6 border-b border-slate-800/80">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('apply')">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/30">
+            ⚡
+          </div>
+          <div>
+            <span class="text-base font-extrabold tracking-tight text-white">CareerHero</span>
+            <span class="text-[10px] block text-blue-400 font-semibold uppercase tracking-wider -mt-1">Application Studio</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-4 space-y-1.5 text-sm font-medium">
+        
+        <!-- 1. Apply For Jobs (Default Landing Workspace) -->
+        <button onclick="switchView('apply')" id="nav-apply" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold shadow-md shadow-blue-600/25 transition-all">
+          <div class="flex items-center space-x-3">
+            <span>✨</span>
+            <span>Apply For Jobs</span>
+          </div>
+          <span class="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">Start</span>
+        </button>
+
+        <!-- 2. Pipeline & Insights Section -->
+        <div class="pt-3">
+          <div class="px-3 pb-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pipeline & Insights</div>
+          
+          <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-sidebarHover transition-all">
+            <span>📊</span>
+            <span>Analytics Dashboard</span>
+          </button>
+          
+          <button onclick="switchView('leads')" id="nav-leads" class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-sidebarHover transition-all">
+            <div class="flex items-center space-x-3">
+              <span>🎯</span>
+              <span>Leads Queue Hub</span>
+            </div>
+            <span id="badge-leads-count" class="text-xs bg-blue-900/80 text-blue-300 px-2 py-0.5 rounded-full font-semibold">0</span>
+          </button>
+          
+          <button onclick="switchView('tracker')" id="nav-tracker" class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-sidebarHover transition-all">
+            <div class="flex items-center space-x-3">
+              <span>📋</span>
+              <span>Applied Tracker</span>
+            </div>
+            <span id="badge-total-leads" class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full font-semibold">0</span>
+          </button>
+        </div>
+
+        <!-- 3. Candidate Profile & Evidence -->
+        <div class="pt-3">
+          <div class="px-3 pb-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Candidate Profile</div>
+          
+          <button onclick="switchView('profile')" id="nav-profile" class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-sidebarHover transition-all">
+            <div class="flex items-center space-x-3">
+              <span>👤</span>
+              <span>Evidence & Links</span>
+            </div>
+            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-mono">Live</span>
+          </button>
+        </div>
+
+        <!-- 4. AI Career Copilot -->
+        <div class="pt-3">
+          <div class="px-3 pb-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">AI Strategist</div>
+          
+          <button onclick="switchView('copilot')" id="nav-copilot" class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-sidebarHover transition-all">
+            <div class="flex items-center space-x-3">
+              <span>🤖</span>
+              <span>Career Copilot</span>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Bottom Controls & User Profile -->
+    <div class="p-4 border-t border-slate-800 space-y-3">
+      <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400" id="dry-run-dot"></span>
+          <span class="text-xs font-semibold text-slate-200" id="dry-run-label">Dry-Run: Safe Mode</span>
+        </div>
+        <button onclick="openSettingsModal()" class="text-slate-400 hover:text-white text-xs underline">Config</button>
+      </div>
+
+      <div class="flex items-center justify-between p-2 rounded-xl hover:bg-sidebarHover transition-colors cursor-pointer" onclick="openSettingsModal()">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm" id="user-avatar-initials">
+            CN
+          </div>
+          <div class="overflow-hidden">
+            <div class="text-sm font-semibold text-white truncate" id="sidebar-user-name">Candidate Name</div>
+            <div class="text-xs text-slate-400 truncate" id="sidebar-user-role">Senior Product Designer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==================== MAIN CONTENT CANVAS (Light #F8FAFC) ==================== -->
+  <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative">
+
+    <!-- Top Global Header with Direct Tab Navigation -->
+    <header class="h-16 border-b border-slate-200/80 bg-white flex items-center justify-between px-8 shrink-0 z-20">
+      
+      <!-- Left: Title & Subtag -->
+      <div class="flex items-center space-x-3">
+        <h1 id="topbar-title" class="text-lg font-bold tracking-tight text-slate-900">Apply For Jobs</h1>
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200" id="topbar-subtag">Strict 1-Page Rule Active</span>
+        <span id="topbar-env-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-1 shadow-sm" title="Active Deployment Orbit">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" id="topbar-env-dot"></span>
+          <span id="topbar-env-text">PROD</span>
+        </span>
+      </div>
+
+      <!-- Center: Direct Top Navigation Tabs -->
+      <div class="hidden md:flex items-center space-x-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/60">
+        <button onclick="switchView('apply')" id="tab-apply" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-blue-600 shadow-sm">
+          ✨ Apply Studio
+        </button>
+        <button onclick="switchView('dashboard')" id="tab-dashboard" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all">
+          📊 Dashboard
+        </button>
+        <button onclick="switchView('leads')" id="tab-leads" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all">
+          🎯 Leads Queue
+        </button>
+        <button onclick="switchView('tracker')" id="tab-tracker" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all">
+          📋 Applied Tracker
+        </button>
+        <button onclick="switchView('profile')" id="tab-profile" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all">
+          👤 Profile Links
+        </button>
+        <button onclick="switchView('copilot')" id="tab-copilot" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all">
+          🤖 Copilot
+        </button>
+      </div>
+
+      <!-- Right: Active 4-Square Pulse Loader, Gmail Status Pill & Settings -->
+      <div class="flex items-center space-x-3">
+        <div id="active-pulse-loader" class="hidden items-center space-x-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-xl">
+          <div class="grid-loader">
+            <div class="grid-loader-square"></div>
+            <div class="grid-loader-square"></div>
+            <div class="grid-loader-square"></div>
+            <div class="grid-loader-square"></div>
+          </div>
+          <span class="text-[11px] font-bold text-blue-700">Paraphrasing...</span>
+        </div>
+
+        <!-- Gmail Connection Status Pill -->
+        <button onclick="openGmailModal()" id="header-gmail-status-btn" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-blue-300 bg-slate-50 hover:bg-white text-xs font-semibold transition-all shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-emerald-500" id="header-gmail-dot"></span>
+          <span id="header-gmail-text" class="text-slate-700 font-medium">Gmail: Checking...</span>
+        </button>
+
+        <!-- Prominent Logout / Disconnect Button -->
+        <button onclick="disconnectGmailAccount()" id="header-logout-btn" class="hidden flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-all shadow-sm" title="Disconnect Gmail and Log Out">
+          <span>🔌</span>
+          <span>Disconnect</span>
+        </button>
+
+        <button onclick="openSettingsModal()" class="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100" title="Settings">
+          ⚙️
+        </button>
+      </div>
+    </header>
+
+    <!-- Scrollable Viewport Container -->
+    <div class="flex-1 overflow-y-auto p-6 md:p-8 space-y-6" id="view-container">
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 1: APPLY & TAILOR STUDIO (DEFAULT LANDING WORKSPACE)            -->
+      <!-- ==================================================================== -->
+      <section id="view-apply" class="space-y-6">
+        
+        <!-- Job Ingestion Card -->
+        <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-5">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <h2 class="text-base font-bold text-slate-900">Job Intake & Location Guidelines</h2>
+              <p class="text-xs text-slate-500">Paraphrases requirements, locks to strict 1-page CV format, and checks ATS keywords.</p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+              <!-- Location / Country Dropdown -->
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-bold text-slate-600">Location:</span>
+                <select id="apply-country" onchange="handleCountryChange()" class="text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-blue-500">
+                  <option value="" disabled selected>-- Select Location / Country --</option>
+                  <option value="ae">🇦🇪 UAE / Dubai (Photo Expected, Visa Tag)</option>
+                  <option value="in">🇮🇳 India (Standard 1-Page)</option>
+                  <option value="us">🇺🇸 US / Canada (Strict 1-Page, No Photo)</option>
+                  <option value="uk">🇬🇧 UK / Europe (1-Page ATS)</option>
+                  <option value="sa">🇸🇦 Saudi Arabia / Gulf (Photo Expected)</option>
+                  <option value="de">🇩🇪 Germany (Lebenslauf Tabular)</option>
+                </select>
+              </div>
+
+              <!-- Page Budget Selector (Strict 1-Page Default) -->
+              <div class="flex items-center space-x-2 pl-2 border-l border-slate-200">
+                <span class="text-xs font-bold text-slate-600">Page Budget:</span>
+                <select id="apply-page-budget" onchange="handlePageBudgetChange()" class="text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-blue-500">
+                  <option value="1" selected>🔒 Strict 1-Page (Default &bull; &lt;10 Yrs)</option>
+                  <option value="2">📄 2 Pages (C-Level / 10+ Yrs Only)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- DYNAMIC SAMPLE JD PROMPT (SHOWN ONLY AFTER COUNTRY IS SELECTED) -->
+          <div id="country-sample-prompt" class="hidden p-3.5 rounded-xl bg-blue-50/80 border border-blue-200 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <span class="text-xl" id="country-sample-flag">🇦🇪</span>
+              <div>
+                <h4 class="text-xs font-bold text-blue-950" id="country-sample-title">Country Selected: UAE / Dubai</h4>
+                <p class="text-[11px] text-blue-800" id="country-sample-desc">Would you like to test with a realistic design opening for this country?</p>
+              </div>
+            </div>
+            <button onclick="loadCurrentCountrySampleJD()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all shrink-0">
+              📋 Load Country Sample JD
+            </button>
+          </div>
+
+          <!-- Dynamic Dubai / Middle East Traditional Protocol Card -->
+          <div id="dubai-photo-alert" class="hidden p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2.5">
+                <span class="text-xl">📸</span>
+                <div>
+                  <h4 class="text-xs font-bold text-amber-950 uppercase tracking-wide">Traditional Middle East / Dubai Protocol Active</h4>
+                  <p class="text-xs text-amber-800">Employers in UAE expect a formal headshot photo (35×45mm), visa status, and nationality.</p>
+                </div>
+              </div>
+              <span class="text-[10px] bg-amber-200/80 text-amber-900 font-bold px-2 py-0.5 rounded uppercase">GCC Standard</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+              <div>
+                <label class="block text-[11px] font-bold text-amber-900 mb-1">Formal Headshot Photo</label>
+                <input type="text" id="apply-photo-path" value="formal_headshot.jpg" class="w-full px-3 py-1.5 text-xs bg-white border border-amber-300 rounded-lg">
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-amber-900 mb-1">Visa Status</label>
+                <select id="apply-visa-status" class="w-full px-3 py-1.5 text-xs bg-white border border-amber-300 rounded-lg">
+                  <option value="Employment Visa (Transferable)" selected>Employment Visa (Transferable)</option>
+                  <option value="Golden Visa (Self-Sponsored)">Golden Visa (Self-Sponsored)</option>
+                  <option value="Visit / Tourist Visa (Immediate Joiner)">Visit / Tourist Visa (Immediate Joiner)</option>
+                  <option value="Resident Visa">Resident Visa</option>
+                  <option value="Need Visa Sponsorship">Need Visa Sponsorship</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-amber-900 mb-1">Nationality</label>
+                <input type="text" id="apply-nationality" value="Indian" class="w-full px-3 py-1.5 text-xs bg-white border border-amber-300 rounded-lg">
+              </div>
+            </div>
+          </div>
+
+          <!-- URL / Inputs Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-3 flex space-x-2">
+              <input type="url" id="apply-job-url" placeholder="Paste Job Link (LinkedIn, Greenhouse, Indeed, Lever, or career portal)..." class="flex-1 px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500">
+              <button onclick="fetchJobFromUrl()" id="btn-fetch-job" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl transition-all shrink-0 flex items-center space-x-1.5">
+                <span>Fetch Job</span>
+              </button>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Company Name</label>
+              <input type="text" id="apply-company" placeholder="e.g. Careem (Uber Subsidiary)" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Target Role</label>
+              <input type="text" id="apply-role" placeholder="e.g. Senior Product Designer" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Contact Email</label>
+              <input type="email" id="apply-email" placeholder="e.g. talent@careem.com" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Job Description Requirements (JD Text)</label>
+            <textarea id="apply-jd-text" rows="5" class="w-full p-3.5 font-mono text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white leading-relaxed" placeholder="Paste complete job description text..."></textarea>
+          </div>
+
+          <div class="flex items-center justify-between pt-2">
+            <div class="flex items-center space-x-2 text-xs text-slate-500">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>Evidence Ingestion: Citing your verified Figma, Behance & Notion work</span>
+            </div>
+            <button onclick="runCompleteTailoring()" id="btn-tailor-application" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-500/25 transition-all flex items-center space-x-2">
+              <span>✨ Paraphrase JD & Generate 1-Page Application</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- GENERATED OUTPUT WORKSPACE -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+          
+          <!-- Column 1: 1-Page CV with Preview Button -->
+          <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Tailored Resume (Strict 1-Page Budget)</h3>
+                <span class="text-[11px] text-emerald-600 font-semibold" id="cv-length-status">✓ Formatted to 1-Page Limit</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <!-- PREVIEW CV BUTTON -->
+                <button onclick="openCvPreviewModal()" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition-all flex items-center space-x-1">
+                  <span>👁️</span>
+                  <span>Preview CV</span>
+                </button>
+                <button onclick="copyResumeMarkdown()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all">
+                  Copy MD
+                </button>
+              </div>
+            </div>
+
+            <textarea id="apply-resume-output" rows="16" class="w-full p-4 font-mono text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white leading-relaxed" placeholder="Click 'Paraphrase JD & Generate 1-Page Application' to generate tailored CV..."></textarea>
+          </div>
+
+          <!-- Column 2: Cold Email & ATS Speedometer -->
+          <div class="space-y-6">
+            <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900">Personalized Human Cold Outreach Note</h3>
+                  <span class="text-[11px] text-slate-400">Conversational, concise, cites live work & attached CV</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <!-- Safe Mode Badge (Locked on Hold) -->
+                  <div class="px-2.5 py-1 rounded-xl text-[11px] font-bold border border-emerald-200 bg-emerald-50 text-emerald-800 flex items-center space-x-1.5" title="Live sending is locked on hold for testing">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Safe Testing Mode</span>
+                  </div>
+
+                  <!-- Create Draft in Gmail Button (Primary) -->
+                  <button onclick="createGmailDraftAction()" id="btn-create-draft" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 transition-all flex items-center space-x-1" title="Save draft directly into Gmail Drafts">
+                    <span>📝</span>
+                    <span>Save to Gmail Drafts</span>
+                  </button>
+
+                  <!-- Dry Run Simulation Button -->
+                  <button onclick="executeSendOrDryRun()" id="btn-execute-send" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-all flex items-center space-x-1" title="Test CV tailoring and record simulated dispatch">
+                    <span>🧪</span>
+                    <span id="btn-send-label">Dry Run Sim</span>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-500 mb-1">Subject</label>
+                <input type="text" id="apply-email-subject" class="w-full px-3.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:bg-white">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-500 mb-1">Email Body</label>
+                <textarea id="apply-email-body" rows="9" class="w-full p-3.5 font-sans text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white leading-relaxed"></textarea>
+              </div>
+            </div>
+
+            <!-- FIRST-READER ATTENTION AUDITOR -->
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/70 to-blue-50/50 border border-indigo-100/80 shadow-sm space-y-3" id="first-reader-card">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="text-base">🎯</span>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-900">First-Reader Attention Audit</h4>
+                    <p class="text-[10px] text-slate-500">Recruiter attention span simulation & hook strength evaluator.</p>
+                  </div>
+                </div>
+                <button onclick="runPitchAudit()" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg shadow-sm">Audit Pitch</button>
+              </div>
+              <div id="first-reader-results" class="hidden grid grid-cols-3 gap-2 pt-1 text-center">
+                <div class="p-2 bg-white rounded-xl border border-indigo-100">
+                  <div class="text-[10px] text-slate-400 font-semibold">Retention Score</div>
+                  <div class="text-lg font-black text-indigo-700 mt-0.5" id="audit-retention-score">--</div>
+                </div>
+                <div class="p-2 bg-white rounded-xl border border-indigo-100">
+                  <div class="text-[10px] text-slate-400 font-semibold">Hook Quality</div>
+                  <div class="text-xs font-bold text-slate-800 mt-1" id="audit-hook-rating">--</div>
+                </div>
+                <div class="p-2 bg-white rounded-xl border border-indigo-100">
+                  <div class="text-[10px] text-slate-400 font-semibold">Est. Scan Time</div>
+                  <div class="text-xs font-bold text-slate-800 mt-1" id="audit-scan-time">--</div>
+                </div>
+              </div>
+              <div id="audit-feedback-tips" class="text-[11px] text-slate-600 space-y-1"></div>
+            </div>
+
+            <!-- SPEEDOMETER ARC & ATS GAUGE -->
+            <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-between">
+              <div class="flex items-center space-x-4">
+                <div class="relative w-16 h-12 flex flex-col items-center justify-center shrink-0">
+                  <svg class="w-16 h-10" viewBox="0 0 100 50">
+                    <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#E2E8F0" stroke-width="10" stroke-linecap="round"/>
+                    <path id="speedo-arc" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#2563EB" stroke-width="10" stroke-linecap="round" stroke-dasharray="126" stroke-dashoffset="126"/>
+                  </svg>
+                  <span class="text-xs font-extrabold text-blue-700 -mt-2" id="apply-match-gauge">0%</span>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-900">ATS Keyword Match Level</h4>
+                  <p class="text-[11px] text-slate-500" id="apply-matched-count">0 keywords matched yet.</p>
+                </div>
+              </div>
+              <button onclick="switchView('dashboard')" class="text-xs font-bold text-blue-600 hover:underline">View Pipeline &rsaquo;</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 2: ANALYTICS DASHBOARD (REAL LIVE METRICS STARTING AT 0)        -->
+      <!-- ==================================================================== -->
+      <section id="view-dashboard" class="hidden space-y-6">
+        
+        <!-- Live Chronological Activity Stream Banner -->
+        <div class="p-5 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50/50 to-white border border-blue-100 flex items-center justify-between shadow-sm">
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white text-xl shadow-md shadow-blue-500/20">
+              🚀
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Live Application Activity Stream</h3>
+              <p class="text-xs text-slate-700" id="dash-latest-application">
+                <span class="font-bold text-slate-900">Last application applied:</span> <span id="dash-last-applied-text" class="text-blue-600 font-semibold">None yet. Go to Apply Studio to submit your first application.</span>
+              </p>
+              <p class="text-[11px] text-slate-500" id="dash-before-applied-text">Before that: —</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="clearAllDemoData()" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-500 border border-slate-200 text-xs font-semibold rounded-xl transition-all">
+              🔄 Reset to 0
+            </button>
+            <button onclick="switchView('apply')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm">
+              + New Application
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI STATS CARDS (STARTING AT 0) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-2">
+            <div class="text-xs font-semibold text-slate-500">Total Applications</div>
+            <div class="text-3xl font-extrabold text-slate-900" id="kpi-total-applied">0</div>
+            <div class="text-[11px] text-slate-400">Live records from database.</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-2">
+            <div class="text-xs font-semibold text-slate-500">Applications Today</div>
+            <div class="text-3xl font-extrabold text-blue-600" id="kpi-sent-today">0</div>
+            <div class="text-[11px] text-slate-400">Active dispatches in session.</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-2">
+            <div class="text-xs font-semibold text-slate-500">Interview Stage</div>
+            <div class="text-3xl font-extrabold text-emerald-600" id="kpi-interviews">0</div>
+            <div class="text-[11px] text-slate-400">Recorded interview requests.</div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-2">
+            <div class="text-xs font-semibold text-slate-500">Average ATS Match</div>
+            <div class="text-3xl font-extrabold text-slate-900" id="kpi-avg-match">0%</div>
+            <div class="text-[11px] text-slate-400">Tailored keyword fit score.</div>
+          </div>
+        </div>
+
+        <!-- INBOUND RECRUITER SCANNER & LIVE RESPONSES FEED -->
+        <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-bold shadow-sm">
+                📥
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-slate-900">Inbound Recruiter Scanner</h3>
+                <p class="text-xs text-slate-500">Scan your Gmail inbox for interview invites, assessment links, and candidate status updates.</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <div id="scan-pulse-loader" class="hidden items-center space-x-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-xl">
+                <div class="grid-loader">
+                  <div class="grid-loader-square"></div>
+                  <div class="grid-loader-square"></div>
+                  <div class="grid-loader-square"></div>
+                  <div class="grid-loader-square"></div>
+                </div>
+                <span class="text-[11px] font-bold text-blue-700">Scanning Gmail API...</span>
+              </div>
+              <button onclick="triggerInboundScan()" id="btn-trigger-scan" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 transition-all flex items-center space-x-1.5">
+                <span>⚡</span>
+                <span>Scan Gmail for Replies</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Feed Container -->
+          <div id="inbound-replies-feed" class="space-y-2.5">
+            <div class="py-8 text-center text-slate-400 text-xs">
+              <div class="text-2xl mb-1">📬</div>
+              Click <strong>"Scan Gmail for Replies"</strong> to check for incoming recruiter messages and interview requests.
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVITY HEAT MAP (30-DAY GRID) & MONOPILLARS -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-base font-bold text-slate-900">Application Activity Heat Map</h3>
+                <p class="text-xs text-slate-400">Daily outreach density over the past 30 days.</p>
+              </div>
+              <span class="text-xs font-bold text-slate-500" id="heatmap-total-label">0 Activities Logged</span>
+            </div>
+
+            <!-- Heat Map Matrix -->
+            <div class="pt-2">
+              <div class="grid grid-flow-col grid-rows-5 gap-1.5 w-fit" id="activity-heatmap-grid">
+                <!-- 30 Dynamic squares rendered by JS -->
+              </div>
+              <div class="flex items-center space-x-2 text-[10px] text-slate-400 pt-3">
+                <span>Less</span>
+                <span class="w-3 h-3 rounded bg-slate-100 border border-slate-200"></span>
+                <span class="w-3 h-3 rounded bg-blue-200"></span>
+                <span class="w-3 h-3 rounded bg-blue-400"></span>
+                <span class="w-3 h-3 rounded bg-blue-600"></span>
+                <span>More</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- MONOPILLAR PILLARS (PIPELINE BREAKDOWN) -->
+          <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 pb-1">Pipeline Stages</h3>
+              <p class="text-xs text-slate-400 pb-4">Live stage distribution.</p>
+              
+              <div class="space-y-4">
+                <div>
+                  <div class="flex justify-between text-xs font-semibold mb-1">
+                    <span class="text-slate-700">Applied (Sent)</span>
+                    <span id="mono-applied-count" class="text-blue-600 font-bold">0</span>
+                  </div>
+                  <div class="w-full bg-slate-100 rounded-full h-2">
+                    <div id="bar-applied" class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-xs font-semibold mb-1">
+                    <span class="text-slate-700">Interviewing</span>
+                    <span id="mono-interview-count" class="text-emerald-600 font-bold">0</span>
+                  </div>
+                  <div class="w-full bg-slate-100 rounded-full h-2">
+                    <div id="bar-interview" class="bg-emerald-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-xs font-semibold mb-1">
+                    <span class="text-slate-700">Offers</span>
+                    <span id="mono-offer-count" class="text-indigo-600 font-bold">0</span>
+                  </div>
+                  <div class="w-full bg-slate-100 rounded-full h-2">
+                    <div id="bar-offer" class="bg-indigo-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bullet Target Performance Bar -->
+            <div class="pt-6 border-t border-slate-100">
+              <div class="flex justify-between text-xs font-bold text-slate-800 mb-1">
+                <span>Monthly Target</span>
+                <span id="bullet-target-label">0 / 20</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-2.5 relative overflow-hidden">
+                <div id="bullet-target-fill" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STALLED APPLICATIONS AUTOPSY & RESURRECTION CARD -->
+        <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4" id="autopsy-container">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">🧟</div>
+              <div>
+                <h3 class="text-base font-bold text-slate-900">Application Autopsy & Resurrection Pulse</h3>
+                <p class="text-xs text-slate-500">Autonomous analysis of silent/stalled applications (&ge; 7 days) with resurrection triggers.</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-semibold text-slate-500">Threshold:</span>
+              <select id="autopsy-days-threshold" onchange="loadAutopsyReport()" class="text-xs px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700">
+                <option value="7">7 Days Silent</option>
+                <option value="10">10 Days Silent</option>
+                <option value="14">14 Days Silent</option>
+              </select>
+              <button onclick="loadAutopsyReport()" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-lg">↺ Refresh</button>
+            </div>
+          </div>
+
+          <div id="autopsy-content">
+            <div class="text-center py-6 text-xs text-slate-400">Loading autopsy diagnostics...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 2.5: LEADS QUEUE HUB (OFFLINE DATABASE & BATCH RUNNER)            -->
+      <!-- ==================================================================== -->
+      <section id="view-leads" class="hidden space-y-6">
+        <!-- Metric Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-between">
+            <div>
+              <div class="text-xs text-slate-500 font-medium">Total Stored Leads</div>
+              <div class="text-2xl font-black text-slate-900 mt-1" id="leads-metric-total">0</div>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">🎯</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-between">
+            <div>
+              <div class="text-xs text-slate-500 font-medium">Ready To Contact</div>
+              <div class="text-2xl font-black text-amber-600 mt-1" id="leads-metric-tocontact">0</div>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">⏳</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-between">
+            <div>
+              <div class="text-xs text-slate-500 font-medium">Applied / In Progress</div>
+              <div class="text-2xl font-black text-emerald-600 mt-1" id="leads-metric-applied">0</div>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg">✅</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-between">
+            <div>
+              <div class="text-xs text-slate-500 font-medium">Due for Follow-Up</div>
+              <div class="text-2xl font-black text-indigo-600 mt-1" id="leads-metric-followups">0</div>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">📬</div>
+          </div>
+        </div>
+
+        <!-- Main Card with Controls & Table -->
+        <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Target Companies & Recruiting Leads</h3>
+              <p class="text-xs text-slate-500">Offline SQLite database with batch auto-tailoring and 1-click apply.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="openScraperModal()" class="px-3.5 py-1.5 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white text-xs font-bold rounded-xl transition-all flex items-center space-x-1.5 shadow-md shadow-indigo-500/20">
+                <span>⚡</span>
+                <span>Fetch Fresh Leads</span>
+              </button>
+              <button onclick="openCsvImportModal()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center space-x-1.5 shadow-sm">
+                <span>📥</span>
+                <span>Import CSV</span>
+              </button>
+              <button onclick="openAddLeadModal()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center space-x-1.5 shadow-sm">
+                <span>➕</span>
+                <span>Add Lead</span>
+              </button>
+              <button onclick="openBatchRunnerModal('draft')" id="btn-batch-action" class="px-4 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center space-x-1.5">
+                <span>⚡</span>
+                <span id="btn-batch-label">Batch Tailor (0)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Pills & Search Bar -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
+            <!-- Category Tabs -->
+            <div class="flex items-center space-x-1 overflow-x-auto pb-1" id="leads-cat-tabs">
+              <button onclick="filterLeadsCategory('All')" class="leads-cat-btn px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white shadow-sm transition-all" data-cat="All">All (<span id="cat-count-all">0</span>)</button>
+              <button onclick="filterLeadsCategory('Direct')" class="leads-cat-btn px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all" data-cat="Direct">Direct (<span id="cat-count-direct">0</span>)</button>
+              <button onclick="filterLeadsCategory('YC Startups')" class="leads-cat-btn px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all" data-cat="YC Startups">YC Startups (<span id="cat-count-yc">0</span>)</button>
+              <button onclick="filterLeadsCategory('Agency')" class="leads-cat-btn px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all" data-cat="Agency">Agencies (<span id="cat-count-agency">0</span>)</button>
+              <button onclick="filterLeadsCategory('Social / LinkedIn')" class="leads-cat-btn px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all" data-cat="Social / LinkedIn">Social (<span id="cat-count-social">0</span>)</button>
+            </div>
+
+            <!-- Search and Status Dropdown -->
+            <div class="flex items-center space-x-2">
+              <select id="leads-filter-status" onchange="filterLeadsStatus(this.value)" class="text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-700">
+                <option value="All">All Statuses</option>
+                <option value="To Contact">To Contact</option>
+                <option value="Applied">Applied</option>
+                <option value="Drafted">Drafted</option>
+                <option value="Interview">Interview</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+              <div class="relative">
+                <input type="text" id="leads-search-input" oninput="onLeadsSearchInput()" placeholder="Search leads..." class="text-xs pl-7 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl w-44 md:w-56 focus:bg-white focus:outline-none focus:border-blue-400">
+                <span class="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Multi-Select Action Bar -->
+          <div id="leads-batch-bar" class="hidden p-3 bg-blue-50 border border-blue-200 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="flex items-center space-x-2 text-blue-900 font-semibold">
+              <span id="batch-selected-indicator">0 selected</span>
+              <button onclick="toggleSelectAllVisibleLeads(true)" class="text-blue-600 hover:underline font-bold text-[11px] ml-2">Select All Visible</button>
+              <span class="text-slate-300">|</span>
+              <button onclick="toggleSelectAllVisibleLeads(false)" class="text-slate-500 hover:underline font-medium text-[11px]">Clear</button>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="px-2.5 py-1 bg-amber-50 border border-amber-200 text-amber-800 font-bold rounded-lg text-[10px]">
+                🔒 Live Send On Hold
+              </span>
+              <button onclick="openBatchRunnerModal('draft')" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-sm flex items-center space-x-1">
+                <span>📝</span>
+                <span>Save to Gmail Drafts</span>
+              </button>
+              <button onclick="openBatchRunnerModal('dry_run')" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold rounded-lg shadow-xs flex items-center space-x-1">
+                <span>🧪</span>
+                <span>Dry Run Simulation</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="overflow-x-auto border border-slate-100 rounded-xl">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50/80">
+                <tr class="text-slate-400 text-xs border-b border-slate-200/60 uppercase tracking-wider">
+                  <th class="py-2.5 pl-3 w-8">
+                    <input type="checkbox" id="leads-master-checkbox" onchange="toggleMasterLeadsCheckbox(this.checked)" class="w-4 h-4 rounded text-blue-600">
+                  </th>
+                  <th class="py-2.5 pl-2 font-bold text-slate-700">Company & Category</th>
+                  <th class="py-2.5 font-bold text-slate-700">Target Role</th>
+                  <th class="py-2.5 font-bold text-slate-700">Country</th>
+                  <th class="py-2.5 font-bold text-slate-700">Contact Email</th>
+                  <th class="py-2.5 font-bold text-slate-700">Status</th>
+                  <th class="py-2.5 text-right pr-3 font-bold text-slate-700">Action</th>
+                </tr>
+              </thead>
+              <tbody id="leads-table-body" class="divide-y divide-slate-100">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Pagination & Count -->
+          <div class="flex items-center justify-between text-xs text-slate-500 pt-2 px-1">
+            <div id="leads-pagination-info">Showing 0 of 0 leads</div>
+            <div class="flex items-center space-x-1">
+              <button onclick="paginateLeads(-1)" id="leads-prev-btn" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg disabled:opacity-40">Previous</button>
+              <span id="leads-current-page" class="px-2 font-bold text-slate-700">1</span>
+              <button onclick="paginateLeads(1)" id="leads-next-btn" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg disabled:opacity-40">Next</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 3: APPLIED TRACKER (CLICKABLE & WORKING)                         -->
+      <!-- ==================================================================== -->
+      <section id="view-tracker" class="hidden space-y-6">
+        <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Applied Job Pipeline Tracker</h3>
+              <p class="text-xs text-slate-500">Live records from local database & Google Sheets tracker.</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="clearAllDemoData()" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-500 border border-slate-200 text-xs font-semibold rounded-xl transition-all">
+                🔄 Reset to 0
+              </button>
+              <button onclick="switchView('apply')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm">
+                + New Application
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead>
+                <tr class="text-slate-400 text-xs border-b border-slate-100 uppercase tracking-wider">
+                  <th class="pb-3 pl-2">Company & Role</th>
+                  <th class="pb-3">Status</th>
+                  <th class="pb-3">Date Applied</th>
+                  <th class="pb-3">Recipient Email</th>
+                  <th class="pb-3 text-right pr-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="applications-table-body" class="divide-y divide-slate-100">
+                <!-- Dynamically populated or clean empty state -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 4: CANDIDATE PROFILE & EVIDENCE                                 -->
+      <!-- ==================================================================== -->
+      <section id="view-profile" class="hidden space-y-6">
+        <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Candidate Evidence & Portfolio Hub</h3>
+              <p class="text-xs text-slate-500">Verified live links (Figma, Behance, Notion, Showreel) cited during tailoring.</p>
+            </div>
+            <button onclick="saveProfileData()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm">
+              Save Profile
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+              <input type="text" id="prof-name" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Headline</label>
+              <input type="text" id="prof-role" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Contact Email</label>
+              <input type="email" id="prof-email" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
+              <input type="text" id="prof-phone" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">🎨 Figma Live Prototypes</label>
+              <input type="url" id="link-figma" placeholder="https://figma.com/@..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">🔷 Behance Portfolio</label>
+              <input type="url" id="link-behance" placeholder="https://behance.net/..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">📝 Notion Case Studies</label>
+              <input type="url" id="link-notion" placeholder="https://notion.site/..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">🎬 Drive Showreel / Video</label>
+              <input type="url" id="link-showreel" placeholder="https://drive.google.com/..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 5: CAREER COPILOT ==================== -->
+      <section id="view-copilot" class="hidden space-y-6">
+        <div class="h-[620px] rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col overflow-hidden">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
+                🤖
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Career Copilot</h3>
+                <span class="text-[11px] text-emerald-600 font-semibold">&bull; Online Advisor</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-1 overflow-y-auto p-6 space-y-4" id="copilot-messages">
+            <div class="p-5 rounded-2xl bg-blue-50/60 border border-blue-100 text-xs text-blue-900 space-y-2">
+              <h4 class="font-bold text-sm text-blue-950">Career Strategist Ready</h4>
+              <p>Ask for advice on positioning your 1-page CV, tailoring for Middle East or EU roles, or negotiating compensation.</p>
+            </div>
+          </div>
+
+          <div class="p-4 border-t border-slate-100 bg-white flex items-center space-x-3">
+            <input type="text" id="copilot-input" placeholder="Ask Career Copilot anything..." class="flex-1 px-4 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none" onkeydown="if(event.key==='Enter') sendCopilotMessage()">
+            <button onclick="sendCopilotMessage()" id="btn-send-copilot" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-500/20">
+              Send
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==================== CV PREVIEW MODAL ==================== -->
+  <div id="cv-preview-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-3xl max-h-[90vh] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      <div class="h-14 border-b border-slate-100 flex items-center justify-between px-6 bg-slate-50/70">
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-extrabold uppercase tracking-wider bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full">Strict 1-Page Format</span>
+          <span class="text-sm font-bold text-slate-800">Curriculum Vitae Preview</span>
+        </div>
+        <div class="flex items-center space-x-3">
+          <button onclick="window.print()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center space-x-1">
+            <span>🖨️</span>
+            <span>Print / PDF</span>
+          </button>
+          <button onclick="closeCvPreviewModal()" class="text-slate-400 hover:text-slate-700 font-bold text-xl leading-none">&times;</button>
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto p-8 font-sans text-xs text-slate-800 bg-white space-y-4" id="cv-modal-content">
+        <!-- Rendered markdown preview -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== GMAIL CONNECTION & OAUTH MODAL ==================== -->
+  <div id="gmail-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-bold">
+            📫
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Google Cloud & Gmail Connection</h3>
+            <p class="text-xs text-slate-500">OAuth consent, token management & inbound inbox scanning</p>
+          </div>
+        </div>
+        <button onclick="closeGmailModal()" class="text-slate-400 hover:text-slate-700 font-bold text-xl leading-none">&times;</button>
+      </div>
+
+      <!-- Current Connection Status Card -->
+      <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2" id="gmail-status-card">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500" id="modal-gmail-dot"></span>
+            <span class="text-xs font-bold text-slate-800" id="modal-gmail-account">user@gmail.com</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200" id="modal-gmail-badge">Connected</span>
+            <button onclick="disconnectGmailAccount()" id="btn-modal-disconnect" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold rounded-lg transition-all" title="Unlink Gmail and reset token">
+              🔌 Disconnect
+            </button>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-500" id="modal-gmail-details">Total Mailbox Messages: 67,140 | Scopes: gmail.send, gmail.readonly, gmail.modify</p>
+      </div>
+
+      <!-- Guided 3-Step Setup Instructions -->
+      <div class="space-y-2.5 text-xs">
+        <div class="font-bold text-slate-800 uppercase tracking-wider text-[11px]">How To Connect Your Google Account:</div>
+        
+        <div class="flex items-start space-x-3 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+          <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-[11px] shrink-0">1</div>
+          <div class="space-y-0.5">
+            <div class="font-bold text-slate-800">Google Cloud Console Project</div>
+            <p class="text-slate-500 text-[11px]">Enable <strong>Gmail API</strong> in Google Cloud Console and create an <strong>OAuth 2.0 Client ID (Desktop App)</strong>.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start space-x-3 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+          <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-[11px] shrink-0">2</div>
+          <div class="space-y-0.5">
+            <div class="font-bold text-slate-800">Credentials & Token Auto-Detection</div>
+            <p class="text-slate-500 text-[11px]">Click "Auto-Detect Workspace Token" to load existing credentials automatically, or paste credentials.json below.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start space-x-3 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+          <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-[11px] shrink-0">3</div>
+          <div class="space-y-0.5">
+            <div class="font-bold text-slate-800">One-Click Browser Authorization</div>
+            <p class="text-slate-500 text-[11px]">Click "Authorize Gmail Account" $\to$ your browser opens $\to$ select your account $\to$ click Continue (app not live/verified) $\to$ authenticated!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paste/Upload Credentials Area -->
+      <div class="space-y-1.5">
+        <label class="block text-xs font-bold text-slate-700">Paste credentials.json (if setting up on new machine)</label>
+        <textarea id="gmail-credentials-input" rows="2" placeholder="Paste your Google Cloud OAuth client credentials.json here..." class="w-full p-2.5 font-mono text-[11px] bg-slate-50 border border-slate-200 rounded-xl focus:bg-white"></textarea>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+        <div class="flex items-center space-x-2">
+          <button onclick="syncWorkspaceCredentials()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all">
+            🔄 Auto-Detect Workspace Token
+          </button>
+          <button onclick="saveCredentialsJson()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all">
+            💾 Save JSON
+          </button>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <button onclick="closeGmailModal()" class="px-3.5 py-1.5 bg-slate-100 text-slate-600 text-xs font-semibold rounded-xl">Close</button>
+          <button onclick="triggerInteractiveOAuth()" id="btn-modal-auth" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center space-x-1.5">
+            <span>⚡</span>
+            <span>Authorize Gmail Account</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SETTINGS MODAL ==================== -->
+  <div id="settings-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl border border-slate-200 p-6 space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-base font-bold text-slate-900">Agent Configuration</h3>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">LLM Provider</label>
+          <select id="set-llm-provider" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+            <option value="gemini">Google Gemini (Recommended)</option>
+            <option value="openai">OpenAI GPT-4o</option>
+            <option value="claude">Anthropic Claude</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">API Key</label>
+          <input type="password" id="set-llm-key" placeholder="Enter API Key..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+        </div>
+
+        <div class="p-3 bg-slate-50 rounded-xl flex items-center justify-between">
+          <div>
+            <div class="font-bold text-slate-900">Dry-Run Safe Mode</div>
+            <div class="text-slate-500 text-[11px]">Prevents accidental external sends</div>
+          </div>
+          <input type="checkbox" id="set-dry-run" checked class="w-4 h-4 text-blue-600 rounded">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Activation Passkey (Safety Lock)</label>
+          <input type="password" id="set-activation-passkey" placeholder="Optional security passkey to gate live emails..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+          <p class="text-[10px] text-slate-400 mt-1">When set, automated live sending and autonomous batch execution require this passkey.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 pt-2">
+        <button onclick="closeSettingsModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl">Cancel</button>
+        <button onclick="saveSettingsConfig()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm">Save Config</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CSV IMPORT MODAL ==================== -->
+  <div id="csv-import-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">📥</span>
+          <h3 class="text-base font-bold text-slate-900">Import Leads from CSV</h3>
+        </div>
+        <button onclick="closeCsvImportModal()" class="text-slate-400 hover:text-slate-700 font-bold text-xl leading-none">&times;</button>
+      </div>
+      <p class="text-xs text-slate-500">Paste raw CSV data or drag & drop. Supports columns: <code>Company, Role, Email, Country, Category, Status, Notes</code>.</p>
+      <textarea id="csv-import-textarea" rows="7" placeholder="Company,Role,Email,Country,Category\nAcme Corp,Senior Product Designer,hiring@acme.com,US,Direct" class="w-full p-3 font-mono text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none"></textarea>
+      <div class="flex items-center justify-between pt-2">
+        <label class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl cursor-pointer">
+          📁 Choose File <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleCsvFileUpload(event)">
+        </label>
+        <div class="space-x-2">
+          <button onclick="closeCsvImportModal()" class="px-4 py-2 bg-slate-100 text-slate-600 text-xs font-semibold rounded-xl">Cancel</button>
+          <button onclick="submitCsvImport()" id="btn-submit-csv" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm">Import Leads</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ADD LEAD MODAL ==================== -->
+  <div id="add-lead-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">➕</span>
+          <h3 class="text-base font-bold text-slate-900">Add Single Target Lead</h3>
+        </div>
+        <button onclick="closeAddLeadModal()" class="text-slate-400 hover:text-slate-700 font-bold text-xl leading-none">&times;</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Company Name *</label>
+          <input type="text" id="add-lead-company" placeholder="e.g. Acme Corp" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Target Role</label>
+            <input type="text" id="add-lead-role" value="Senior Product Designer" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Category</label>
+            <select id="add-lead-category" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+              <option value="Direct">Direct</option>
+              <option value="YC Startups">YC Startups</option>
+              <option value="Agency">Agency</option>
+              <option value="Social / LinkedIn">Social / LinkedIn</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Contact Email</label>
+            <input type="email" id="add-lead-email" placeholder="talent@company.com" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Country / Region</label>
+            <input type="text" id="add-lead-country" placeholder="e.g. UAE / US / UK" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Job / Website URL</label>
+          <input type="text" id="add-lead-url" placeholder="https://..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Notes</label>
+          <input type="text" id="add-lead-notes" placeholder="Optional notes or recruiter context..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+        </div>
+      </div>
+      <div class="flex items-center justify-end space-x-2 pt-2">
+        <button onclick="closeAddLeadModal()" class="px-4 py-2 bg-slate-100 text-slate-600 text-xs font-semibold rounded-xl">Cancel</button>
+        <button onclick="submitAddLead()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm">Save Lead</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== BATCH RUNNER MODAL ==================== -->
+  <div id="batch-runner-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">⚡</span>
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Autonomous Batch Tailoring Engine</h3>
+            <p class="text-xs text-slate-500">Auto-tailors 1-page CVs and drafts personalized outreach.</p>
+          </div>
+        </div>
+        <button onclick="closeBatchRunnerModal()" class="text-slate-400 hover:text-slate-700 font-bold text-xl leading-none">&times;</button>
+      </div>
+
+      <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs space-y-1">
+        <div class="font-bold text-blue-900">Queue Selected: <span id="batch-modal-count" class="font-black text-blue-700">0</span> leads</div>
+        <p class="text-blue-700 text-[11px]">Each lead will be synthesized into a verified 1-page PDF and high-conversion personalized email.</p>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Execution Mode</label>
+          <select id="batch-modal-mode" onchange="onBatchModeChange(this.value)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800">
+            <option value="draft" selected>📝 Save to Gmail Drafts (Recommended — Review in Gmail Before Sending)</option>
+            <option value="dry_run">🧪 Dry Run Simulation (Generate Tailored CVs & Log Only)</option>
+          </select>
+          <p class="text-[11px] text-slate-400 mt-1">🔒 Live email dispatch is currently locked on hold for testing. Only Drafts and Dry Run are enabled.</p>
+        </div>
+
+        <!-- Progress Bar & Output Log -->
+        <div id="batch-progress-container" class="hidden space-y-2 pt-2">
+          <div class="flex items-center justify-between text-[11px] font-bold text-slate-700">
+            <span id="batch-progress-status">Processing leads...</span>
+            <span id="batch-progress-pct">0%</span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+            <div id="batch-progress-bar" class="bg-blue-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <div id="batch-log-output" class="p-3 bg-slate-900 text-slate-200 font-mono text-[11px] rounded-xl max-h-40 overflow-y-auto space-y-1"></div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
+        <button onclick="closeBatchRunnerModal()" class="px-4 py-2 bg-slate-100 text-slate-600 text-xs font-semibold rounded-xl">Close</button>
+        <button onclick="startBatchExecution()" id="btn-start-batch" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20 flex items-center space-x-1.5">
+          <span>🚀</span>
+          <span>Start Batch Engine</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FOLLOW-UP DRAFTER MODAL ==================== -->
+  <div id="followup-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">📬</span>
+          <div>
+            <h3 class="text-base font-bold text-slate-900">7-Day Follow-Up Drafter</h3>
+            <p class="text-xs text-slate-500" id="followup-modal-target">Target Company</p>
+          </div>
+        </div>
+        <button onclick="closeFollowUpModal()" class="text-slate-400 hover:text-slate-700 font-bold text-xl leading-none">&times;</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Subject</label>
+          <input type="text" id="followup-subject" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">2-Sentence High-Converting Email</label>
+          <textarea id="followup-body" rows="6" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-sans text-xs focus:bg-white"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+        <button onclick="copyFollowUpToClipboard()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all">
+          📋 Copy Text
+        </button>
+        <div class="space-x-2">
+          <button onclick="closeFollowUpModal()" class="px-4 py-2 bg-slate-100 text-slate-600 text-xs font-semibold rounded-xl">Close</button>
+          <button onclick="saveFollowUpDraft()" id="btn-save-followup" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm">
+            📝 Save to Gmail Draft
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== AURAJOBS SCRAPER & INGESTION MODAL ==================== -->
+  <div id="scraper-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">⚡</div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Job Ingestion Engine (AuraJobs + Public Feeds)</h3>
+            <p class="text-xs text-slate-500">Autonomous scraping, zero-auth filtering, and atomic ingestion into SQLite.</p>
+          </div>
+        </div>
+        <button onclick="closeScraperModal()" class="text-slate-400 hover:text-slate-700 font-bold text-xl leading-none">&times;</button>
+      </div>
+
+      <!-- Scraper Configuration Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Target Role Keyword</label>
+          <input type="text" id="scraper-role" value="Product Designer" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:bg-white focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Acquisition Mode</label>
+          <select id="scraper-mode" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:bg-white text-slate-700">
+            <option value="Express">⚡ Express (~30s, Zero-Auth Feeds: Remotive, Arbeitnow, RemoteOK)</option>
+            <option value="Comprehensive">🔍 Comprehensive MultiBoard (JobSpy Deep Search: LinkedIn, Indeed, etc.)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Seniority Level</label>
+          <select id="scraper-seniority" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:bg-white text-slate-700">
+            <option value="Any">Any Seniority</option>
+            <option value="Junior">Junior / Entry</option>
+            <option value="Mid">Mid-Level</option>
+            <option value="Senior" selected>Senior</option>
+            <option value="Lead">Lead / Staff</option>
+            <option value="Director">Director / VP</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Geography / Target Market</label>
+          <select id="scraper-geo" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:bg-white text-slate-700">
+            <option value="All" selected>All / Global Remote</option>
+            <option value="United States">United States</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="European Union">European Union</option>
+            <option value="UAE / Middle East">UAE / Middle East</option>
+            <option value="Canada">Canada</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Job Freshness Window</label>
+          <select id="scraper-freshness" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:bg-white text-slate-700">
+            <option value="24">Past 24 Hours</option>
+            <option value="48">Past 48 Hours</option>
+            <option value="72" selected>Past 72 Hours (Recommended)</option>
+            <option value="168">Past 7 Days</option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <button onclick="startScraperRun()" id="btn-run-scraper" class="w-full py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5">
+            <span>🚀</span>
+            <span>Start Ingestion Run</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Execution Telemetry -->
+      <div class="space-y-2 pt-2 border-t border-slate-100">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-slate-700">Telemetry & Progress</span>
+          <span id="scraper-status-text" class="font-semibold text-blue-600">Idle (0%)</span>
+        </div>
+        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+          <div id="scraper-progress-bar" class="bg-gradient-to-r from-blue-600 to-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <pre id="scraper-log-terminal" class="h-44 p-3 bg-slate-900 text-slate-200 text-[11px] font-mono rounded-xl overflow-y-auto whitespace-pre-wrap leading-tight shadow-inner">Ready to fetch fresh job openings...</pre>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+        <span class="text-slate-400">Deterministic SHA256 deduplication avoids storing duplicate postings.</span>
+        <button onclick="closeScraperModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl transition-all">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CONTROLLER JAVASCRIPT ==================== -->
+  <script>
+
+    const API_BASE = window.location.origin;
+    let isDryRunActive = true;
+    let lastScannedReplies = [];
+
+    // Authentic Country-Specific Sample JDs
+    const SAMPLE_JDS = {
+      ae: {
+        flag: "🇦🇪",
+        countryName: "UAE / Dubai",
+        company: "Careem (Uber Subsidiary)",
+        role: "Senior Product Designer",
+        email: "talent@careem.com",
+        text: "Careem is looking for a Senior Product Designer to join our Super App Experience Squad in Dubai.\nRequirements:\n- 5+ years shipping complex consumer mobile and B2B SaaS interfaces.\n- Mastery of Figma, design systems architecture, component tokenization, and rapid prototyping.\n- Experience running end-to-end qualitative user research and usability testing sprints.\n- Strong cross-functional alignment with engineering leads (Tailwind, HTML/CSS handoff).\n- Location: Dubai / UAE. Transferable visa or Golden Visa preferred."
+      },
+      us: {
+        flag: "🇺🇸",
+        countryName: "US / Canada",
+        company: "Stripe",
+        role: "Staff Product Designer",
+        email: "design-talent@stripe.com",
+        text: "Stripe is hiring a Staff Product Designer for our Global Payment Platforms team in San Francisco (Remote eligible).\nRequirements:\n- 6+ years designing enterprise fintech or developer-facing products.\n- Deep craft in systems thinking, high-density dashboard UX, and interactive Figma prototyping.\n- Proven track record designing WCAG AA accessible design system components.\n- Cross-functional leadership across PM, engineering, and data science.\n- Location: United States / Remote. Strict 1-Page resume preferred. No photo."
+      },
+      uk: {
+        flag: "🇬🇧",
+        countryName: "UK / Europe",
+        company: "Monzo Bank",
+        role: "Senior Product Designer",
+        email: "careers@monzo.com",
+        text: "Monzo is seeking a Senior Product Designer for our Personal Finance squad in London.\nRequirements:\n- 5+ years experience designing intuitive mobile banking & consumer financial experiences.\n- Strong skills in design systems, micro-interactions, mobile UX patterns (iOS & Android).\n- Rigorous qualitative and quantitative customer discovery skills.\n- Collaborative partnership with cross-functional product squads in agile sprints.\n- Location: London, UK (Hybrid). 1-page CV standard."
+      },
+      in: {
+        flag: "🇮🇳",
+        countryName: "India",
+        company: "Swiggy",
+        role: "Lead UI/UX Designer",
+        email: "talent@swiggy.in",
+        text: "Swiggy is looking for a Lead UI/UX Designer to drive our Consumer Experience team in Bangalore.\nRequirements:\n- 5+ years designing high-scale consumer mobile products (millions of daily active users).\n- Expert in design systems, micro-interactions, Figma component libraries, and motion design.\n- Ability to translate user research and funnel conversion metrics into intuitive UI solutions.\n- Strong portfolio demonstrating end-to-end product design ownership.\n- Location: Bangalore / Delhi NCR, India."
+      },
+      sa: {
+        flag: "🇸🇦",
+        countryName: "Saudi Arabia / Gulf",
+        company: "Noon",
+        role: "Senior Product Designer",
+        email: "hiring@noon.com",
+        text: "Noon is hiring a Senior Product Designer for our E-Commerce Experience team in Riyadh.\nRequirements:\n- 5+ years designing bilingual (Arabic & English) mobile apps and responsive web interfaces.\n- Mastery of RTL/LTR UI patterns, Figma design systems, and rapid interactive prototyping.\n- Experience with high-conversion checkout funnels and search discovery workflows.\n- Formal photo and GCC transferable visa required.\n- Location: Riyadh, Saudi Arabia."
+      },
+      de: {
+        flag: "🇩🇪",
+        countryName: "Germany",
+        company: "Zalando",
+        role: "Senior Product Designer",
+        email: "jobs@zalando.de",
+        text: "Zalando is looking for a Senior Product Designer for our Core Discovery team in Berlin.\nRequirements:\n- 5+ years experience building scalable digital experiences in e-commerce or retail tech.\n- Deep understanding of user-centered design, prototyping, usability testing, and design systems.\n- Fluent English; German is a plus.\n- Tabular Lebenslauf format expected.\n- Location: Berlin, Germany (Hybrid)."
+      }
+    };
+
+    // Micro-interaction Page Transition
+    function triggerPageTransition() {
+      const bar = document.getElementById('page-loading-bar');
+      if (!bar) return;
+      bar.style.opacity = '1';
+      bar.style.width = '45%';
+      setTimeout(() => {
+        bar.style.width = '100%';
+        setTimeout(() => {
+          bar.style.opacity = '0';
+          setTimeout(() => { bar.style.width = '0%'; }, 300);
+        }, 200);
+      }, 100);
+    }
+
+    // View Navigation Logic
+    function switchView(viewName) {
+      triggerPageTransition();
+      const views = ['apply', 'dashboard', 'leads', 'tracker', 'profile', 'copilot'];
+      views.forEach(v => {
+        const el = document.getElementById('view-' + v);
+        if (el) el.classList.add('hidden');
+        
+        const navBtn = document.getElementById('nav-' + v);
+        if (navBtn) {
+          if (v === viewName) {
+            navBtn.className = "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold shadow-md shadow-blue-600/25 transition-all";
+          } else {
+            navBtn.className = "w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-sidebarHover transition-all";
+          }
+        }
+
+        const tabBtn = document.getElementById('tab-' + v);
+        if (tabBtn) {
+          if (v === viewName) {
+            tabBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-blue-600 shadow-sm";
+          } else {
+            tabBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all";
+          }
+        }
+      });
+
+      const activeEl = document.getElementById('view-' + viewName);
+      if (activeEl) activeEl.classList.remove('hidden');
+
+      const titles = {
+        apply: 'Apply For Jobs',
+        dashboard: 'Analytics Dashboard',
+        leads: 'Leads Queue Hub',
+        tracker: 'Applied Pipeline Tracker',
+        profile: 'Candidate Evidence Hub',
+        copilot: 'Career Copilot AI'
+      };
+      const topTitle = document.getElementById('topbar-title');
+      if (topTitle) topTitle.innerText = titles[viewName] || 'CareerHero Studio';
+
+      const subtags = {
+        apply: { text: 'Strict 1-Page Rule Active', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200' },
+        dashboard: { text: 'Live Pipeline & Response Analytics', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200' },
+        leads: { text: '590+ Stored Target Leads & Batch Engine', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200' },
+        tracker: { text: 'Application History & Gmail Status', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200' },
+        profile: { text: 'Candidate Evidence Bank & Master CV', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200' },
+        copilot: { text: 'Career Copilot AI Assistant', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200' }
+      };
+      const subtagEl = document.getElementById('topbar-subtag');
+      if (subtagEl && subtags[viewName]) {
+        if (viewName === 'apply') {
+          handleCountryChange();
+        } else {
+          subtagEl.innerText = subtags[viewName].text;
+          subtagEl.className = subtags[viewName].cls;
+        }
+      }
+
+      if (viewName === 'dashboard') {
+        loadDashboardStats();
+        loadInboundRepliesFeed();
+        loadAutopsyReport();
+      }
+      if (viewName === 'profile') loadProfileData();
+      if (viewName === 'tracker') loadApplicationsTable();
+      if (viewName === 'leads') {
+        loadLeadsStats();
+        loadLeadsTable();
+      }
+    }
+
+    // Country Change Handler (Only shows sample JD prompt AFTER country is picked)
+    function handleCountryChange() {
+      const countryEl = document.getElementById('apply-country');
+      if (!countryEl) return;
+      const country = countryEl.value;
+      const dubaiAlert = document.getElementById('dubai-photo-alert');
+      const tag = document.getElementById('topbar-subtag');
+      const samplePrompt = document.getElementById('country-sample-prompt');
+
+      if (!country) {
+        if (samplePrompt) samplePrompt.classList.add('hidden');
+        if (dubaiAlert) dubaiAlert.classList.add('hidden');
+        return;
+      }
+
+      const sample = SAMPLE_JDS[country];
+      if (sample && samplePrompt) {
+        samplePrompt.classList.remove('hidden');
+        document.getElementById('country-sample-flag').innerText = sample.flag;
+        document.getElementById('country-sample-title').innerText = "Country Selected: " + sample.countryName;
+        document.getElementById('country-sample-desc').innerText = "Load authentic sample JD for " + sample.company + " (" + sample.role + ").";
+      } else if (samplePrompt) {
+        samplePrompt.classList.add('hidden');
+      }
+
+      if (country === 'ae' || country === 'sa') {
+        if (dubaiAlert) dubaiAlert.classList.remove('hidden');
+        if (tag) {
+          tag.innerText = 'Middle East Protocol (Photo Expected)';
+          tag.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200';
+        }
+      } else {
+        if (dubaiAlert) dubaiAlert.classList.add('hidden');
+        if (tag) {
+          tag.innerText = 'Strict 1-Page Rule Active';
+          tag.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200';
+        }
+      }
+    }
+
+    function loadCurrentCountrySampleJD() {
+      const country = document.getElementById('apply-country').value;
+      const sample = SAMPLE_JDS[country] || SAMPLE_JDS['ae'];
+      document.getElementById('apply-company').value = sample.company;
+      document.getElementById('apply-role').value = sample.role;
+      document.getElementById('apply-email').value = sample.email;
+      document.getElementById('apply-jd-text').value = sample.text;
+    }
+
+    function handlePageBudgetChange() {
+      const budget = document.getElementById('apply-page-budget').value;
+      const status = document.getElementById('cv-length-status');
+      if (!status) return;
+      if (budget === '1') {
+        status.innerText = '✓ Formatted to 1-Page Limit';
+        status.className = 'text-[11px] text-emerald-600 font-semibold';
+      } else {
+        status.innerText = '✓ 2-Page Executive Budget Active';
+        status.className = 'text-[11px] text-blue-600 font-semibold';
+      }
+    }
+
+    // Fetch Job from URL
+    async function fetchJobFromUrl() {
+      const url = document.getElementById('apply-job-url').value.trim();
+      if (!url) {
+        alert("Please enter a job URL first!");
+        return;
+      }
+      document.getElementById('active-pulse-loader').classList.remove('hidden');
+      const btn = document.getElementById('btn-fetch-job');
+      btn.innerText = "Fetching...";
+      try {
+        const res = await fetch(API_BASE + '/api/parse-job', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ url: url })
+        });
+        const data = await res.json();
+        if (data.company) document.getElementById('apply-company').value = data.company;
+        if (data.role) document.getElementById('apply-role').value = data.role;
+        if (data.text) document.getElementById('apply-jd-text').value = data.text;
+      } catch (err) {
+        alert("Failed to fetch URL. You can paste the JD text directly below.");
+      } finally {
+        document.getElementById('active-pulse-loader').classList.add('hidden');
+        btn.innerText = "Fetch Job";
+      }
+    }
+
+    // Complete Tailoring Action
+    async function runCompleteTailoring() {
+      const company = document.getElementById('apply-company').value.trim() || 'Target Company';
+      const role = document.getElementById('apply-role').value.trim() || 'Senior Product Designer';
+      const jdText = document.getElementById('apply-jd-text').value.trim();
+      const country = document.getElementById('apply-country').value || 'us';
+      const pageBudget = document.getElementById('apply-page-budget').value;
+      const photoPath = document.getElementById('apply-photo-path') ? document.getElementById('apply-photo-path').value : '';
+      const visaStatus = document.getElementById('apply-visa-status') ? document.getElementById('apply-visa-status').value : '';
+      const nationality = document.getElementById('apply-nationality') ? document.getElementById('apply-nationality').value : '';
+
+      if (!jdText) {
+        alert("Please paste a Job Description or select a country to load a sample JD!");
+        return;
+      }
+
+      document.getElementById('active-pulse-loader').classList.remove('hidden');
+      const btn = document.getElementById('btn-tailor-application');
+      btn.innerText = "Paraphrasing & Generating...";
+
+      try {
+        // 1. ATS Analysis
+        const resAnalyze = await fetch(API_BASE + '/api/analyze-job', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ company: company, role: role, text: jdText })
+        });
+        const dataAnalyze = await resAnalyze.json();
+        const score = dataAnalyze.match_score ? Math.round(dataAnalyze.match_score) : 88;
+        document.getElementById('apply-match-gauge').innerText = score + '%';
+        
+        // Speedometer arc update
+        const arc = document.getElementById('speedo-arc');
+        if (arc) {
+          const offset = 126 - (126 * (score / 100));
+          arc.style.strokeDashoffset = offset;
+        }
+
+        const matchedArr = dataAnalyze.matched_skills || ['Design Systems', 'Figma', 'Prototyping'];
+        document.getElementById('apply-matched-count').innerText = matchedArr.length + ' keywords verified: ' + matchedArr.slice(0, 3).join(', ') + '...';
+
+        // 2. 1-Page Tailored Resume (Strict constraint + Middle East protocol)
+        const resTailor = await fetch(API_BASE + '/api/tailor-resume', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            company: company,
+            role: role,
+            job_text: jdText,
+            country: country,
+            page_budget: pageBudget,
+            photo_path: photoPath,
+            visa_status: visaStatus,
+            nationality: nationality
+          })
+        });
+        const dataTailor = await resTailor.json();
+        document.getElementById('apply-resume-output').value = dataTailor.markdown || '';
+
+        // 3. Human Cold Email
+        const emailContact = document.getElementById('apply-email').value || ('talent@' + company.toLowerCase().replace(/[^a-z]/g, '') + '.com');
+        const resEmail = await fetch(API_BASE + '/api/draft-email', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ company: company, role: role, to: emailContact, job_text: jdText })
+        });
+        const dataEmail = await resEmail.json();
+        const candName = (document.getElementById('sidebar-user-name') ? document.getElementById('sidebar-user-name').innerText : 'Candidate Name');
+        document.getElementById('apply-email-subject').value = dataEmail.subject || (role + ' — ' + candName);
+        document.getElementById('apply-email-body').value = dataEmail.body || ('Hi ' + company + ' Team,\n\nI came across your ' + role + ' opening and wanted to reach out directly...');
+        runPitchAudit();
+        runPitchAudit();
+
+      } catch (err) {
+        alert("Generation error: " + err);
+      } finally {
+        document.getElementById('active-pulse-loader').classList.add('hidden');
+        btn.innerHTML = "<span>✨</span><span>Paraphrase JD & Generate 1-Page Application</span>";
+      }
+    }
+
+    // Execute 1-Click Send or Dry Run
+    async function executeSendOrDryRun() {
+      const company = document.getElementById('apply-company').value.trim() || 'Target Company';
+      const role = document.getElementById('apply-role').value.trim() || 'Senior Product Designer';
+      const to = document.getElementById('apply-email').value.trim();
+      const candName = (document.getElementById('sidebar-user-name') ? document.getElementById('sidebar-user-name').innerText : 'Candidate Name');
+      const subject = document.getElementById('apply-email-subject').value.trim() || (role + ' — ' + candName);
+      const body = document.getElementById('apply-email-body').value.trim();
+
+      if (!to) {
+        alert("Please enter a recipient email address first!");
+        return;
+      }
+      if (!body) {
+        alert("Please generate or enter an email body first!");
+        return;
+      }
+
+      document.getElementById('active-pulse-loader').classList.remove('hidden');
+      const btn = document.getElementById('btn-execute-send');
+      btn.innerText = "Dispatching...";
+
+      try {
+        const res = await fetch(API_BASE + '/api/email/send', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            to: to,
+            subject: subject,
+            body: body,
+            company: company,
+            role: role,
+          })
+        });
+        const data = await res.json();
+        
+        if (data.status === 'ok') {
+          if (data.dry_run) {
+            alert("✓ Application simulated in Safe Mode (DRY_RUN). Recorded in live tracker!\nToggle 'Safe Mode' if you wish to dispatch live email.");
+          } else {
+            alert("✓ Application email & tailored PDF dispatched live via Gmail API to " + to + "!\nGmail Message ID: " + (data.message_id || "Sent"));
+          }
+          loadDashboardStats();
+          loadApplicationsTable();
+          switchView('tracker');
+        } else {
+          alert("Send error: " + JSON.stringify(data));
+        }
+      } catch (err) {
+        alert("Dispatch failed: " + err);
+      } finally {
+        document.getElementById('active-pulse-loader').classList.add('hidden');
+        btn.innerHTML = "<span>⚡</span><span id='btn-send-label'>" + (isDryRunActive ? "Simulate Send" : "1-Click Live Send") + "</span>";
+      }
+    }
+
+    // Load Live Dashboard Starting at 0
+    async function loadDashboardStats() {
+      try {
+        const res = await fetch(API_BASE + '/api/tracker/applications');
+        if (!res.ok) return;
+        const apps = await res.json();
+        
+        const count = apps ? apps.length : 0;
+        document.getElementById('kpi-total-applied').innerText = count;
+        document.getElementById('badge-total-leads').innerText = count;
+        document.getElementById('mono-applied-count').innerText = count;
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        let sentToday = 0;
+        let interviewCount = 0;
+        let totalScore = 0;
+        let scoredCount = 0;
+
+        (apps || []).forEach(a => {
+          if (a.applied_date && a.applied_date.startsWith(todayStr)) {
+            sentToday++;
+          }
+          if (a.status === 'Interview') {
+            interviewCount++;
+          }
+          if (a.match_score && parseFloat(a.match_score) > 0) {
+            totalScore += parseFloat(a.match_score);
+            scoredCount++;
+          }
+        });
+
+        const kpiToday = document.getElementById('kpi-sent-today');
+        if (kpiToday) kpiToday.innerText = sentToday;
+
+        const kpiInterview = document.getElementById('kpi-interviews');
+        if (kpiInterview) kpiInterview.innerText = interviewCount;
+
+        const avgScore = scoredCount > 0 ? Math.round(totalScore / scoredCount) + '%' : (count > 0 ? '85%' : '0%');
+        const kpiAvgMatch = document.getElementById('kpi-avg-match');
+        if (kpiAvgMatch) kpiAvgMatch.innerText = avgScore;
+
+        document.getElementById('bullet-target-label').innerText = count + ' / 20';
+        document.getElementById('bullet-target-fill').style.width = Math.min(100, (count/20)*100) + '%';
+        document.getElementById('bar-applied').style.width = count > 0 ? "100%" : "0%";
+
+        if (count > 0) {
+          const last = apps[0];
+          document.getElementById('dash-last-applied-text').innerHTML = '<strong>' + (last.company || 'Company') + '</strong> — ' + (last.role || 'Role') + ' <span class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full ml-2">' + (last.status || 'Sent') + '</span>';
+          if (count > 1) {
+            const before = apps[1];
+            document.getElementById('dash-before-applied-text').innerHTML = 'Before that: <strong>' + before.company + '</strong> — ' + before.role + ' (' + (before.applied_date || 'Earlier') + ')';
+          } else {
+            document.getElementById('dash-before-applied-text').innerText = "Before that: — (First application in pipeline)";
+          }
+        } else {
+          document.getElementById('dash-last-applied-text').innerText = "None yet. Go to Apply Studio to submit your first application.";
+          document.getElementById('dash-before-applied-text').innerText = "Before that: —";
+        }
+
+        renderHeatmap(count);
+      } catch (e) {}
+    }
+
+    // Render 30-Day Activity Heatmap
+    function renderHeatmap(activeCount) {
+      const grid = document.getElementById('activity-heatmap-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      for (let i = 0; i < 30; i++) {
+        const square = document.createElement('div');
+        square.className = 'w-3.5 h-3.5 rounded-sm transition-all ';
+        if (i === 29 && activeCount > 0) {
+          square.className += 'bg-blue-600 shadow-sm shadow-blue-500/50 scale-110';
+        } else if (i > 26 && activeCount > 1) {
+          square.className += 'bg-blue-400';
+        } else if (i > 24 && activeCount > 2) {
+          square.className += 'bg-blue-300';
+        } else {
+          square.className += 'bg-slate-100 border border-slate-200/80';
+        }
+        grid.appendChild(square);
+      }
+      const totalLabel = document.getElementById('heatmap-total-label');
+      if (totalLabel) totalLabel.innerText = activeCount + ' Activities Logged';
+    }
+
+    // Load Live Applications Table
+    async function loadApplicationsTable() {
+      try {
+        const res = await fetch(API_BASE + '/api/tracker/applications');
+        if (!res.ok) return;
+        const apps = await res.json();
+        const tbody = document.getElementById('applications-table-body');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (!apps || apps.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="py-12 text-center text-slate-400 text-xs"><div class="text-3xl mb-2">📋</div><div class="font-bold text-slate-700 text-sm mb-1">No applications logged yet</div><p class="mb-4">Go to Apply Studio to customize and send your first application!</p><button onclick="switchView(\'apply\')" class="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold shadow-sm hover:bg-blue-700">+ Open Apply Studio</button></td></tr>';
+          return;
+        }
+
+        apps.forEach(app => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50 transition-colors';
+          tr.innerHTML = '<td class="py-3.5 pl-2"><div class="font-bold text-slate-900">' + (app.role || 'Role') + '</div><div class="text-xs text-slate-400">' + (app.company || 'Company') + '</div></td>' +
+            '<td><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ' + (app.status === 'Sent' ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700') + ' border border-blue-200">' + (app.status || 'Applied') + '</span></td>' +
+            '<td class="text-xs text-slate-500">' + (app.applied_date || '2026-09-13') + '</td>' +
+            '<td class="text-xs text-slate-700 font-medium">' + (app.contact_email || 'careers@company.com') + '</td>' +
+            '<td class="text-right pr-2 text-xs space-x-2"><button onclick="openCvPreviewModal()" class="text-blue-600 hover:underline font-bold">👁️ View CV</button><button onclick="deleteApp(' + app.id + ')" class="text-slate-400 hover:text-rose-500 p-1">🗑️</button></td>';
+          tbody.appendChild(tr);
+        });
+      } catch (e) {}
+    }
+
+    async function deleteApp(id) {
+      if (!confirm("Remove this application?")) return;
+      try {
+        await fetch(API_BASE + '/api/tracker/delete', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ app_id: id })
+        });
+        loadDashboardStats();
+        loadApplicationsTable();
+      } catch (e) {}
+    }
+
+    // Reset All Demo Data to 0
+    async function clearAllDemoData() {
+      if (!confirm("Reset all applications to 0? This lets you test the pipeline from clean zero.")) return;
+      try {
+        await fetch(API_BASE + '/api/tracker/clear-all', { method: 'POST' });
+        loadDashboardStats();
+        loadApplicationsTable();
+        alert("Pipeline reset to 0! Submit a job in Apply Studio to see it move.");
+      } catch (e) {
+        alert("Reset failed: " + e);
+      }
+    }
+
+    // Clean Line-by-Line Markdown to HTML Formatter
+    function formatMarkdownToHtml(md) {
+      if (!md) return '';
+      const lines = md.split('\n');
+      let out = [];
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (!line) {
+          out.push('<div class="h-2"></div>');
+          continue;
+        }
+        if (line.startsWith('# ')) {
+          out.push('<h1 class="text-xl font-black text-slate-950 tracking-tight mb-1">' + line.slice(2) + '</h1>');
+        } else if (line.startsWith('### ')) {
+          out.push('<h2 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">' + line.slice(4) + '</h2>');
+        } else if (line.startsWith('## ')) {
+          out.push('<h3 class="text-xs font-extrabold text-slate-900 border-b border-blue-200 pb-1 mt-4 mb-2 uppercase tracking-wide">' + line.slice(3) + '</h3>');
+        } else if (line.startsWith('- ')) {
+          let item = line.slice(2).replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900">$1</strong>');
+          out.push('<div class="flex items-start space-x-2 py-0.5"><span class="text-blue-500 font-bold">•</span><span class="leading-relaxed">' + item + '</span></div>');
+        } else {
+          let formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900">$1</strong>').replace(/\*(.*?)\*/g, '<em class="text-slate-500">$1</em>');
+          out.push('<p class="leading-relaxed text-slate-700">' + formatted + '</p>');
+        }
+      }
+      return out.join('');
+    }
+
+    // CV Preview Modal
+    function openCvPreviewModal() {
+      const md = document.getElementById('apply-resume-output').value;
+      const content = document.getElementById('cv-modal-content');
+      if (!md) {
+        content.innerHTML = "<div class='text-slate-400 text-center py-10'><div class='text-2xl mb-2'>📄</div>No CV generated yet. Click <strong>'Paraphrase JD & Generate 1-Page Application'</strong> first.</div>";
+      } else {
+        const formatted = formatMarkdownToHtml(md);
+        content.innerHTML = '<div class="p-6 rounded-xl border border-slate-200 bg-white shadow-sm space-y-2">' + formatted + '</div>';
+      }
+      document.getElementById('cv-preview-modal').classList.remove('hidden');
+    }
+
+    function closeCvPreviewModal() { 
+      document.getElementById('cv-preview-modal').classList.add('hidden'); 
+    }
+
+    function copyResumeMarkdown() {
+      const md = document.getElementById('apply-resume-output').value;
+      if (!md) return;
+      navigator.clipboard.writeText(md);
+      alert("Tailored Resume Markdown copied to clipboard!");
+    }
+
+    // Profile Data Loading & Saving
+    async function loadProfileData() {
+      checkAppEnvironment();
+      try {
+        const res = await fetch(API_BASE + '/api/profile');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.full_name) {
+          const pName = document.getElementById('prof-name');
+          if (pName) pName.value = data.full_name || '';
+          const sName = document.getElementById('sidebar-user-name');
+          if (sName) sName.innerText = data.full_name || 'Candidate Name';
+          const avatar = document.getElementById('user-avatar-initials');
+          if (avatar) avatar.innerText = (data.full_name.split(' ').map(n=>n[0]).join('')).substring(0, 2).toUpperCase();
+        }
+        const pEmail = document.getElementById('prof-email');
+        if (pEmail) pEmail.value = data.email || '';
+        const pPhone = document.getElementById('prof-phone');
+        if (pPhone) pPhone.value = data.phone || '';
+        const pRole = document.getElementById('prof-role');
+        if (pRole) pRole.value = data.target_role || '';
+        const sRole = document.getElementById('sidebar-user-role');
+        if (sRole && data.target_role) sRole.innerText = data.target_role;
+
+        const links = data.portfolio_links || {};
+        if (document.getElementById('link-figma')) document.getElementById('link-figma').value = links.figma || '';
+        if (document.getElementById('link-behance')) document.getElementById('link-behance').value = links.behance || '';
+        if (document.getElementById('link-notion')) document.getElementById('link-notion').value = links.notion || '';
+        if (document.getElementById('link-showreel')) document.getElementById('link-showreel').value = links.showreel || '';
+
+        const setProv = document.getElementById('set-llm-provider');
+        if (setProv) setProv.value = data.llm_provider || 'gemini';
+        const setKey = document.getElementById('set-llm-key');
+        if (setKey) setKey.value = data.llm_api_key || '';
+        const setPass = document.getElementById('set-activation-passkey');
+        if (setPass) setPass.value = data.activation_passkey || '';
+      } catch (err) {}
+    }
+
+    async function saveProfileData() {
+      const payload = {
+        full_name: document.getElementById('prof-name').value,
+        email: document.getElementById('prof-email').value,
+        phone: document.getElementById('prof-phone').value,
+        target_role: document.getElementById('prof-role').value,
+        portfolio_links: {
+          figma: document.getElementById('link-figma').value,
+          behance: document.getElementById('link-behance').value,
+          notion: document.getElementById('link-notion').value,
+          showreel: document.getElementById('link-showreel').value,
+        }
+      };
+      try {
+        const res = await fetch(API_BASE + '/api/profile', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) alert("Profile saved!");
+      } catch (err) {
+        alert("Save error: " + err);
+      }
+    }
+
+    // Copilot Chat
+    async function sendCopilotMessage() {
+      const input = document.getElementById('copilot-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      appendChatMessage('user', text);
+      const btn = document.getElementById('btn-send-copilot');
+      btn.innerText = '...';
+      try {
+        const res = await fetch(API_BASE + '/api/copilot/chat', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+        appendChatMessage('assistant', data.reply);
+      } catch (e) {
+        appendChatMessage('assistant', 'Error reaching AI copilot.');
+      } finally {
+        btn.innerText = 'Send';
+      }
+    }
+
+    function appendChatMessage(role, content) {
+      const container = document.getElementById('copilot-messages');
+      if (!container) return;
+      const div = document.createElement('div');
+      div.className = "flex items-start space-x-3 " + (role === 'user' ? 'justify-end' : '');
+      if (role === 'assistant') {
+        div.innerHTML = '<div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">🤖</div>' +
+          '<div class="max-w-xl p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-800 space-y-2">' +
+            '<div class="font-bold text-slate-900">Career Copilot</div>' +
+            '<div class="whitespace-pre-line leading-relaxed">' + content + '</div>' +
+          '</div>';
+      } else {
+        div.innerHTML = '<div class="max-w-md p-3.5 rounded-2xl bg-blue-600 text-white text-xs font-medium shadow-sm">' + content + '</div>' +
+          '<div class="w-8 h-8 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0">You</div>';
+      }
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Settings Modal
+    function openSettingsModal() { document.getElementById('settings-modal').classList.remove('hidden'); }
+    function closeSettingsModal() { document.getElementById('settings-modal').classList.add('hidden'); }
+
+    async function saveSettingsConfig() {
+      const payload = {
+        llm_provider: document.getElementById('set-llm-provider').value,
+        llm_api_key: document.getElementById('set-llm-key').value,
+        dry_run: document.getElementById('set-dry-run').checked,
+        activation_passkey: document.getElementById('set-activation-passkey') ? document.getElementById('set-activation-passkey').value.trim() : '',
+      };
+      try {
+        await fetch(API_BASE + '/api/profile', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        alert("Configuration saved!");
+        closeSettingsModal();
+        loadProfileData();
+        checkGmailStatus();
+      } catch (e) {}
+    }
+
+    // ==================== GMAIL & INBOUND SCANNER CONTROLLER ====================
+    async function checkGmailStatus() {
+      try {
+        const res = await fetch(API_BASE + '/api/gmail/status');
+        if (!res.ok) return;
+        const data = await res.json();
+        const headerDot = document.getElementById('header-gmail-dot');
+        const headerText = document.getElementById('header-gmail-text');
+        const modalDot = document.getElementById('modal-gmail-dot');
+        const modalAccount = document.getElementById('modal-gmail-account');
+        const modalBadge = document.getElementById('modal-gmail-badge');
+        const modalDetails = document.getElementById('modal-gmail-details');
+
+        isDryRunActive = data.dry_run !== false;
+        updateDryRunUI(isDryRunActive);
+
+        if (data.authenticated) {
+          if (headerDot) headerDot.className = "w-2 h-2 rounded-full bg-emerald-500";
+          if (headerText) headerText.innerText = "Gmail: " + (data.email || "Connected");
+          if (modalDot) modalDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+          if (modalAccount) modalAccount.innerText = data.email || "Connected";
+          if (modalBadge) {
+            modalBadge.innerText = "Active & Connected";
+            modalBadge.className = "text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200";
+          }
+          if (modalDetails) {
+            modalDetails.innerText = "Total Mailbox Messages: " + (data.messages_total ? data.messages_total.toLocaleString() : "Available") + " | Scopes: gmail.send, gmail.readonly, gmail.modify";
+          }
+          const disBtn = document.getElementById('btn-modal-disconnect');
+          if (disBtn) disBtn.classList.remove('hidden');
+          const headerLogout = document.getElementById('header-logout-btn');
+          if (headerLogout) headerLogout.classList.remove('hidden');
+        } else {
+          if (headerDot) headerDot.className = "w-2 h-2 rounded-full bg-amber-500";
+          if (headerText) headerText.innerText = "⚠️ Connect Gmail";
+          if (modalDot) modalDot.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
+          if (modalAccount) modalAccount.innerText = "Not Connected";
+          if (modalBadge) {
+            modalBadge.innerText = "Pending Auth";
+            modalBadge.className = "text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200";
+          }
+          if (modalDetails) {
+            modalDetails.innerText = data.error || "Click 'Authorize Gmail Account' or 'Auto-Detect Workspace Token' to connect your Google account.";
+          }
+          const disBtn = document.getElementById('btn-modal-disconnect');
+          if (disBtn) disBtn.classList.add('hidden');
+          const headerLogout = document.getElementById('header-logout-btn');
+          if (headerLogout) headerLogout.classList.add('hidden');
+        }
+      } catch (e) {}
+    }
+
+    async function disconnectGmailAccount() {
+      if (!confirm("Are you sure you want to disconnect your Gmail integration? You can reconnect anytime by clicking 'Authorize Gmail Account' or 'Auto-Detect Workspace Token'.")) {
+        return;
+      }
+      try {
+        const res = await fetch(API_BASE + '/api/gmail/disconnect', { method: 'POST' });
+        const data = await res.json();
+        alert("Gmail account disconnected! Authentication status reset to unauthenticated.");
+        await checkGmailStatus();
+      } catch (err) {
+        alert("Failed to disconnect Gmail: " + err);
+      }
+    }
+
+    function openGmailModal() {
+      checkGmailStatus();
+      document.getElementById('gmail-modal').classList.remove('hidden');
+    }
+
+    function closeGmailModal() {
+      document.getElementById('gmail-modal').classList.add('hidden');
+    }
+
+    async function syncWorkspaceCredentials() {
+      try {
+        const res = await fetch(API_BASE + '/api/gmail/sync-workspace', { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'ok') {
+          alert("Successfully synced workspace credentials and tokens!");
+          checkGmailStatus();
+        } else {
+          alert("Sync result: " + JSON.stringify(data));
+        }
+      } catch (err) {
+        alert("Sync failed: " + err);
+      }
+    }
+
+    async function saveCredentialsJson() {
+      const jsonText = document.getElementById('gmail-credentials-input').value.trim();
+      if (!jsonText) {
+        alert("Please paste your credentials.json content first!");
+        return;
+      }
+      try {
+        const res = await fetch(API_BASE + '/api/gmail/save-credentials', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ credentials_json: jsonText })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert("credentials.json saved successfully! Now click 'Authorize Gmail Account'.");
+          checkGmailStatus();
+        } else {
+          alert("Error: " + (data.detail || "Failed to save credentials"));
+        }
+      } catch (e) {
+        alert("Save failed: " + e);
+      }
+    }
+
+    async function triggerInteractiveOAuth() {
+      const btn = document.getElementById('btn-modal-auth');
+      btn.innerText = "Opening Browser...";
+      try {
+        const res = await fetch(API_BASE + '/api/gmail/authorize', { method: 'POST' });
+        const data = await res.json();
+        alert(data.message || "Browser opened for authorization. Select your account and click Continue.");
+        let pollCount = 0;
+        const interval = setInterval(async () => {
+          pollCount++;
+          await checkGmailStatus();
+          if (pollCount > 15) clearInterval(interval);
+        }, 2000);
+      } catch (e) {
+        alert("Auth trigger failed: " + e);
+      } finally {
+        btn.innerHTML = "<span>⚡</span><span>Authorize Gmail Account</span>";
+      }
+    }
+
+    function updateDryRunUI(dryRun) {
+      isDryRunActive = dryRun;
+      const dot = document.getElementById('safe-mode-dot');
+      const text = document.getElementById('safe-mode-text');
+      const sendLabel = document.getElementById('btn-send-label');
+      const sideDot = document.getElementById('dry-run-dot');
+      const sideText = document.getElementById('dry-run-label');
+      const check = document.getElementById('set-dry-run');
+
+      if (check) check.checked = dryRun;
+
+      if (dryRun) {
+        if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-500";
+        if (text) text.innerText = "Safe Mode (Dry Run)";
+        if (sendLabel) sendLabel.innerText = "Simulate Send";
+        if (sideDot) sideDot.className = "w-2 h-2 rounded-full bg-emerald-400";
+        if (sideText) sideText.innerText = "Dry-Run: Safe Mode";
+      } else {
+        if (dot) dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
+        if (text) text.innerText = "🚨 Live Gmail Send";
+        if (sendLabel) sendLabel.innerText = "1-Click Live Send";
+        if (sideDot) sideDot.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
+        if (sideText) sideText.innerText = "Dry-Run: OFF (Live)";
+      }
+    }
+
+    async function toggleDryRunMode() {
+      const nextState = !isDryRunActive;
+      if (!nextState && !confirm("Switch to LIVE GMAIL SEND? Clicking send will dispatch real emails from your Gmail account.")) {
+        return;
+      }
+      try {
+        const res = await fetch(API_BASE + '/api/config/toggle-dry-run', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ dry_run: nextState })
+        });
+        const data = await res.json();
+        updateDryRunUI(data.dry_run);
+      } catch (e) {
+        alert("Toggle error: " + e);
+      }
+    }
+
+    async function createGmailDraftAction() {
+      const company = document.getElementById('apply-company').value.trim() || 'Target Company';
+      const role = document.getElementById('apply-role').value.trim() || 'Senior Product Designer';
+      const to = document.getElementById('apply-email').value.trim();
+      const candName = (document.getElementById('sidebar-user-name') ? document.getElementById('sidebar-user-name').innerText : 'Candidate Name');
+      const subject = document.getElementById('apply-email-subject').value.trim() || (role + ' — ' + candName);
+      const body = document.getElementById('apply-email-body').value.trim();
+
+      if (!to) {
+        alert("Please enter a recipient email address first!");
+        return;
+      }
+      if (!body) {
+        alert("Please generate or enter an email body first!");
+        return;
+      }
+
+      const btn = document.getElementById('btn-create-draft');
+      btn.innerText = "Drafting...";
+      try {
+        const res = await fetch(API_BASE + '/api/email/create-draft', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            to: to,
+            subject: subject,
+            body: body,
+            company: company,
+            role: role,
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert("✓ Draft created in your Gmail Drafts folder!\nDraft ID: " + data.draft_id + "\nYou can review it on mail.google.com");
+        } else {
+          alert("Draft creation failed: " + (data.detail || "Unknown error"));
+        }
+      } catch (err) {
+        alert("Draft error: " + err);
+      } finally {
+        btn.innerHTML = "<span>📝</span><span>Save Draft</span>";
+      }
+    }
+
+    async function triggerInboundScan() {
+      const loader = document.getElementById('scan-pulse-loader');
+      const btn = document.getElementById('btn-trigger-scan');
+      if (loader) loader.classList.remove('hidden');
+      if (btn) btn.innerText = "Scanning...";
+
+      try {
+        const res = await fetch(API_BASE + '/api/gmail/scan', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ query: "-from:me newer_than:30d", max_results: 25 })
+        });
+        const data = await res.json();
+        if (data.status === 'unauthenticated') {
+          openGmailModal();
+          alert("Please connect your Gmail account first to scan inbound replies.");
+          return;
+        }
+        renderInboundRepliesFeed(data.replies || []);
+        loadDashboardStats();
+        loadApplicationsTable();
+        alert("Scan complete! Scanned " + (data.scanned_count || 0) + " recent messages. Found " + (data.matched_count || 0) + " matches with tracked applications.");
+      } catch (e) {
+        alert("Scan error: " + e);
+      } finally {
+        if (loader) loader.classList.add('hidden');
+        if (btn) btn.innerHTML = "<span>⚡</span><span>Scan Gmail for Replies</span>";
+      }
+    }
+
+    async function loadInboundRepliesFeed() {
+      try {
+        const res = await fetch(API_BASE + '/api/gmail/replies?limit=25');
+        if (!res.ok) return;
+        const replies = await res.json();
+        renderInboundRepliesFeed(replies);
+      } catch (e) {}
+    }
+
+    function renderInboundRepliesFeed(replies) {
+      const feed = document.getElementById('inbound-replies-feed');
+      if (!feed) return;
+      feed.innerHTML = '';
+      lastScannedReplies = replies || [];
+
+      if (!replies || replies.length === 0) {
+        feed.innerHTML = '<div class="py-6 text-center text-slate-400 text-xs"><div class="text-xl mb-1">📬</div>No inbound recruiter replies scanned yet. Click <strong>"Scan Gmail for Replies"</strong> above.</div>';
+        return;
+      }
+
+      replies.forEach((r, idx) => {
+        const item = document.createElement('div');
+        item.className = 'p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-blue-200 transition-all space-y-1.5';
+
+        let badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+        if (r.intent === 'Interview') badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        else if (r.intent === 'Rejected') badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
+        else if (r.intent === 'Assessment') badgeClass = 'bg-amber-50 text-amber-700 border-amber-200';
+
+        const matchTag = r.matched_company 
+          ? '<span class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md font-bold">✓ Linked to ' + r.matched_company + ' (' + (r.matched_role || 'Application') + ')</span>'
+          : '<span class="text-[10px] text-slate-400">Unlinked message</span>';
+
+        item.innerHTML = '<div class="flex items-center justify-between">' +
+          '<div class="flex items-center space-x-2">' +
+            '<span class="text-xs font-bold text-slate-900">' + (r.sender_name || r.sender_email || 'Recruiter') + '</span>' +
+            '<span class="text-[11px] text-slate-400">&lt;' + (r.sender_email || '') + '&gt;</span>' +
+          '</div>' +
+          '<div class="flex items-center space-x-2">' +
+            '<span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full border ' + badgeClass + '">' + (r.badge || r.intent || 'Update') + '</span>' +
+            '<span class="text-[10px] text-slate-400">' + (r.date || '').substring(0, 16) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="text-xs font-semibold text-slate-800 truncate">' + (r.subject || 'No Subject') + '</div>' +
+        '<div class="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">' + (r.snippet || r.body_preview || '') + '</div>' +
+        '<div class="flex items-center justify-between pt-1">' +
+          matchTag +
+          '<button onclick="viewInboundDetails(' + idx + ')" class="text-[11px] font-bold text-blue-600 hover:underline">Read Message &rsaquo;</button>' +
+        '</div>';
+
+        feed.appendChild(item);
+      });
+    }
+
+    function viewInboundDetails(idx) {
+      const r = lastScannedReplies[idx];
+      if (!r) return;
+      const nl = String.fromCharCode(10);
+      const msg = [
+        'From: ' + (r.from_header || r.sender_email),
+        'Subject: ' + (r.subject || ''),
+        'Date: ' + (r.date || ''),
+        'Intent: ' + (r.intent || ''),
+        '',
+        'Message Preview:',
+        (r.body_preview || r.snippet || '')
+      ].join(nl);
+      alert(msg);
+    }
+
+    // Initial Splash Screen Dismissal & Init
+    window.addEventListener('DOMContentLoaded', () => {
+      // 1. Dismiss splash loader smoothly after 400ms
+      setTimeout(() => {
+        const splash = document.getElementById('app-splash-loader');
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(() => {
+            splash.style.display = 'none';
+          }, 500);
+        }
+      }, 400);
+
+      // 2. Start on Apply Studio with live data
+      switchView('apply');
+      checkGmailStatus();
+      loadProfileData();
+      loadDashboardStats();
+      loadInboundRepliesFeed();
+    });
+
+
+    // =========================================================================
+    // LEADS QUEUE HUB & BATCH ENGINE CONTROLLER (PHASES 2, 3, 4)
+    // =========================================================================
+    let leadsCurrentCategory = 'All';
+    let leadsCurrentStatus = 'All';
+    let leadsSearchQuery = '';
+    let leadsCurrentPage = 1;
+    const leadsPageSize = 50;
+    let leadsSelectedIds = new Set();
+    let leadsSearchTimer = null;
+    let currentBatchMode = 'draft';
+    let activeFollowUpTarget = null;
+
+    async function loadLeadsStats() {
+      try {
+        const res = await fetch(API_BASE + '/api/leads/stats');
+        if (!res.ok) return;
+        const stats = await res.json();
+        const total = stats.total_leads || 0;
+        const toContact = stats.to_contact || 0;
+        const applied = stats.applied || 0;
+        const cats = stats.categories || {};
+
+        const mTotal = document.getElementById('leads-metric-total');
+        if (mTotal) mTotal.innerText = total;
+        const mContact = document.getElementById('leads-metric-tocontact');
+        if (mContact) mContact.innerText = toContact;
+        const mApplied = document.getElementById('leads-metric-applied');
+        if (mApplied) mApplied.innerText = applied;
+
+        const bBadge = document.getElementById('badge-leads-count');
+        if (bBadge) bBadge.innerText = total;
+
+        const cAll = document.getElementById('cat-count-all');
+        if (cAll) cAll.innerText = total;
+        const cDirect = document.getElementById('cat-count-direct');
+        if (cDirect) cDirect.innerText = cats['Direct'] || 0;
+        const cYc = document.getElementById('cat-count-yc');
+        if (cYc) cYc.innerText = cats['YC Startups'] || 0;
+        const cAgency = document.getElementById('cat-count-agency');
+        if (cAgency) cAgency.innerText = cats['Agency'] || 0;
+        const cSocial = document.getElementById('cat-count-social');
+        if (cSocial) cSocial.innerText = cats['Social / LinkedIn'] || 0;
+
+        // Check follow-ups
+        const fRes = await fetch(API_BASE + '/api/tracker/follow-ups');
+        if (fRes.ok) {
+          const fData = await fRes.json();
+          const mFollow = document.getElementById('leads-metric-followups');
+          if (mFollow) mFollow.innerText = fData.count || 0;
+        }
+      } catch (e) {
+        console.error("Error loading leads stats:", e);
+      }
+    }
+
+    async function loadLeadsTable() {
+      try {
+        loadLeadsStats();
+        const offset = (leadsCurrentPage - 1) * leadsPageSize;
+        let url = API_BASE + '/api/leads?limit=' + leadsPageSize + '&offset=' + offset;
+        if (leadsCurrentCategory && leadsCurrentCategory !== 'All') {
+          url += '&category=' + encodeURIComponent(leadsCurrentCategory);
+        }
+        if (leadsCurrentStatus && leadsCurrentStatus !== 'All') {
+          url += '&status=' + encodeURIComponent(leadsCurrentStatus);
+        }
+        if (leadsSearchQuery) {
+          url += '&search=' + encodeURIComponent(leadsSearchQuery);
+        }
+
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const data = await res.json();
+        const leads = data.leads || [];
+        const count = data.count || 0;
+
+        const tbody = document.getElementById('leads-table-body');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (leads.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="py-12 text-center text-slate-400 text-xs"><div class="text-3xl mb-2">🔍</div><div class="font-bold text-slate-700 text-sm mb-1">No leads match your filter</div><p class="mb-4">Try clearing filters or import a new lead batch!</p><button onclick="openCsvImportModal()" class="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold shadow-sm">+ Import CSV</button></td></tr>';
+          updatePaginationUI(0, 0);
+          return;
+        }
+
+        leads.forEach(lead => {
+          const isSelected = leadsSelectedIds.has(lead.id);
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50 transition-colors';
+          
+          let catBadgeClass = 'bg-slate-100 text-slate-700';
+          if (lead.category === 'YC Startups') catBadgeClass = 'bg-orange-50 text-orange-700 border border-orange-200';
+          else if (lead.category === 'Agency') catBadgeClass = 'bg-purple-50 text-purple-700 border border-purple-200';
+          else if (lead.category === 'Direct') catBadgeClass = 'bg-blue-50 text-blue-700 border border-blue-200';
+          else if (lead.category.includes('Social')) catBadgeClass = 'bg-sky-50 text-sky-700 border border-sky-200';
+
+          let statusBadgeClass = 'bg-amber-50 text-amber-700 border border-amber-200';
+          if (lead.status === 'Applied' || lead.status === 'Sent') statusBadgeClass = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+          else if (lead.status === 'Drafted') statusBadgeClass = 'bg-blue-50 text-blue-700 border border-blue-200';
+          else if (lead.status === 'Interview') statusBadgeClass = 'bg-indigo-50 text-indigo-700 border border-indigo-200';
+          else if (lead.status === 'Rejected') statusBadgeClass = 'bg-rose-50 text-rose-700 border border-rose-200';
+
+          let actionButtonsHtml = '';
+          const st = (lead.status || '').toLowerCase();
+          if (st.includes('applied') || st === 'sent' || st.includes('followed') || st.includes('reply')) {
+            actionButtonsHtml = 
+              '<button onclick="openFollowUpForLead(' + lead.id + ', \'' + escapeHtml(lead.company) + '\', \'' + escapeHtml(lead.role) + '\', \'' + escapeHtml(lead.contact_email) + '\')" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-lg transition-all shadow-sm" title="Draft High-Converting Follow-Up">📬 Follow-up</button>' +
+              '<button onclick=\'loadLeadIntoStudio(' + JSON.stringify(lead).replace(/'/g, "&#39;") + ')\' class="px-2 py-1 text-slate-400 hover:text-blue-600 text-xs font-semibold transition-all" title="Re-open in Apply Studio">↺ Re-apply</button>';
+          } else if (st === 'drafted' || st.includes('tailored')) {
+            actionButtonsHtml = 
+              '<button onclick=\'loadLeadIntoStudio(' + JSON.stringify(lead).replace(/'/g, "&#39;") + ')\' class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-lg transition-all" title="Review Draft in Apply Studio">📝 Review Draft</button>' +
+              '<button onclick="openFollowUpForLead(' + lead.id + ', \'' + escapeHtml(lead.company) + '\', \'' + escapeHtml(lead.role) + '\', \'' + escapeHtml(lead.contact_email) + '\')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-lg" title="Follow-up">📬</button>';
+          } else {
+            actionButtonsHtml = 
+              '<button onclick=\'loadLeadIntoStudio(' + JSON.stringify(lead).replace(/'/g, "&#39;") + ')\' class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all shadow-sm shadow-blue-500/20" title="Load into Apply Studio">✨ Apply</button>' +
+              '<button onclick="openFollowUpForLead(' + lead.id + ', \'' + escapeHtml(lead.company) + '\', \'' + escapeHtml(lead.role) + '\', \'' + escapeHtml(lead.contact_email) + '\')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-lg" title="Follow-up">📬</button>';
+          }
+
+          let emailBadge = '';
+          if (lead.contact_email) {
+            const ev = (lead.email_status || '').toLowerCase();
+            if (ev === 'deliverable') {
+              emailBadge = ' <span class="inline-flex items-center text-[10px] text-emerald-600 font-bold ml-1.5 px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200" title="Zero-Auth Verified Deliverable">✓ Deliverable</span>';
+            } else if (ev === 'burner' || ev === 'disposable') {
+              emailBadge = ' <span class="inline-flex items-center text-[10px] text-rose-600 font-bold ml-1.5 px-1.5 py-0.5 rounded bg-rose-50 border border-rose-200" title="Disposable / Burner Domain Detected">⚠ Burner</span>';
+            } else if (ev === 'undeliverable') {
+              emailBadge = ' <span class="inline-flex items-center text-[10px] text-rose-500 font-bold ml-1.5" title="Undeliverable Domain">✕ Invalid</span>';
+            } else {
+              emailBadge = ' <button onclick="verifyLeadEmail(' + lead.id + ', \'' + escapeHtml(lead.contact_email) + '\', this)" class="text-[10px] text-blue-500 hover:text-blue-700 hover:underline ml-1 font-semibold" title="Verify Deliverability via Zero-Auth Kickbox/Disify">Verify</button>';
+            }
+          }
+
+          tr.innerHTML = '<td class="py-3 pl-3 w-8"><input type="checkbox" onchange="toggleLeadSelection(' + lead.id + ', this.checked)" class="lead-row-checkbox w-4 h-4 rounded text-blue-600" data-id="' + lead.id + '" ' + (isSelected ? 'checked' : '') + '></td>' +
+            '<td class="py-3 pl-2"><div class="font-bold text-slate-900 flex items-center space-x-1.5"><span>' + escapeHtml(lead.company) + '</span></div><div class="mt-0.5"><span class="text-[10px] px-2 py-0.5 rounded-md font-semibold ' + catBadgeClass + '">' + (lead.category || 'Direct') + '</span></div></td>' +
+            '<td class="text-xs text-slate-700 font-medium">' + escapeHtml(lead.role || 'Product Designer') + '</td>' +
+            '<td class="text-xs text-slate-500">' + escapeHtml(lead.country || '—') + '</td>' +
+            '<td class="text-xs text-slate-700 font-mono">' + (lead.contact_email ? '<a href="mailto:' + escapeHtml(lead.contact_email) + '" class="text-blue-600 hover:underline">' + escapeHtml(lead.contact_email) + '</a>' + emailBadge : '<span class="text-slate-400">Not found</span>') + '</td>' +
+            '<td><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ' + statusBadgeClass + '">' + escapeHtml(lead.status || 'To Contact') + '</span></td>' +
+            '<td class="text-right pr-3 text-xs space-x-1.5 whitespace-nowrap">' + actionButtonsHtml + '</td>';
+
+          tbody.appendChild(tr);
+        });
+
+        updatePaginationUI(offset, count);
+        updateMasterCheckbox();
+      } catch (e) {
+        console.error("Error loading leads table:", e);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function filterLeadsCategory(cat) {
+      leadsCurrentCategory = cat;
+      leadsCurrentPage = 1;
+      const btns = document.querySelectorAll('.leads-cat-btn');
+      btns.forEach(b => {
+        if (b.getAttribute('data-cat') === cat) {
+          b.className = "leads-cat-btn px-3 py-1 text-xs font-bold rounded-lg bg-blue-600 text-white shadow-sm transition-all";
+        } else {
+          b.className = "leads-cat-btn px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-all";
+        }
+      });
+      loadLeadsTable();
+    }
+
+    function filterLeadsStatus(status) {
+      leadsCurrentStatus = status;
+      leadsCurrentPage = 1;
+      loadLeadsTable();
+    }
+
+    function onLeadsSearchInput() {
+      clearTimeout(leadsSearchTimer);
+      leadsSearchTimer = setTimeout(() => {
+        const inp = document.getElementById('leads-search-input');
+        leadsSearchQuery = inp ? inp.value.trim() : '';
+        leadsCurrentPage = 1;
+        loadLeadsTable();
+      }, 250);
+    }
+
+    function paginateLeads(delta) {
+      leadsCurrentPage = Math.max(1, leadsCurrentPage + delta);
+      loadLeadsTable();
+    }
+
+    function updatePaginationUI(offset, count) {
+      const info = document.getElementById('leads-pagination-info');
+      const pageSpan = document.getElementById('leads-current-page');
+      const prevBtn = document.getElementById('leads-prev-btn');
+      const nextBtn = document.getElementById('leads-next-btn');
+
+      if (pageSpan) pageSpan.innerText = leadsCurrentPage;
+      if (prevBtn) prevBtn.disabled = leadsCurrentPage <= 1;
+      if (nextBtn) nextBtn.disabled = count < leadsPageSize;
+      if (info) {
+        const from = count > 0 ? (offset + 1) : 0;
+        const to = offset + count;
+        info.innerText = 'Showing ' + from + '–' + to + ' leads';
+      }
+    }
+
+    // Lead Checkbox Selection
+    function toggleLeadSelection(id, checked) {
+      if (checked) leadsSelectedIds.add(id);
+      else leadsSelectedIds.delete(id);
+      updateBatchBar();
+    }
+
+    function toggleMasterLeadsCheckbox(checked) {
+      const boxes = document.querySelectorAll('.lead-row-checkbox');
+      boxes.forEach(b => {
+        b.checked = checked;
+        const id = parseInt(b.getAttribute('data-id'));
+        if (id) {
+          if (checked) leadsSelectedIds.add(id);
+          else leadsSelectedIds.delete(id);
+        }
+      });
+      updateBatchBar();
+    }
+
+    function toggleSelectAllVisibleLeads(select) {
+      const master = document.getElementById('leads-master-checkbox');
+      if (master) master.checked = select;
+      toggleMasterLeadsCheckbox(select);
+    }
+
+    function updateMasterCheckbox() {
+      const boxes = document.querySelectorAll('.lead-row-checkbox');
+      const master = document.getElementById('leads-master-checkbox');
+      if (!master || boxes.length === 0) return;
+      let allChecked = true;
+      boxes.forEach(b => { if (!b.checked) allChecked = false; });
+      master.checked = allChecked;
+    }
+
+    function updateBatchBar() {
+      const bar = document.getElementById('leads-batch-bar');
+      const ind = document.getElementById('batch-selected-indicator');
+      const count = leadsSelectedIds.size;
+      const btnBatch = document.getElementById('btn-batch-label');
+
+      if (btnBatch) btnBatch.innerText = 'Batch Process (' + count + ')';
+      if (ind) ind.innerText = count + ' lead' + (count === 1 ? '' : 's') + ' selected';
+
+      if (count > 0) {
+        if (bar) bar.classList.remove('hidden');
+      } else {
+        if (bar) bar.classList.add('hidden');
+      }
+    }
+
+    // Load Lead Into Apply Studio
+    function loadLeadIntoStudio(lead) {
+      if (!lead) return;
+      const cInput = document.getElementById('apply-company');
+      if (cInput) cInput.value = lead.company || '';
+      const rInput = document.getElementById('apply-role');
+      if (rInput) rInput.value = lead.role || 'Senior Product Designer';
+      const eInput = document.getElementById('apply-email');
+      if (eInput) eInput.value = lead.contact_email || '';
+
+      // Auto-detect country code
+      const cStr = (lead.country || '').toLowerCase();
+      const countrySelect = document.getElementById('apply-country');
+      if (countrySelect) {
+        if (cStr.includes('dubai') || cStr.includes('uae') || cStr.includes('ae')) countrySelect.value = 'ae';
+        else if (cStr.includes('us') || cStr.includes('united states') || cStr.includes('america')) countrySelect.value = 'us';
+        else if (cStr.includes('uk') || cStr.includes('london') || cStr.includes('britain')) countrySelect.value = 'uk';
+        else if (cStr.includes('india') || cStr.includes('in') || cStr.includes('delhi') || cStr.includes('bangalore')) countrySelect.value = 'in';
+        else if (cStr.includes('saudi') || cStr.includes('riyadh')) countrySelect.value = 'sa';
+        handleCountryChange();
+      }
+
+      const jdBox = document.getElementById('apply-jd-text');
+      if (jdBox) {
+        jdBox.value = (lead.job_url ? 'Job URL: ' + lead.job_url + '\n\n' : '') +
+          'Targeting ' + (lead.role || 'Product Designer') + ' at ' + lead.company + '.\n' +
+          (lead.notes ? 'Context Notes: ' + lead.notes + '\n' : '') +
+          'Focus areas: End-to-end UX ownership, design systems architecture, high-conversion interfaces.';
+      }
+
+      switchView('apply');
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    // CSV Import Modal Handlers
+    function openCsvImportModal() {
+      const m = document.getElementById('csv-import-modal');
+      if (m) m.classList.remove('hidden');
+    }
+    function closeCsvImportModal() {
+      const m = document.getElementById('csv-import-modal');
+      if (m) m.classList.add('hidden');
+    }
+
+    function handleCsvFileUpload(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const txt = document.getElementById('csv-import-textarea');
+        if (txt) txt.value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+
+    async function submitCsvImport() {
+      const txt = document.getElementById('csv-import-textarea').value.trim();
+      if (!txt) {
+        alert("Please paste CSV data or select a CSV file first.");
+        return;
+      }
+      const btn = document.getElementById('btn-submit-csv');
+      btn.innerText = "Importing...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(API_BASE + '/api/leads/import-csv', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ csv_text: txt })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert("Successfully imported " + data.inserted + " new leads (" + data.total_imported + " rows parsed)!");
+          closeCsvImportModal();
+          document.getElementById('csv-import-textarea').value = '';
+          loadLeadsStats();
+          loadLeadsTable();
+        } else {
+          alert("Import failed: " + (data.detail || "Unknown error"));
+        }
+      } catch (e) {
+        alert("Import request error: " + e);
+      } finally {
+        btn.innerText = "Import Leads";
+        btn.disabled = false;
+      }
+    }
+
+    // Add Lead Modal Handlers
+    function openAddLeadModal() {
+      const m = document.getElementById('add-lead-modal');
+      if (m) m.classList.remove('hidden');
+    }
+    function closeAddLeadModal() {
+      const m = document.getElementById('add-lead-modal');
+      if (m) m.classList.add('hidden');
+    }
+
+    async function submitAddLead() {
+      const comp = document.getElementById('add-lead-company').value.trim();
+      if (!comp) {
+        alert("Company Name is required!");
+        return;
+      }
+      const payload = {
+        company: comp,
+        role: document.getElementById('add-lead-role').value.trim(),
+        category: document.getElementById('add-lead-category').value,
+        contact_email: document.getElementById('add-lead-email').value.trim(),
+        country: document.getElementById('add-lead-country').value.trim(),
+        job_url: document.getElementById('add-lead-url').value.trim(),
+        notes: document.getElementById('add-lead-notes').value.trim(),
+      };
+
+      try {
+        const res = await fetch(API_BASE + '/api/leads', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          closeAddLeadModal();
+          document.getElementById('add-lead-company').value = '';
+          loadLeadsStats();
+          loadLeadsTable();
+        } else {
+          alert("Failed to create lead");
+        }
+      } catch (e) {
+        alert("Error creating lead: " + e);
+      }
+    }
+
+    // Batch Runner Modal Handlers (Phase 3)
+    function openBatchRunnerModal(mode) {
+      if (leadsSelectedIds.size === 0) {
+        alert("Please check at least one lead to process!");
+        return;
+      }
+      currentBatchMode = mode || 'draft';
+      const m = document.getElementById('batch-runner-modal');
+      const cSpan = document.getElementById('batch-modal-count');
+      const mSelect = document.getElementById('batch-modal-mode');
+
+      if (cSpan) cSpan.innerText = leadsSelectedIds.size;
+      if (mSelect) mSelect.value = currentBatchMode;
+      onBatchModeChange(currentBatchMode);
+
+      document.getElementById('batch-progress-container').classList.add('hidden');
+      document.getElementById('batch-log-output').innerHTML = '';
+
+      if (m) m.classList.remove('hidden');
+    }
+
+    function closeBatchRunnerModal() {
+      const m = document.getElementById('batch-runner-modal');
+      if (m) m.classList.add('hidden');
+    }
+
+    function onBatchModeChange(mode) {
+      currentBatchMode = mode;
+      const passkeyBox = document.getElementById('batch-passkey-container');
+      if (passkeyBox) {
+        if (mode === 'live_send') passkeyBox.classList.remove('hidden');
+        else passkeyBox.classList.add('hidden');
+      }
+    }
+
+    async function startBatchExecution() {
+      const count = leadsSelectedIds.size;
+      if (count === 0) return;
+
+      const mode = document.getElementById('batch-modal-mode').value;
+      const passkeyElem = document.getElementById('batch-modal-passkey');
+      const passkey = passkeyElem ? passkeyElem.value.trim() : '';
+
+      const btn = document.getElementById('btn-start-batch');
+      btn.disabled = true;
+      btn.innerHTML = "<span>⏳</span><span>Executing Batch...</span>";
+
+      const pCont = document.getElementById('batch-progress-container');
+      const pBar = document.getElementById('batch-progress-bar');
+      const pPct = document.getElementById('batch-progress-pct');
+      const pStatus = document.getElementById('batch-progress-status');
+      const logBox = document.getElementById('batch-log-output');
+
+      pCont.classList.remove('hidden');
+      pBar.style.width = '20%';
+      pPct.innerText = '20%';
+      pStatus.innerText = 'Synthesizing tailored CVs & outreach pitches...';
+      logBox.innerHTML = '<div class="text-blue-400">⚡ Starting batch run for ' + count + ' leads in [' + mode + '] mode...</div>';
+
+      try {
+        const payload = {
+          lead_ids: Array.from(leadsSelectedIds),
+          mode: mode,
+          passkey: passkey || undefined
+        };
+
+        const res = await fetch(API_BASE + '/api/batch/run', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || ("HTTP " + res.status));
+        }
+
+        pBar.style.width = '100%';
+        pPct.innerText = '100%';
+        pStatus.innerText = 'Batch completed successfully!';
+
+        (data.results || []).forEach(r => {
+          const div = document.createElement('div');
+          div.className = 'text-emerald-400';
+          div.innerText = '✓ [' + r.company + '] ' + r.status + (r.pdf ? ' -> PDF Generated' : '');
+          logBox.appendChild(div);
+        });
+
+        // Clear selection & reload stats
+        leadsSelectedIds.clear();
+        updateBatchBar();
+        loadLeadsStats();
+        loadLeadsTable();
+        loadDashboardStats();
+
+        btn.innerHTML = "<span>✅</span><span>Batch Complete</span>";
+      } catch (e) {
+        pStatus.innerText = 'Batch execution error';
+        const errDiv = document.createElement('div');
+        errDiv.className = 'text-rose-400 font-bold';
+        errDiv.innerText = '✗ Error: ' + e.message;
+        logBox.appendChild(errDiv);
+        btn.innerHTML = "<span>⚠️</span><span>Failed</span>";
+      } finally {
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = "<span>🚀</span><span>Run Again</span>";
+        }, 2000);
+      }
+    }
+
+    // Follow-Up Modal Handlers (Phase 4)
+    async function openFollowUpForLead(leadId, company, role, email) {
+      activeFollowUpTarget = { id: leadId, company: company, role: role, email: email };
+      const m = document.getElementById('followup-modal');
+      const t = document.getElementById('followup-modal-target');
+      if (t) t.innerText = company + ' (' + (role || 'Product Designer') + ')';
+
+      try {
+        const res = await fetch(API_BASE + '/api/email/draft-follow-up', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ target_type: 'lead', target_id: leadId })
+        });
+        const data = await res.json();
+        document.getElementById('followup-subject').value = data.subject || '';
+        document.getElementById('followup-body').value = data.body || '';
+      } catch (e) {
+        document.getElementById('followup-subject').value = 'Re: ' + (role || 'Product Designer') + ' — Following up (' + company + ')';
+        document.getElementById('followup-body').value = 'Hi ' + company + ' Team,\n\nFollowing up on my previous note regarding the ' + (role || 'Product Designer') + ' role. I wanted to check if you are still reviewing portfolios.\n\nBest regards,\nCandidate';
+      }
+
+      if (m) m.classList.remove('hidden');
+    }
+
+    function closeFollowUpModal() {
+      const m = document.getElementById('followup-modal');
+      if (m) m.classList.add('hidden');
+    }
+
+    function copyFollowUpToClipboard() {
+      const body = document.getElementById('followup-body').value;
+      navigator.clipboard.writeText(body);
+      alert("Follow-up text copied to clipboard!");
+    }
+
+    async function saveFollowUpDraft() {
+      if (!activeFollowUpTarget || !activeFollowUpTarget.email) {
+        alert("No contact email found for this lead to create a Gmail draft.");
+        return;
+      }
+      const subject = document.getElementById('followup-subject').value;
+      const body = document.getElementById('followup-body').value;
+      const btn = document.getElementById('btn-save-followup');
+      btn.innerText = "Saving...";
+
+      try {
+        const res = await fetch(API_BASE + '/api/email/create-draft', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            to: activeFollowUpTarget.email,
+            subject: subject,
+            body: body,
+            company: activeFollowUpTarget.company,
+            role: activeFollowUpTarget.role
+          })
+        });
+        const data = await res.json();
+        if (data.status === 'ok') {
+          alert("Follow-up draft saved to your Gmail account!");
+          closeFollowUpModal();
+        } else {
+          alert("Could not save to Gmail: " + (data.error || "Unknown"));
+        }
+      } catch (e) {
+        alert("Draft error: " + e);
+      } finally {
+        btn.innerText = "📝 Save to Gmail Draft";
+      }
+    }
+
+  </script>
+</body>
+</html>

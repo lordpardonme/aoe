@@ -13,17 +13,22 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from reportlab.lib.enums import TA_LEFT
-from reportlab.lib.pagesizes import LETTER
-from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from reportlab.lib.units import inch
-from reportlab.platypus import (
-    ListFlowable,
-    ListItem,
-    Paragraph,
-    SimpleDocTemplate,
-    Spacer,
-)
+try:
+    from reportlab.lib.enums import TA_LEFT
+    from reportlab.lib.pagesizes import LETTER
+    from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+    from reportlab.lib.units import inch
+    from reportlab.platypus import (
+        ListFlowable,
+        ListItem,
+        Paragraph,
+        SimpleDocTemplate,
+        Spacer,
+    )
+    HAVE_REPORTLAB = True
+except ImportError:
+    HAVE_REPORTLAB = False
+    ParagraphStyle = None  # type: ignore
 
 from .logger import get_logger
 
@@ -33,7 +38,9 @@ if TYPE_CHECKING:  # avoid a hard import cycle at runtime
 log = get_logger("pdf")
 
 
-def _styles() -> dict[str, ParagraphStyle]:
+def _styles() -> dict[str, Any]:
+    if not HAVE_REPORTLAB:
+        return {}
     base = getSampleStyleSheet()
     return {
         "name": ParagraphStyle(
@@ -86,6 +93,9 @@ def _escape(text: str) -> str:
 
 def render_resume_pdf(data: "ResumeData", out_path: Path) -> Path:
     """Render a :class:`ResumeData` to a polished one/two-column-free PDF."""
+    if not HAVE_REPORTLAB:
+        log.warning("ReportLab is not installed; skipping PDF build.")
+        return out_path
     styles = _styles()
     story: list = []
 
@@ -137,6 +147,9 @@ def render_resume_pdf(data: "ResumeData", out_path: Path) -> Path:
 
 def render_text_pdf(text: str, out_path: Path, *, title: str | None = None) -> Path:
     """Render a plain-text document (paragraphs + '- ' bullets) to PDF."""
+    if not HAVE_REPORTLAB:
+        log.warning("ReportLab is not installed; skipping PDF build.")
+        return out_path
     styles = _styles()
     story: list = []
     if title:

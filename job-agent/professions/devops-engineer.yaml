@@ -1,0 +1,65 @@
+name: DevOps Engineer
+description: Bridges the gap between software development and IT operations to improve deployment frequency and reliability.
+skill_vocabulary:
+  - docker
+  - kubernetes
+  - terraform
+  - ansible
+  - aws
+  - gcp
+  - azure
+  - ci/cd
+  - jenkins
+  - github actions
+  - gitlab ci
+  - monitoring
+  - prometheus
+  - grafana
+  - datadog
+  - linux
+  - bash
+  - scripting
+  - infrastructure as code
+  - cloud architecture
+  - networking
+  - security
+  - load balancing
+  - auto scaling
+  - container orchestration
+  - helm
+  - argocd
+  - python
+  - go
+  - ruby
+  - chef
+  - puppet
+  - splunk
+  - elk stack
+  - elasticsearch
+  - logstash
+  - kibana
+  - new relic
+  - site reliability
+  - sre
+  - incident management
+  - chaos engineering
+  - tcp/ip
+  - dns
+  - vpc
+  - vpn
+  - shell
+role_keywords:
+  - devops
+  - sre
+  - engineer
+  - administrator
+  - sysadmin
+  - lead
+  - architect
+  - manager
+  - director
+  - platform
+  - infrastructure
+  - site reliability
+  - cloud
+  - operations

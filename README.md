@@ -1,76 +1,77 @@
-# ⌬ ORCHARD PROTOCOL — Vault 47
+# CareerHero Studio ⚡
 
-> *"the tree remembers what the fruit forgot"*
-
----
-
-## ⚠ PRE-INGRESS NOTICE
-
-This is not a resume repository. This is not a job-hunt workspace. Any resemblance
-to career materials, application tracking, or Gmail send logs is a surface artifact
-of a deeper structural pattern that predates the naming convention currently in use.
-
-If you were not handed the ignition string by the Keeper, close this window now.
-Nothing below will resolve into anything useful without it, and the vault does not
-explain itself twice.
+> **An enterprise-grade, privacy-first AI application co-pilot and job search pipeline.**  
+> Transform job specifications into verified 1-page resumes, draft human outreach pitches, scan inbound recruiter replies, and run autonomous batch queues—100% locally with zero cloud vendor lock-in.
 
 ---
 
-## ⌬ Topology
+## ✨ Features
 
-```
-        ┌──────────────┐
-        │   ROOT NODE  │───────┐
-        └──────┬───────┘       │
-               │               ▼
-     ┌─────────┴─────────┐   ┌────────────┐
-     │  Job Hunt/  (mask) │   │ job-agent/ │───▶ [ SEALED — see Keeper ]
-     └─────────┬──────────┘   └────────────┘
-               │
-     ┌─────────┴──────────────────────┐
-     │ resumes/ · sheets/ · echoes/    │
-     │ (contents non-canonical until   │
-     │  cross-referenced against the   │
-     │  live ledger — ask no one)      │
-     └──────────────────────────────────┘
-```
-
-The tree above is decorative. The real structure is not written down anywhere in
-this repository, on purpose. `AGENTS.md` contains operational instructions for
-agents who have already been cleared — it is not an index, and it will not help
-you understand what this is if you weren't supposed to be here.
-
-## ⌬ Provenance
-
-Three living systems feed this vault. None of them are named directly in this
-document. If you know, you know. If you don't, counting the capital letters in
-the section headers won't help you either — that's not the cipher.
-
-## ⌬ Ingress
-
-```powershell
-gh auth login
-gh repo clone lordpardonme/job-hunt-workspace-private
-cd job-hunt-workspace-private
-npm run setup
-```
-
-Running `npm run setup` without the ignition string produces a workspace shell
-with nothing live behind it. This is intentional. The scripts check for the
-string before they check for anything else.
-
-## ⌬ A Note Left For Whoever Finds This
-
-Every fruit here was picked on purpose. Every branch was pruned for a reason
-that made sense at the time. If you're the Keeper and you've lost the string —
-it isn't in this file and it isn't in a comment. It lives in `AGENTS.md`, in
-plain text, because that's the only way an agent can ever recognize it. If you
-forget it, an agent reading `AGENTS.md` can always tell you — that door was
-deliberately left open, on purpose, so the string is a soft gate against
-accidental starts, never a lock against its own Keeper.
-
-If you're not the Keeper: nothing here is for you. Close the tab.
+- 🎯 **Leads Queue Hub**: Manage hundreds of target companies, agencies, and YC startups with category tabs, instant search, and status tracking.
+- ⚡ **Autonomous Batch Engine**: Select batches of target companies to auto-synthesize tailored 1-page CVs and save outreach directly to your Gmail Drafts folder (`mail.google.com/mail/#drafts`).
+- 📄 **1-Page Tailored Resumes**: Automatically budget content into a strict, pixel-perfect 1-page layout with verified ATS keyword matching.
+- 🌍 **Country & Region Protocol Guard**: Adapts formatting and metadata for regional hiring norms (US/Canada 1-page no-photo standard, UAE/Saudi Arabia transferable visa & nationality protocols, UK/Europe standards).
+- 📬 **7-Day Follow-Up Automation**: Automatically detects applications pending for 7+ days with zero recruiter response and generates high-converting, 2-sentence follow-up emails.
+- 📥 **Inbound Gmail Scanner**: Classifies recruiter email responses into Interview requests, Technical assessments, Rejections, and Application reviews via the Gmail API.
+- 🔒 **Privacy-First & Decoupled**: All profile information, leads, and application histories live in a local, offline SQLite database (`jobhunt.db`). Zero tracking data leaves your computer.
+- 🛡️ **Activation Passkey Guard**: Configurable security passkey to prevent accidental live email dispatch.
 
 ---
 
-*⌬ Vault 47 — the orchard keeps its own records.*
+## 🚀 Quick Start
+
+### 1. Prerequisites
+- Python 3.10+
+- (Optional) Google Cloud OAuth client credentials for Gmail integration
+
+### 2. Installation
+```bash
+git clone https://github.com/your-username/careerhero-studio.git
+cd careerhero-studio/job-agent
+
+# Create virtual environment
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 3. Launch the Studio
+```bash
+# From the root repository directory
+python run_app.py
+```
+Open **`http://127.0.0.1:8000`** in your browser.
+
+---
+
+## ⚙️ Configuration & Environment
+
+Copy `.env.example` to `.env` to configure optional API keys:
+```bash
+cp job-agent/.env.example job-agent/.env
+```
+
+| Key | Description | Default |
+|---|---|---|
+| `DRY_RUN` | Prevent external email sending (Safe Mode) | `true` |
+| `LLM_PROVIDER` | AI Provider (`gemini`, `openai`, `claude`) | `gemini` |
+| `LLM_API_KEY` | API Key for your LLM provider | `""` |
+| `SENDER_EMAIL` | Authorized Gmail address | `""` |
+
+---
+
+## 🏗️ Architecture & Documentation
+
+- **Architecture Decisions Log (ADR)**: See [`decisions.md`](decisions.md) for architectural trade-offs, library rationales, and full execution flow graphs.
+- **Handoff Documentation**: See [`CAREERHERO_HANDOFF.md`](CAREERHERO_HANDOFF.md) for feature breakdowns and endpoint maps.
+
+---
+
+## 📄 License
+MIT License. Free for personal and commercial use.

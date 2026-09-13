@@ -29,9 +29,24 @@ Job Hunt/.git/
 
 # Local secrets
 .env
-.env.*
+.env.local
+.env.*.local
+!.env.example
+!.env.uat
+!.env.staging
+!.env.production
 *.pem
 *.key
 credentials.json
 token.json
 Job Hunt/.git-nested-backup/
+
+# Local SQLite databases and generated user artifacts
+*.db
+*.sqlite
+*.sqlite3
+job-agent/tracker/
+reconciled-tracker-build/
+Job Hunt/resumes/*.pdf
+generated/
+logs/

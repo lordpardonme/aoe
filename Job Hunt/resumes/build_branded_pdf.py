@@ -54,7 +54,19 @@ PAIRINGS = {
                   "bold": "segoeuib.ttf", "italic": "segoeuii.ttf", "light": "segoeuisl.ttf"},
 }
 
-FONT_DIR = Path("C:/Windows/Fonts")
+import platform
+
+def _detect_font_dir() -> Path:
+    """Return the system font directory for the current OS."""
+    system = platform.system()
+    if system == "Windows":
+        return Path("C:/Windows/Fonts")
+    elif system == "Darwin":  # macOS
+        return Path("/Library/Fonts")
+    else:  # Linux and others
+        return Path("/usr/share/fonts/truetype")
+
+FONT_DIR = _detect_font_dir()
 URL_RE = re.compile(r"(https?://[^\s)]+)")
 
 # Local CV convention by market, researched 2026. photo: "never" is a hard block
@@ -334,7 +346,8 @@ def main():
         i += 1
     flush_role(); flush_card(); story.extend(take())
 
-    doc = BaseDocTemplate(str(out_path), pagesize=A4, title=title, author="Mohd Hayaat Ali",
+    import os
+    doc = BaseDocTemplate(str(out_path), pagesize=A4, title=title, author=os.environ.get("CANDIDATE_NAME", ""),
                           leftMargin=.78 * inch, rightMargin=.78 * inch,
                           topMargin=.65 * inch, bottomMargin=.65 * inch)
     doc.addPageTemplates([PageTemplate(id="p", frames=[

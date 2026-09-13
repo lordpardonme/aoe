@@ -245,3 +245,27 @@ def test() -> None:
     else:
         console.print("[red]Some offline checks failed — see logs/error.log.[/red]")
         raise typer.Exit(code=1)
+
+
+@app.command()
+def ui(
+    host: str = typer.Option("127.0.0.1", "--host", help="Host interface to bind to."),
+    port: int = typer.Option(8000, "--port", help="Port to listen on."),
+    no_browser: bool = typer.Option(False, "--no-browser", help="Do not open browser automatically."),
+) -> None:
+    """Launch the local Job Hunt Studio web application."""
+    import threading
+    import time
+    import webbrowser
+    import uvicorn
+    from .web.app import app as web_app
+
+    url = f"http://{host}:{port}"
+    console.print(f"[bold green]Starting Job Hunt Studio at:[/bold green] [bold cyan]{url}[/bold cyan]")
+    if not no_browser:
+        def _open():
+            time.sleep(1.2)
+            webbrowser.open(url)
+        threading.Thread(target=_open, daemon=True).start()
+    uvicorn.run(web_app, host=host, port=port, log_level="info")
+

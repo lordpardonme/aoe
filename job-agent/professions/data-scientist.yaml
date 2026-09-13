@@ -1,0 +1,66 @@
+name: Data Scientist
+description: Analyzes and interprets complex digital data to help organizations make better decisions.
+skill_vocabulary:
+  - python
+  - r
+  - sql
+  - machine learning
+  - deep learning
+  - nlp
+  - computer vision
+  - tensorflow
+  - pytorch
+  - scikit-learn
+  - pandas
+  - numpy
+  - statistics
+  - data visualization
+  - tableau
+  - power bi
+  - big data
+  - spark
+  - hadoop
+  - a/b testing
+  - hypothesis testing
+  - regression
+  - classification
+  - clustering
+  - neural networks
+  - feature engineering
+  - etl
+  - data mining
+  - predictive modeling
+  - time series analysis
+  - natural language processing
+  - xgboost
+  - lightgbm
+  - matplotlib
+  - seaborn
+  - plotly
+  - jupyter
+  - aws
+  - gcp
+  - azure
+  - databricks
+  - snowflake
+  - bigquery
+  - redshift
+  - git
+  - mlflow
+  - model deployment
+  - inference
+  - optimization
+role_keywords:
+  - scientist
+  - analyst
+  - engineer
+  - researcher
+  - manager
+  - lead
+  - director
+  - principal
+  - staff
+  - senior
+  - statistician
+  - quant
+  - architect

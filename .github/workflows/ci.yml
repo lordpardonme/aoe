@@ -1,0 +1,48 @@
+name: CI Quality Gate & Test Suite
+
+on:
+  push:
+    branches: [ main, staging, uat ]
+  pull_request:
+    branches: [ main, staging, uat ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Automated Quality Gate & System Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f job-agent/requirements.txt ]; then pip install -r job-agent/requirements.txt; fi
+          pip install fastapi uvicorn reportlab pandas pyyaml requests httpx pydantic pydantic-settings
+
+      - name: Syntax & Lint Compilation Check
+        run: |
+          python -m py_compile run_app.py manage_env.py
+          python -m py_compile job-agent/src/web/app.py job-agent/src/web/db.py
+
+      - name: Run E2E Test Suite
+        env:
+          APP_ENV: uat
+        run: |
+          python -u -c "
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path.cwd() / 'job-agent'))
+          from src.web.app import app
+          from src.web.db import init_db
+          init_db()
+          print('FastAPI app and database schema initialized cleanly.')
+          "

@@ -1,0 +1,72 @@
+name: Software Engineer
+description: Designs, develops, and maintains software applications and systems.
+skill_vocabulary:
+  - python
+  - javascript
+  - typescript
+  - react
+  - node.js
+  - aws
+  - docker
+  - kubernetes
+  - ci/cd
+  - rest api
+  - graphql
+  - sql
+  - nosql
+  - mongodb
+  - postgresql
+  - redis
+  - git
+  - agile
+  - scrum
+  - microservices
+  - system design
+  - data structures
+  - algorithms
+  - oop
+  - tdd
+  - unit testing
+  - integration testing
+  - linux
+  - cloud computing
+  - serverless
+  - lambda
+  - terraform
+  - ansible
+  - java
+  - c++
+  - c#
+  - go
+  - rust
+  - ruby
+  - vue.js
+  - angular
+  - express
+  - django
+  - flask
+  - spring boot
+  - .net
+  - azure
+  - gcp
+  - api design
+  - backend
+  - frontend
+  - full stack
+  - software architecture
+role_keywords:
+  - engineer
+  - developer
+  - programmer
+  - coder
+  - architect
+  - lead
+  - manager
+  - director
+  - sdet
+  - sde
+  - technical lead
+  - backend
+  - frontend
+  - full-stack
+  - fullstack
