@@ -58,6 +58,13 @@ chore: update dependencies
 
 Use the [issue templates](https://github.com/lordpardonme/aoe/issues/new/choose) to report bugs or request features.
 
+## Contributor License Assignment
+
+AOE is distributed under a **Strict Proprietary & Source-Available License** (see [`LICENSE`](LICENSE)). By submitting a Pull Request, issue, or patch to this repository, you explicitly agree that:
+1. Your contributions are licensed to and assigned to `@lordpardonme`.
+2. Your contributions become subject to the terms of the project's proprietary license.
+3. You retain no separate proprietary rights or claims to the codebase or its architecture.
+
 ## Code of Conduct
 
 This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).

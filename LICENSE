@@ -1,21 +1,96 @@
-MIT License
+STRICT PROPRIETARY & SOURCE-AVAILABLE LICENSE
+(ALL RIGHTS RESERVED — STRICT NO-COPY & NO-DERIVATIVES)
 
-Copyright (c) 2026 lordpardonme
+Copyright (c) 2026 lordpardonme. All Rights Reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+NOTICE TO ALL USERS, DEVELOPERS, AND ORGANIZATIONS:
+READ THIS LICENSE AGREEMENT CAREFULLY BEFORE ACCESSING, VIEWING, OR USING ANY
+PORTION OF THE AOE (AUTONOMOUS OUTREACH ENGINE) CODEBASE, ARCHITECTURE, DOCUMENTATION,
+OR ASSOCIATED DIGITAL ASSETS.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+================================================================================
+1. GRANT OF LIMITED EVALUATION RIGHTS
+================================================================================
+The source code contained in this repository is made publicly accessible solely
+for the limited purpose of personal technical evaluation, security auditing,
+and direct assessment of the author's work.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Subject to the restrictions set forth herein, you are granted a non-exclusive,
+non-transferable, revocable, and limited right to view and inspect the source
+code in its unmodified form on this GitHub repository.
+
+================================================================================
+2. ABSOLUTE PROHIBITION ON COPYING, REPRODUCTION & REDISTRIBUTION
+================================================================================
+EXCEPT AS EXPRESSLY PERMITTED IN SECTION 1, ALL RIGHTS ARE RESERVED TO THE
+COPYRIGHT HOLDER. YOU EXPRESSLY AGREE NOT TO:
+
+a. COPY OR REPRODUCE: You may NOT copy, clone, mirror, duplicate, transcribe,
+   or store this software or any part of it on any public or private server,
+   repository, or distribution medium, in whole or in part, without prior express
+   written authorization from the copyright holder.
+
+b. CREATE DERIVATIVE WORKS: You may NOT modify, adapt, translate, refactor,
+   repackage, build upon, or create derivative works based upon this codebase,
+   its backend architecture, its scraping pipeline, its ReportLab 1-page layout
+   algorithms, its prompts, or its frontend interface.
+
+c. REDISTRIBUTE: You may NOT distribute, redistribute, sublicense, assign,
+   rent, lease, sell, lend, broadcast, or transmit this software or any
+   derivative works to any third party.
+
+d. COMMERCIAL USE & SAAS: You may NOT use this software or any portion of it
+   for any commercial enterprise, business operation, monetization effort,
+   consulting delivery, or as part of any Software-as-a-Service (SaaS), API,
+   or cloud-hosted platform.
+
+e. AI TRAINING & SCRAPING: You may NOT feed, ingest, scrape, or process this
+   codebase, documentation, system architecture, or proprietary prompt taxonomies
+   into any machine learning model, large language model (LLM), or artificial
+   intelligence training pipeline without prior express written consent.
+
+f. ATTRIBUTION REMOVAL: You may NOT remove, obscure, or alter any copyright
+   notices, author attributions, watermarks, or trademark identifiers present
+   within the software or documentation.
+
+================================================================================
+3. INTELLECTUAL PROPERTY OWNERSHIP
+================================================================================
+Title, ownership rights, copyright, and intellectual property rights in and to
+the software (including but not limited to source code, algorithms, database
+schemas, UI/UX designs, workflows, documentation, and architecture specifications)
+remain exclusively and permanently with lordpardonme.
+
+This license does NOT convey any rights of ownership or intellectual property to
+any user or third party.
+
+================================================================================
+4. ENFORCEMENT, DMCA & LEGAL REMEDIES
+================================================================================
+Any unauthorized reproduction, copying, distribution, or commercial exploitation
+of this software constitutes willful copyright infringement under international
+copyright treaties and domestic laws (including Title 17 of the United States Code).
+
+The copyright holder reserves the right to immediately issue Digital Millennium
+Copyright Act (DMCA) takedown notices, seek emergency preliminary and permanent
+injunctive relief, and pursue monetary damages, legal fees, and statutory penalties
+to the fullest extent permitted by law.
+
+================================================================================
+5. NO WARRANTY / DISCLAIMER OF LIABILITY
+================================================================================
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER "AS IS" AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+================================================================================
+FOR INQUIRIES, COMMERCIAL LICENSING, OR EXPLICIT PERMISSION REQUESTS, CONTACT:
+GitHub: @lordpardonme (https://github.com/lordpardonme)
+================================================================================

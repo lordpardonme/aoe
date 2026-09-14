@@ -315,7 +315,21 @@ An automated, headless Playwright test suite was executed against `http://127.0.
     - **`v*.*.*` tags**: Immutable release tags, blocks deletion and modification.
   - Enforced deployment branch policies for `UAT` (uat branch), `Staging` (staging branch), and `Production` (main branch).
   - Added repository variables (`APP_ENV`, `DRY_RUN`, `PYTHON_VERSION`) and secret placeholders (`LLM_API_KEY`, `GMAIL_CREDENTIALS`) for both GitHub Actions and GitHub Codespaces.
-  - Authored complete community suite: `LICENSE` (MIT), `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `.github/CODEOWNERS`, `.github/pull_request_template.md`, and issue templates for bug reports and feature requests.
+  - Authored complete community suite: `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `.github/CODEOWNERS`, `.github/pull_request_template.md`, and issue templates for bug reports and feature requests.
   - Created `.devcontainer/devcontainer.json` for 1-click GitHub Codespaces development.
+
+#### Decision 15: Transition to Strict Proprietary & Source-Available Anti-Copy License
+* **Context**: Permissive open-source licenses (like MIT) permit unrestricted copying, cloning, repackaging, commercial exploitation, and closed-source re-hosting of the application. The project owner requires strict legal protections preventing theft, copying, or SaaS deployment of AOE.
+* **Decision**:
+  - Replaced the permissive MIT license with a **Strict Proprietary & Source-Available License (All Rights Reserved — Strict No-Copy & No-Derivatives)**.
+  - Core terms:
+    - **No Copying or Mirroring**: Explicit prohibition on duplicating or hosting the codebase without express written consent.
+    - **No Derivative Works**: Prohibits building derivative tools, scrapers, or layout clones based on AOE.
+    - **No Commercial / SaaS Use**: Completely forbids multi-tenant or commercial exploitation.
+    - **Anti-AI Training**: Explicitly blocks automated ingestion into LLM or ML training datasets.
+    - **Evaluation Only**: Source is viewable solely for personal technical inspection and security auditing.
+    - **Contributor Assignment**: In `CONTRIBUTING.md`, all community contributions are legally assigned to `@lordpardonme`.
+  - Updated `README.md` license badge to `Proprietary / Strict` and added prominent legal notices.
+
 
 

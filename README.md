@@ -7,7 +7,7 @@
 [![CI Quality Gate](https://github.com/lordpardonme/aoe/actions/workflows/ci.yml/badge.svg)](https://github.com/lordpardonme/aoe/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Proprietary / Strict](https://img.shields.io/badge/License-Proprietary%20%2F%20Strict-red.svg)](LICENSE)
 [![Open in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-blue.svg?logo=github)](https://codespaces.new/lordpardonme/aoe)
 [![Safe Mode: DRY RUN](https://img.shields.io/badge/Safe_Mode-DRY__RUN_Enabled-success.svg)](#-safety--security-architecture)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
@@ -289,9 +289,20 @@ We welcome contributions from the community! Please read our [Contributing Guide
 
 ---
 
-## 📄 License
+## 📄 License & Proprietary Rights
 
-Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for complete terms.
+**Copyright © 2026 [lordpardonme](https://github.com/lordpardonme). All Rights Reserved.**
+
+This software, its source code, layout budgeting engines, database schemas, and associated documentation are **strictly proprietary and confidential**. The source code is made publicly available solely for personal inspection, security auditing, and technical review.
+
+> 🚫 **Strict Prohibition on Copying, Distribution & Commercialization:**
+> - **No Copying or Mirroring:** You may **not** copy, clone, mirror, duplicate, transcribe, or redistribute this repository or any portion thereof without prior express written consent from the author.
+> - **No Derivative Works:** Creating derivative products, forks for independent distribution, or repackaged versions is strictly forbidden.
+> - **No Commercial / SaaS Exploitation:** This software cannot be deployed as a multi-tenant service, integrated into commercial platforms, or monetized in any form.
+> - **No AI Training / Scraping:** Ingesting this codebase, documentation, prompt taxonomies, or architecture into artificial intelligence training datasets or LLM pipelines is strictly prohibited.
+
+For complete legal terms and conditions, consult the [`LICENSE`](LICENSE) file. For enterprise inquiries, contact [@lordpardonme](https://github.com/lordpardonme).
+
 
 ---
 
