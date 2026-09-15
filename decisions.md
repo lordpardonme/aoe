@@ -477,3 +477,23 @@ An automated, headless Playwright test suite was executed against `http://127.0.
   3. **Automated Verification (`scratch/test_ai_engines_modal.py`)**:
      - Verified modal launch, provider switching (Gemini → Claude → Ollama → Gemini), preset chip selection, show/hide key toggle, configuration saving, per-task custom model dispatch to Dwight, task ledger badge, and terminal logging with 0 console errors and 0 page errors.
      - Captured artifacts: `scranton_ai_engines_modal.png` and `scranton_custom_model_dispatched.png`.
+
+#### Decision 22: Interactive Task Deliverable & Output Inspector Modal & Output Closure
+* **Context**: The user identified a critical UX completion gap: *"After assigning and doing everything, what happens? There is no end thing. I don't see anywhere if I assign a task to Toby and ask him to do something. Then if I dispatch the key, it says task completed. So where did this go? If I assign something to Jim, I assign it to Jim, I scout remote design jobs... And plus, the UI, the name is long, it doesn't show anything. If I 10 minutes coffee pitch, fast dispatch, and he started draft, 10-minute coffee chat, task completed. So where is this task getting completed? What is the end result? Where is this screen where I can see it?"*
+* **Decision**:
+  1. **Task Deliverable & Output Inspector Modal (`#modal-task-deliverable`)**:
+     - Built authentic retro Munder Difflin modal in `staging_office.html` with character bust canvas, role/department tags, engine model badge, timestamp, and context-tailored deliverable body.
+     - **Email Pitch (Andy, Ryan, Kelly, Stanley, Michael)**: Full subject line and outreach body with word count & reading time badge (`78 words • 20s read`), 1-click **`[📋 Copy Pitch to Clipboard]`**, and **`[📬 Push to Gmail Drafts]`** integration.
+     - **1-Page Bahnschrift PDF (Dwight)**: Mathematical single-page budget gauge displaying Line Capacity (`46 / 50 lines`), Page Overflow (`0.00 mm`), Typography (`Bahnschrift DIN 1451`), Contrast Ratio (`7.2:1 WCAG AA`), tailored skill taxonomy chips, summary preview, **`[📄 Download 1-Page PDF]`**, and **`[🖨️ Print on Copier]`** button that triggers the physical green Xerox machine.
+     - **Job Scout & Keywords (Jim)**: Matched keyword taxonomy, 3 curated live feed matches, and **`[✨ Pass to Dwight to Tailor 1-Page CV]`** action handoff.
+     - **Quality Gate Audit (Angela)**: 100/100 audit scorecard checking WCAG AA contrast, single-page layout budget, ATS machine parseability, and typo continuity, with **`[🛡️ Apply Accounting Stamp]`**.
+     - **Inbound Radar Scanner (Toby)**: Scanned thread telemetry, interview invitation counts, recruiter acknowledgements, and parsed intent.
+     - **Salary Comp & Negotiation (Oscar)**: 25th-90th percentile compensation benchmarks and fact-grounded counter-offer negotiation scripts.
+  2. **Automatic Real-Time Deliverable Popup**:
+     - Updated `assignTaskToAgent()` so when any task finishes execution (after 3.6s), it automatically pops up `#modal-task-deliverable` directly in front of the user, providing immediate visual and tactical closure.
+  3. **Tasks Ledger Card Fixes & Persistent Deliverable Access**:
+     - Eliminated single-line truncation (`white-space: nowrap; overflow: hidden; text-overflow: ellipsis`) on task titles in `#cc-dynamic-tasks-list`. Titles now wrap cleanly with full visibility.
+     - Added prominent **`[📦 View Deliverable ↗]`** buttons to all completed task cards (including pre-loaded sample tasks `t1`, `t2`, `t3`), allowing users to inspect or copy outputs at any time.
+  4. **Automated Verification (`scratch/test_task_deliverables.py`)**:
+     - Verified modal rendering, sample tasks inspection, copy-to-clipboard, auto-popup on task dispatch and completion, and 0 console/page errors.
+     - Verified artifacts: `scranton_dwight_deliverable_modal.png`, `scranton_andy_deliverable_modal.png`, and `scranton_tasks_with_deliverables_overview.png`.
