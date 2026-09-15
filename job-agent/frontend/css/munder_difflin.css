@@ -1,0 +1,456 @@
+/* ==========================================================================
+   Munder Difflin Design System Tokens & Components
+   Animal Crossing x Earthbound x SNES Menu UI
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Press+Start+2P&family=Pixelify+Sans:wght@400;600;700&display=swap');
+
+:root {
+  color-scheme: light;
+
+  /* Base Surfaces */
+  --cth-cream-50:  #FFFDF5;
+  --cth-cream-100: #FFF8E7;
+  --cth-cream-200: #F4E9C7;
+  --cth-cream-300: #E8D9A0;
+  --cth-paper-100: #FCFAF0;
+  --cth-paper-200: #F0EAD2;
+
+  /* Ink (Text & Borders) */
+  --cth-ink-900: #1A1320;
+  --cth-ink-700: #3D2E4A;
+  --cth-ink-500: #6B5878;
+  --cth-ink-300: #A899B5;
+  --cth-ink-100: #D9CFE0;
+
+  /* Character Accents */
+  --cth-coral:       #D96A62;   --cth-coral-light: #F3D3CD;
+  --cth-mint:        #5CA97A;   --cth-mint-light:  #D2E7DA;
+  --cth-sky:         #4F9FAF;   --cth-sky-light:   #CFE5E9;
+  --cth-lemon:       #DCAB3C;   --cth-lemon-light: #F3E4BC;
+  --cth-lilac:       #9482D3;   --cth-lilac-light: #E0DAF2;
+  --cth-peach:       #D99168;   --cth-peach-light: #F3DACA;
+
+  /* Status Colors */
+  --cth-status-idle:       #A199AB;
+  --cth-status-thinking:   #4F9FAF;
+  --cth-status-working:    #DCAB3C;
+  --cth-status-waiting:    #6D87D6;
+  --cth-status-blocked:    #D96A62;
+  --cth-status-success:    #5CA97A;
+  --cth-status-ghost:      #D9D3DE;
+  --cth-status-compacting: #8F7CC7;
+  --cth-status-looping:    #D6903F;
+  --cth-status-typing:     #C89838;
+
+  /* World Colors */
+  --cth-grass-light: #D4EAB0;
+  --cth-grass-dark:  #B5D589;
+  --cth-wood-light:  #E5C896;
+  --cth-wood-dark:   #C9A66B;
+  --cth-path:        #E8D8B0;
+  --cth-wall:        #8B6F47;
+
+  /* Spacing Grid */
+  --cth-space-0: 0px;
+  --cth-space-1: 4px;
+  --cth-space-2: 8px;
+  --cth-space-3: 12px;
+  --cth-space-4: 16px;
+  --cth-space-5: 24px;
+  --cth-space-6: 32px;
+  --cth-space-7: 48px;
+  --cth-space-8: 64px;
+
+  /* Typography */
+  --cth-font-display: "Press Start 2P", monospace;
+  --cth-font-ui:      "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --cth-font-pixel:   "Pixelify Sans", sans-serif;
+  --cth-font-mono:    "JetBrains Mono", monospace;
+
+  --cth-text-display-lg: 16px;
+  --cth-text-display-md: 12px;
+  --cth-text-display-sm: 8px;
+  --cth-text-body-lg:    16px;
+  --cth-text-body-md:    14px;
+  --cth-text-body-sm:    12px;
+  --cth-text-mono-md:    13px;
+  --cth-text-mono-sm:    11px;
+
+  --cth-lh-display-lg: 24px;
+  --cth-lh-display-md: 20px;
+  --cth-lh-display-sm: 12px;
+  --cth-lh-body-lg:    24px;
+  --cth-lh-body-md:    20px;
+  --cth-lh-body-sm:    16px;
+  --cth-lh-mono:       18px;
+
+  /* Shadows & Borders */
+  --cth-shadow-hard: 3px 3px 0 rgba(26, 19, 32, 0.14);
+  --cth-shadow-drop: 4px 4px 0 rgba(26, 19, 32, 0.25);
+
+  --cth-panel-border:          inset 0 0 0 1px var(--cth-ink-300);
+  --cth-panel-border-inset:    inset 0 0 0 1px var(--cth-ink-100);
+  --cth-panel-border-terminal: inset 0 0 0 1px var(--cth-ink-300);
+  --cth-panel-border-dialog:   inset 0 0 0 1px var(--cth-ink-500);
+  --cth-on-accent:             #1A1320;
+}
+
+/* ==================== DARK THEME ==================== */
+:root[data-cth-theme='dark'] {
+  color-scheme: dark;
+
+  --cth-cream-50:  #17171B;
+  --cth-cream-100: #1D1D22;
+  --cth-cream-200: #26262C;
+  --cth-cream-300: #313139;
+  --cth-paper-100: #1A1A1F;
+  --cth-paper-200: #222229;
+
+  --cth-ink-900: #DEDBD6;
+  --cth-ink-700: #B3B0AC;
+  --cth-ink-500: #96919F;
+  --cth-ink-300: #787684;
+  --cth-ink-100: #3E3D46;
+
+  --cth-coral: #E08C82;       --cth-mint:  #74C096;
+  --cth-sky:   #6FB3C4;       --cth-lemon: #CFAA57;
+  --cth-lilac: #A896E3;       --cth-peach: #DFA57F;
+
+  --cth-coral-light: #3B2724;
+  --cth-mint-light:  #1E3328;
+  --cth-sky-light:   #1C2E34;
+  --cth-lemon-light: #382F1D;
+  --cth-lilac-light: #2D273E;
+  --cth-peach-light: #3A2B23;
+
+  --cth-shadow-hard: 3px 3px 0 rgba(0, 0, 0, 0.4);
+  --cth-shadow-drop: 4px 4px 0 rgba(0, 0, 0, 0.6);
+  --cth-on-accent:   #1A1320;
+}
+
+/* ==================== BASE UTILITIES ==================== */
+.cth-root {
+  background: var(--cth-cream-100);
+  color: var(--cth-ink-900);
+  font-family: var(--cth-font-ui);
+  font-size: var(--cth-text-body-md);
+  line-height: var(--cth-lh-body-md);
+}
+
+.cth-bg-noise {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(232, 217, 160, 0.18) 0 1px,
+    transparent 1px 6px
+  );
+}
+
+:root[data-cth-theme='dark'] .cth-bg-noise {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.03) 0 1px,
+    transparent 1px 6px
+  );
+}
+
+canvas, img, svg {
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ==================== MUNDER DIFFLIN PANELS ==================== */
+.cth-panel {
+  background: var(--cth-cream-100);
+  box-shadow: var(--cth-panel-border);
+  position: relative;
+}
+
+.cth-panel-inset {
+  background: var(--cth-cream-200);
+  box-shadow: var(--cth-panel-border-inset);
+}
+
+.cth-panel-terminal {
+  background: var(--cth-paper-100);
+  box-shadow: var(--cth-panel-border-terminal);
+}
+
+.cth-panel-dialog {
+  background: var(--cth-cream-50);
+  box-shadow: var(--cth-panel-border-dialog);
+  filter: drop-shadow(var(--cth-shadow-drop));
+}
+
+.cth-panel-header {
+  font-family: var(--cth-font-display);
+  font-size: var(--cth-text-display-md);
+  line-height: var(--cth-lh-display-md);
+  padding: 6px 12px 4px;
+  background: var(--cth-cream-200);
+  color: var(--cth-ink-900);
+  box-shadow: inset 0 -1px 0 var(--cth-ink-300);
+}
+
+/* ==================== 3D CHUNKY PIXEL BUTTONS ==================== */
+.cth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--cth-font-ui);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 50ms ease-out, background-color 80ms ease-out;
+  padding: 0 12px;
+  height: 32px;
+  font-size: var(--cth-text-body-sm);
+  outline: none;
+}
+
+.cth-btn-sm {
+  height: 24px;
+  padding: 0 8px;
+  font-size: 11px;
+}
+
+.cth-btn-lg {
+  height: 40px;
+  padding: 0 16px;
+  font-size: var(--cth-text-body-md);
+}
+
+.cth-btn:active {
+  transform: translate(0, 2px);
+}
+
+.cth-btn-primary {
+  background: var(--cth-ink-900);
+  color: var(--cth-cream-50);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -2px 0 rgba(0, 0, 0, 0.4), 0 1px 0 var(--cth-ink-900);
+}
+.cth-btn-primary:hover {
+  background: var(--cth-ink-700);
+}
+
+.cth-btn-secondary {
+  background: var(--cth-cream-100);
+  color: var(--cth-ink-900);
+  box-shadow: inset 0 0 0 1px var(--cth-ink-300), inset 0 1px 0 var(--cth-cream-50), inset 0 -2px 0 var(--cth-cream-300);
+}
+.cth-btn-secondary:hover {
+  background: var(--cth-cream-200);
+}
+
+.cth-btn-ghost {
+  background: transparent;
+  color: var(--cth-ink-700);
+  box-shadow: inset 0 0 0 1px var(--cth-ink-300);
+}
+.cth-btn-ghost:hover {
+  background: var(--cth-cream-200);
+}
+
+.cth-btn-destructive {
+  background: var(--cth-coral);
+  color: var(--cth-cream-50);
+  box-shadow: inset 0 1px 0 var(--cth-coral-light), inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+}
+.cth-btn-destructive:hover {
+  background: #c55750;
+}
+
+.cth-btn:disabled {
+  background: var(--cth-cream-300) !important;
+  color: var(--cth-ink-500) !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ==================== PIXEL STATUS CHIPS ==================== */
+.cth-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 6px;
+  font-family: var(--cth-font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: lowercase;
+  border-radius: 2px;
+  line-height: 16px;
+}
+
+.cth-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.cth-badge-idle {
+  background: rgba(161, 153, 171, 0.2);
+  color: var(--cth-status-idle);
+}
+.cth-badge-idle .cth-badge-dot { background: var(--cth-status-idle); }
+
+.cth-badge-working {
+  background: rgba(220, 171, 60, 0.2);
+  color: var(--cth-status-working);
+}
+.cth-badge-working .cth-badge-dot { background: var(--cth-status-working); animation: cth-pulse 1.2s infinite; }
+
+.cth-badge-thinking {
+  background: rgba(79, 159, 175, 0.2);
+  color: var(--cth-status-thinking);
+}
+.cth-badge-thinking .cth-badge-dot { background: var(--cth-status-thinking); animation: cth-pulse 1.2s infinite; }
+
+.cth-badge-blocked {
+  background: rgba(217, 106, 98, 0.2);
+  color: var(--cth-status-blocked);
+}
+.cth-badge-blocked .cth-badge-dot { background: var(--cth-status-blocked); }
+
+.cth-badge-success {
+  background: rgba(92, 169, 122, 0.2);
+  color: var(--cth-status-success);
+}
+.cth-badge-success .cth-badge-dot { background: var(--cth-status-success); }
+
+@keyframes cth-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* ==================== MUNDER DIFFLIN AGENT DOCK CARDS ==================== */
+.cth-agent-dock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 12px;
+  scrollbar-width: none;
+}
+.cth-agent-dock::-webkit-scrollbar { display: none; }
+
+.cth-agent-card {
+  width: 220px;
+  height: 78px;
+  flex-shrink: 0;
+  background: var(--cth-cream-100);
+  box-shadow: var(--cth-panel-border);
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6px 8px 6px 6px;
+  transition: transform 60ms ease-out, box-shadow 60ms ease-out;
+}
+
+.cth-agent-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--cth-panel-border), 1px 3px 0 0 rgba(26, 19, 32, 0.15);
+}
+
+.cth-agent-card.selected {
+  box-shadow: 0 0 0 2px var(--cth-ink-900), var(--cth-panel-border);
+  transform: translateY(-2px);
+}
+
+.cth-agent-card.is-god {
+  background: var(--cth-lemon-light);
+  box-shadow: inset 0 0 0 1px var(--cth-lemon), var(--cth-panel-border);
+}
+
+.cth-agent-card .bust-canvas {
+  width: 36px;
+  height: 56px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+
+.cth-boss-tag {
+  font-family: var(--cth-font-display);
+  font-size: 8px;
+  padding: 1px 4px;
+  background: var(--cth-lemon);
+  color: var(--cth-on-accent);
+  box-shadow: inset 0 0 0 1px var(--cth-ink-900);
+  line-height: 10px;
+}
+
+.cth-role-tag {
+  font-family: var(--cth-font-display);
+  font-size: 7px;
+  padding: 1px 4px;
+  background: var(--cth-cream-200);
+  color: var(--cth-ink-700);
+  box-shadow: inset 0 0 0 1px var(--cth-ink-300);
+  line-height: 10px;
+}
+
+/* 8-Segment Context Gauge */
+.cth-gauge {
+  height: 4px;
+  width: 100%;
+  background: var(--cth-cream-300);
+  position: relative;
+  overflow: hidden;
+}
+.cth-gauge-fill {
+  height: 100%;
+  background: var(--cth-mint);
+  transition: width 150ms ease-out;
+}
+.cth-gauge-fill.warn { background: var(--cth-lemon); }
+.cth-gauge-fill.danger { background: var(--cth-coral); }
+
+/* ==================== COMMAND CENTER TABS ==================== */
+.cth-tab-strip {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--cth-ink-300);
+  background: var(--cth-cream-200);
+  padding: 0 4px;
+  scrollbar-width: none;
+}
+.cth-tab-strip::-webkit-scrollbar { display: none; }
+
+.cth-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  font-family: var(--cth-font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cth-ink-500);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.cth-tab:hover {
+  color: var(--cth-ink-900);
+}
+
+.cth-tab.active {
+  color: var(--cth-ink-900);
+  background: var(--cth-cream-100);
+  border-bottom: 2px solid var(--cth-lemon);
+  box-shadow: inset 0 1px 0 var(--cth-ink-300), inset 1px 0 0 var(--cth-ink-300), inset -1px 0 0 var(--cth-ink-300);
+}

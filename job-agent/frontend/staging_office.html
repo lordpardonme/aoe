@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full antialiased" data-cth-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Munder Difflin — Dunder Mifflin Scranton Operations Floor [Staging UAT]</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/munder_difflin.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+            display: ['"Press Start 2P"', 'monospace'],
+          }
+        }
+      }
+    };
+    window.API_BASE = window.location.origin;
+  </script>
+  <style>
+    body {
+      background: var(--cth-cream-50);
+      color: var(--cth-ink-900);
+      font-family: var(--cth-font-ui);
+    }
+    canvas {
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -webkit-crisp-edges;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--cth-cream-100);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--cth-ink-300);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--cth-ink-500);
+    }
+    .agent-picker-tile {
+      transition: all 0.1s ease-in-out;
+    }
+    .agent-picker-tile:hover {
+      transform: translateY(-1px);
+      box-shadow: inset 0 0 0 1px var(--cth-lemon) !important;
+    }
+    .agent-picker-tile.selected {
+      box-shadow: inset 0 0 0 2px var(--cth-lemon) !important;
+      background: var(--cth-cream-300) !important;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col overflow-hidden select-none">
+
+  <!-- ==================== 1. MUNDER DIFFLIN AUTHENTIC TITLE BAR ==================== -->
+  <header style="height: 38px; min-height: 38px; background: linear-gradient(180deg, var(--cth-cream-100) 0%, var(--cth-cream-200) 100%); border-bottom: 1px solid var(--cth-ink-300); padding: 0 14px; display: flex; align-items: center; justify-content: space-between; user-select: none; z-index: 30;">
+    
+    <!-- Left: Brand + Status -->
+    <div class="flex items-center space-x-3">
+      <!-- Crimson MD Badge -->
+      <div style="width: 24px; height: 24px; background: #6E1423; border: 2px solid #4A0D17; color: #F4F1EA; font-family: var(--cth-font-display); font-size: 9px; display: grid; place-items: center; box-shadow: 2px 2px 0 rgba(0,0,0,0.2); flex-shrink: 0;">
+        MD
+      </div>
+
+      <span style="font-family: var(--cth-font-display); font-size: 11px; color: var(--cth-ink-900); letter-spacing: 0.5px;">
+        MUNDER DIFFLIN
+      </span>
+
+      <span class="cth-badge cth-badge-working" style="padding: 1px 6px;">
+        <span class="cth-badge-dot"></span>
+        <span style="font-size: 11px;">v0.5.2 latest</span>
+      </span>
+
+      <span style="font-size: 12px; color: var(--cth-lemon); font-weight: 600;" class="hidden sm:inline-block">
+        ● auto mode on
+      </span>
+
+      <span style="font-family: var(--cth-font-mono); font-size: 11px; color: var(--cth-mint);" class="hidden md:inline-flex items-center">
+        <span class="w-2 h-2 rounded-full inline-block bg-emerald-400 mr-1.5 animate-pulse"></span>
+        Scranton Bus: Connected
+      </span>
+    </div>
+
+    <!-- Right: Operational Actions & Theme Toggle -->
+    <div class="flex items-center space-x-2">
+      <button onclick="window.AOECommandCenter.openAssignTaskModal()" class="cth-btn cth-btn-primary" style="height: 28px; font-size: 11px; padding: 0 12px;" title="Assign a custom task or mission to any Scranton character">
+        <span>⚡</span>
+        <span>Assign Task</span>
+      </button>
+
+      <button onclick="window.AOECommandCenter.simulateDemoMission()" class="cth-btn cth-btn-secondary" style="height: 28px; font-size: 11px; padding: 0 10px;" title="Run full 20s observable multi-agent pipeline">
+        <span>🎬</span>
+        <span>Simulate Swarm</span>
+      </button>
+
+      <button id="ai-engines-btn" onclick="window.AOECommandCenter.openAiEnginesModal()" class="cth-btn cth-btn-secondary" style="height: 28px; font-size: 11px; padding: 0 10px;" title="Configure AI Engines, Custom Models &amp; Providers">
+        <span>⚙️</span>
+        <span>AI Engines</span>
+      </button>
+
+      <button id="theme-toggle-btn" onclick="toggleMunderTheme()" class="cth-btn cth-btn-secondary" style="height: 28px; width: 28px; padding: 0;" title="Toggle Light / Dark">
+        <span id="theme-toggle-icon">☀</span>
+      </button>
+
+      <a href="/index.html" class="cth-btn cth-btn-ghost" style="height: 28px; font-size: 11px; padding: 0 10px;" title="Return to Main AOE Hub">
+        <span>← Main App</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ==================== 2. MAIN WORKSPACE ==================== -->
+  <div class="flex-1 flex min-h-0 relative">
+
+    <!-- 2A. LEFT: 2D RETRO CANVAS FLOOR -->
+    <main class="flex-1 flex flex-col min-w-0 relative overflow-hidden" style="background: var(--cth-cream-50); border-right: 1px solid var(--cth-ink-300);">
+      
+      <!-- Canvas Bar Info Strip -->
+      <div style="height: 26px; min-height: 26px; background: var(--cth-cream-100); border-bottom: 1px solid var(--cth-ink-300); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-family: var(--cth-font-display); font-size: 8px; color: var(--cth-ink-500); shrink-0;">
+        <div class="flex items-center space-x-2">
+          <span style="color: var(--cth-lemon);">● SCRANTON BRANCH FLOOR</span>
+          <span style="color: var(--cth-ink-300);">|</span>
+          <span>15 CAST MEMBERS STATIONED</span>
+          <span style="color: var(--cth-ink-300);">|</span>
+          <span style="color: var(--cth-mint);">60 FPS CANVAS</span>
+        </div>
+        <div style="font-family: var(--cth-font-ui); font-size: 11px; color: var(--cth-ink-500);">
+          💡 Click any desk or dock card to select station
+        </div>
+      </div>
+
+      <!-- Canvas Viewport -->
+      <div class="flex-1 relative flex items-center justify-center overflow-hidden" style="background: var(--cth-cream-50);">
+        <canvas id="office-canvas" class="max-w-[1088px] max-h-[704px] w-full h-auto aspect-[1088/704] bg-transparent cursor-pointer"></canvas>
+      </div>
+
+      <!-- Bottom Agent Roster Bar (Authentic Munder Difflin AgentStrip) -->
+      <div style="height: 112px; min-height: 112px; background: var(--cth-cream-200); border-top: 1px solid var(--cth-ink-300); padding: 10px 14px; display: flex; align-items: center; gap: 12px; overflow-x: auto; z-index: 10;">
+        <div style="font-family: var(--cth-font-display); font-size: 8px; color: var(--cth-ink-500); text-align: center; flex-shrink: 0; margin-right: 4px; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+          <div style="display: flex; align-items: center; gap: 3px;">
+            <span>👥</span>
+            <span>DOCK</span>
+          </div>
+          <div style="display: flex; gap: 2px; background: var(--cth-cream-300); padding: 2px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+            <button id="dock-filter-all" onclick="window.AOECommandCenter.setRosterFilter('all')" class="cth-btn cth-btn-primary" style="height: 20px; font-size: 8px; padding: 0 5px;" title="Show all 15 Scranton cast members">All (15)</button>
+            <button id="dock-filter-active" onclick="window.AOECommandCenter.setRosterFilter('active')" class="cth-btn cth-btn-ghost" style="height: 20px; font-size: 8px; padding: 0 5px;" title="Show only agents on active missions">Active</button>
+          </div>
+        </div>
+        <div id="office-roster-container" class="cth-agent-dock flex items-center space-x-3 overflow-x-auto py-1 flex-1">
+          <!-- Populated by command_center.js with canonical cards -->
+        </div>
+      </div>
+    </main>
+
+    <!-- 2B. RIGHT: COMMAND CENTER DRAWER (PixelPanel layout) -->
+    <aside style="width: 420px; flex-shrink: 0; min-height: 0; display: flex; flex-direction: column; background: var(--cth-cream-100); border-left: 1px solid var(--cth-ink-300); color: var(--cth-ink-900);" class="select-text">
+      
+      <!-- Selected Agent Profile Header -->
+      <div style="padding: 10px 14px; border-bottom: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; align-items: center; justify-content: space-between;">
+        <div class="flex items-center space-x-3 min-w-0">
+          <!-- Procedural Avatar Canvas -->
+          <div id="cc-agent-avatar-box" style="width: 36px; height: 46px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); display: flex; align-items: flex-start; justify-content: center; overflow: hidden; flex-shrink: 0;">
+            <canvas id="cc-agent-bust-canvas" width="36" height="56" style="width:36px; height:56px; image-rendering:pixelated;"></canvas>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center space-x-2">
+              <h2 id="cc-agent-name" style="font-family: var(--cth-font-ui); font-weight: 700; font-size: 13px; color: var(--cth-ink-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                Michael Scott
+              </h2>
+              <span id="cc-agent-status-pill" class="cth-badge cth-badge-idle" style="padding: 1px 6px;">
+                <span class="cth-badge-dot"></span>
+                <span id="cc-agent-status-text">idle</span>
+              </span>
+            </div>
+            <p id="cc-agent-role" style="font-size: 11px; color: var(--cth-ink-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">
+              Regional Manager (Supervisor)
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <button id="cc-assign-task-btn" onclick="window.AOECommandCenter.openAssignTaskModal(window.AOECommandCenter.selectedAgent ? window.AOECommandCenter.selectedAgent.id : 'michael')" class="cth-btn cth-btn-primary" style="height: 26px; font-size: 11px; padding: 0 10px;" title="Assign task to this agent">
+            ⚡ Assign Task
+          </button>
+          <button onclick="window.AOECommandCenter.openCharacterModal(window.AOECommandCenter.selectedAgent ? window.AOECommandCenter.selectedAgent.id : 'michael')" class="cth-btn cth-btn-secondary" style="height: 26px; font-size: 11px; padding: 0 8px;" title="Open Desk Drawer">
+            Desk ↗
+          </button>
+        </div>
+      </div>
+
+      <!-- Command Center Navigation Tabs (cth-tab-strip) -->
+      <div class="cth-tab-strip">
+        <button id="cc-tab-btn-terminal" onclick="window.AOECommandCenter.switchTab('terminal')" class="cth-tab active">
+          💻 terminal
+        </button>
+        <button id="cc-tab-btn-monitor" onclick="window.AOECommandCenter.switchTab('monitor')" class="cth-tab">
+          📊 monitor
+        </button>
+        <button id="cc-tab-btn-tasks" onclick="window.AOECommandCenter.switchTab('tasks')" class="cth-tab">
+          📋 tasks
+        </button>
+        <button id="cc-tab-btn-memory" onclick="window.AOECommandCenter.switchTab('memory')" class="cth-tab">
+          🧠 memory
+        </button>
+        <button id="cc-tab-btn-queue" onclick="window.AOECommandCenter.switchTab('queue')" class="cth-tab">
+          <span>📬 queue</span>
+          <span id="cc-queue-count" style="margin-left: 4px; padding: 0 5px; border-radius: 9999px; font-size: 10px; background: var(--cth-lemon-light); color: var(--cth-lemon);">0</span>
+        </button>
+      </div>
+
+      <!-- Tab Content Panes -->
+      <div class="flex-1 overflow-y-auto p-3 min-h-0" style="background: var(--cth-cream-50);">
+        
+        <!-- Tab 1: Terminal Logs -->
+        <div id="cc-tab-content-terminal" class="h-full flex flex-col">
+          <div id="command-terminal-output" style="flex: 1; background: var(--cth-paper-100); box-shadow: var(--cth-panel-border-terminal); padding: 10px; font-family: var(--cth-font-mono); font-size: 11px; line-height: 1.5; color: var(--cth-ink-900); overflow-y: auto;" class="space-y-1 select-text">
+            <div style="color: var(--cth-ink-500);">[SYSTEM] Dunder Mifflin Scranton Floor online in Staging orbit.</div>
+            <div style="color: var(--cth-ink-500);">[SYSTEM] All 15 cast members stationed at authentic Scranton desks.</div>
+            <div style="color: var(--cth-sky);">[MICHAEL SCOTT] "World's Best Boss standing by! Ready for mission dispatch."</div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Visual Pipeline Monitor -->
+        <div id="cc-tab-content-monitor" class="hidden space-y-3">
+          <div class="p-3 rounded-lg" style="background: var(--cth-cream-100); box-shadow: var(--cth-panel-border);">
+            <div style="font-family: var(--cth-font-display); font-size: 9px; color: var(--cth-lemon); display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span>SCRANTON SWARM PROGRESSION</span>
+              <span style="font-family: var(--cth-font-mono); font-size: 10px; color: var(--cth-ink-500);">5 STAGES</span>
+            </div>
+            
+            <div class="space-y-2 pt-1">
+              <!-- Stage 1: Michael -->
+              <div id="monitor-stage-1" class="p-2.5 rounded flex items-center justify-between" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+                <div class="flex items-center space-x-2.5">
+                  <span class="w-5 h-5 rounded flex items-center justify-center font-bold text-[10px]" style="background: var(--cth-lemon); color: var(--cth-cream-50);">1</span>
+                  <div>
+                    <div style="font-weight: 700; font-size: 11px; color: var(--cth-ink-900);">Michael Scott • Supervisor</div>
+                    <div style="font-size: 10px; color: var(--cth-ink-500);">Conference brief &amp; swarm orchestration</div>
+                  </div>
+                </div>
+                <span id="monitor-stage-badge-1" class="cth-badge cth-badge-idle" style="font-size: 9px;">READY</span>
+              </div>
+
+              <!-- Stage 2: Jim -->
+              <div id="monitor-stage-2" class="p-2.5 rounded flex items-center justify-between" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+                <div class="flex items-center space-x-2.5">
+                  <span class="w-5 h-5 rounded flex items-center justify-center font-bold text-[10px]" style="background: var(--cth-sky); color: var(--cth-cream-50);">2</span>
+                  <div>
+                    <div style="font-weight: 700; font-size: 11px; color: var(--cth-ink-900);">Jim Halpert • Job Scout</div>
+                    <div style="font-size: 10px; color: var(--cth-ink-500);">Queries public feeds &amp; matches candidate skills</div>
+                  </div>
+                </div>
+                <span id="monitor-stage-badge-2" class="cth-badge cth-badge-idle" style="font-size: 9px;">READY</span>
+              </div>
+
+              <!-- Stage 3: Dwight -->
+              <div id="monitor-stage-3" class="p-2.5 rounded flex items-center justify-between" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+                <div class="flex items-center space-x-2.5">
+                  <span class="w-5 h-5 rounded flex items-center justify-center font-bold text-[10px]" style="background: var(--cth-peach); color: var(--cth-cream-50);">3</span>
+                  <div>
+                    <div style="font-weight: 700; font-size: 11px; color: var(--cth-ink-900);">Dwight Schrute • Resume Architect</div>
+                    <div style="font-size: 10px; color: var(--cth-ink-500);">Enforces 1-page Bahnschrift limit &amp; prints on copier</div>
+                  </div>
+                </div>
+                <span id="monitor-stage-badge-3" class="cth-badge cth-badge-idle" style="font-size: 9px;">READY</span>
+              </div>
+
+              <!-- Stage 4: Ryan -->
+              <div id="monitor-stage-4" class="p-2.5 rounded flex items-center justify-between" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+                <div class="flex items-center space-x-2.5">
+                  <span class="w-5 h-5 rounded flex items-center justify-center font-bold text-[10px]" style="background: var(--cth-lilac); color: var(--cth-cream-50);">4</span>
+                  <div>
+                    <div style="font-weight: 700; font-size: 11px; color: var(--cth-ink-900);">Ryan Howard • Pitch Specialist</div>
+                    <div style="font-size: 10px; color: var(--cth-ink-500);">Drafts 3-sentence high-conversion outreach pitch</div>
+                  </div>
+                </div>
+                <span id="monitor-stage-badge-4" class="cth-badge cth-badge-idle" style="font-size: 9px;">READY</span>
+              </div>
+
+              <!-- Stage 5: Angela -->
+              <div id="monitor-stage-5" class="p-2.5 rounded flex items-center justify-between" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+                <div class="flex items-center space-x-2.5">
+                  <span class="w-5 h-5 rounded flex items-center justify-center font-bold text-[10px]" style="background: var(--cth-coral); color: var(--cth-cream-50);">5</span>
+                  <div>
+                    <div style="font-weight: 700; font-size: 11px; color: var(--cth-ink-900);">Angela Martin • Quality Gate</div>
+                    <div style="font-size: 10px; color: var(--cth-ink-500);">Audits 100/100 WCAG AA contrast &amp; applies stamp</div>
+                  </div>
+                </div>
+                <span id="monitor-stage-badge-5" class="cth-badge cth-badge-idle" style="font-size: 9px;">READY</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Tasks Board -->
+        <div id="cc-tab-content-tasks" class="hidden space-y-2.5">
+          <div class="p-3 rounded-lg" style="background: var(--cth-cream-100); box-shadow: var(--cth-panel-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-family: var(--cth-font-display); font-size: 9px; color: var(--cth-lemon);">SCRANTON TASKS LEDGER</span>
+              <button onclick="window.AOECommandCenter.openAssignTaskModal()" class="cth-btn cth-btn-primary" style="height: 22px; font-size: 9px; padding: 0 8px;" title="Assign task to any Scranton character">
+                + New Task
+              </button>
+            </div>
+            <div id="cc-dynamic-tasks-list" class="space-y-2 pt-1">
+              <!-- Populated by command_center.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Agent Memory -->
+        <div id="cc-tab-content-memory" class="hidden space-y-2.5">
+          <div id="cc-memory-content" class="p-3 rounded-lg" style="background: var(--cth-cream-100); box-shadow: var(--cth-panel-border); font-size: 11px;">
+            Select any character from the floor or dock to inspect memory context.
+          </div>
+        </div>
+
+        <!-- Tab 5: Queue List -->
+        <div id="cc-tab-content-queue" class="hidden space-y-2">
+          <div class="flex items-center justify-between pb-1" style="font-size: 11px;">
+            <span style="font-weight: 700; color: var(--cth-ink-900);">Pending Leads In Orbit</span>
+            <button onclick="window.AOECommandCenter.loadQueueLeads()" style="font-size: 10px; color: var(--cth-sky); text-decoration: underline;">↺ Refresh</button>
+          </div>
+          <div id="cc-queue-list" class="space-y-2">
+            <div class="p-4 text-center text-xs" style="color: var(--cth-ink-500);">Loading target queue leads...</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom: Michael Scott Interactive Chat Composer -->
+      <div style="padding: 10px 14px; border-top: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; flex-direction: column; gap: 6px;">
+        <div class="flex items-center space-x-2">
+          <input type="text" id="cc-chat-input" placeholder="Instruct Michael Scott (e.g. 'That's what she said', 'Tailor lead', 'status')..." style="flex: 1; padding: 6px 10px; font-size: 11px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;">
+          <button id="cc-btn-send-chat" class="cth-btn cth-btn-primary" style="height: 28px; font-size: 11px; padding: 0 12px; flex-shrink: 0;">
+            Send ✈️
+          </button>
+        </div>
+        <div class="flex items-center justify-between text-[10px]" style="color: var(--cth-ink-500);">
+          <span>Commands: <code>"tailor"</code>, <code>"scan"</code>, <code>"that's what she said"</code></span>
+          <span>Enter to submit</span>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <!-- ==================== CONTEXTUAL CHARACTER MODALS ==================== -->
+
+  <!-- 0. UNIVERSAL TASK ASSIGNMENT MODAL (Munder Difflin Dispatch Engine) -->
+  <div id="modal-assign-task" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 select-text">
+    <div style="width: 100%; max-width: 640px; max-height: 90vh; background: var(--cth-cream-100); box-shadow: var(--cth-panel-border-dialog), 4px 4px 0 rgba(0,0,0,0.3); border: 1px solid var(--cth-ink-900); overflow: hidden; display: flex; flex-direction: column;">
+      
+      <!-- Title Bar -->
+      <div style="height: 40px; border-bottom: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; align-items: center; justify-content: space-between; padding: 0 14px; flex-shrink: 0;">
+        <div class="flex items-center space-x-2">
+          <span>⚡</span>
+          <h3 style="font-family: var(--cth-font-display); font-size: 9px; color: var(--cth-ink-900);">Munder Difflin • Assign Task &amp; Mission</h3>
+          <span class="cth-badge cth-badge-working" style="font-size: 9px; padding: 1px 6px;">Scranton Fleet</span>
+        </div>
+        <button onclick="window.AOECommandCenter.closeAssignTaskModal()" style="font-weight: 700; color: var(--cth-ink-500); cursor: pointer; padding: 4px;" title="Close modal">✕</button>
+      </div>
+
+      <!-- Scrollable Body -->
+      <div class="p-4 space-y-3.5 overflow-y-auto flex-1 text-xs">
+        
+        <!-- Step 1: Character Picker (All 15 Scranton Characters) -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="font-bold text-[11px]" style="color: var(--cth-ink-700);">1. Select Scranton Character</label>
+            <span style="font-size: 10px; color: var(--cth-ink-500);">15 Talents Available • Click any to assign</span>
+          </div>
+          <div id="task-modal-agent-strip" class="grid grid-cols-5 sm:grid-cols-8 gap-1.5 p-2 rounded" style="background: var(--cth-cream-200); box-shadow: inset 0 0 0 1px var(--cth-ink-100); max-height: 140px; overflow-y: auto;">
+            <!-- Rendered by command_center.js -->
+          </div>
+        </div>
+
+        <!-- Step 2: Selected Character Spotlight -->
+        <div class="p-2.5 rounded flex items-center justify-between" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+          <div class="flex items-center space-x-3">
+            <div id="task-modal-spotlight-bust" style="width: 32px; height: 44px; background: var(--cth-cream-200); box-shadow: inset 0 0 0 1px var(--cth-ink-300); display: flex; align-items: flex-start; justify-content: center; overflow: hidden; flex-shrink: 0;">
+              <canvas id="task-modal-bust-canvas" width="32" height="48" style="width:32px; height:48px; image-rendering:pixelated;"></canvas>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span id="task-modal-spotlight-name" style="font-family: var(--cth-font-ui); font-weight: 700; font-size: 13px; color: var(--cth-ink-900);">Michael Scott</span>
+                <span id="task-modal-spotlight-dept" class="cth-badge cth-badge-working" style="font-size: 9px; padding: 1px 5px;">BOSS</span>
+              </div>
+              <div id="task-modal-spotlight-quote" style="font-size: 11px; color: var(--cth-ink-500); font-style: italic; margin-top: 2px;">
+                "World's Best Boss mug is full. Conference room is reserved. What company are we taking down today?"
+              </div>
+            </div>
+          </div>
+          <span id="task-modal-spotlight-status" class="cth-badge cth-badge-idle" style="font-size: 9px;">AVAILABLE</span>
+        </div>
+
+        <!-- Step 3: Quick-Pick Preset Directives -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="font-bold text-[11px]" style="color: var(--cth-ink-700);">2. Quick-Pick Presets for <span id="task-modal-presets-name">Michael</span></label>
+            <span style="font-size: 10px; color: var(--cth-ink-500);">Click preset to auto-fill</span>
+          </div>
+          <div id="task-modal-presets-container" class="flex flex-wrap gap-1.5">
+            <!-- Populated with 3 clickable preset chips -->
+          </div>
+        </div>
+
+        <!-- Step 4: Company & Role Inputs -->
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold mb-1" style="color: var(--cth-ink-700);">Target Company</label>
+            <input type="text" id="task-company-input" value="Spotify" style="width: 100%; padding: 6px 10px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;">
+          </div>
+          <div>
+            <label class="block font-bold mb-1" style="color: var(--cth-ink-700);">Target Role</label>
+            <input type="text" id="task-role-input" value="Senior Product Designer" style="width: 100%; padding: 6px 10px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;">
+          </div>
+        </div>
+
+        <!-- Step 5: Custom Directive (Free-form Textarea) -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="font-bold" style="color: var(--cth-ink-700);">3. Custom Directive / Prompt</label>
+            <span style="font-size: 10px; color: var(--cth-ink-500);">Type any instruction for this character</span>
+          </div>
+          <textarea id="task-prompt-input" rows="3" style="width: 100%; padding: 6px 10px; font-family: var(--cth-font-mono); font-size: 11px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;" placeholder="Type any custom instruction for this character..."></textarea>
+        </div>
+
+        <!-- Step 6: Mode & Engine -->
+        <div class="p-2.5 rounded flex flex-col sm:flex-row sm:items-center justify-between gap-2" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+          <div>
+            <div style="font-weight: 700; color: var(--cth-ink-900);">Execution Engine &amp; Model:</div>
+            <div style="font-size: 10px; color: var(--cth-ink-500);">Per-task model override &amp; execution gate</div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <select id="task-model-select" style="padding: 4px 8px; background: var(--cth-cream-200); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); font-size: 10px; outline: none;">
+              <option value="active">🌐 Active System Engine</option>
+              <option value="gemini-2.0-flash">✨ Gemini 2.0 Flash</option>
+              <option value="claude-3-7-sonnet-20250219">🟣 Claude 3.7 Sonnet</option>
+              <option value="gpt-4o">🟢 GPT-4o (OpenAI)</option>
+              <option value="llama-3.3-70b-versatile">⚡ Groq Llama 3.3 70B</option>
+              <option value="ollama-local">🦙 Ollama Local</option>
+            </select>
+            <select id="task-mode-select" style="padding: 4px 8px; background: var(--cth-cream-200); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); font-size: 10px; outline: none;">
+              <option value="standard">⚡ Fast Dispatch</option>
+              <option value="strict">🛡️ Angela Audit Gate</option>
+              <option value="print">🖨️ 1-Page Bahnschrift Print</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Action Buttons -->
+      <div style="padding: 10px 14px; border-top: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+        <span style="font-size: 10px; color: var(--cth-ink-500);">💡 Character activates on floor with speech bubble &amp; sound cues</span>
+        <div class="flex items-center space-x-2">
+          <button onclick="window.AOECommandCenter.closeAssignTaskModal()" class="cth-btn cth-btn-ghost" style="height: 28px; font-size: 11px;">Cancel</button>
+          <button id="task-modal-dispatch-btn" onclick="window.AOECommandCenter.dispatchAssignedTask()" class="cth-btn cth-btn-primary" style="height: 28px; font-size: 11px; padding: 0 14px;">
+            🚀 Dispatch Task to Michael
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 0B. AI ENGINES & CUSTOM MODEL HUB MODAL -->
+  <div id="modal-ai-engines" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 select-text">
+    <div style="width: 100%; max-width: 620px; max-height: 90vh; background: var(--cth-cream-100); box-shadow: var(--cth-panel-border-dialog), 4px 4px 0 rgba(0,0,0,0.3); border: 1px solid var(--cth-ink-900); overflow: hidden; display: flex; flex-direction: column;">
+      
+      <!-- Title Bar -->
+      <div style="height: 40px; border-bottom: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; align-items: center; justify-content: space-between; padding: 0 14px; flex-shrink: 0;">
+        <div class="flex items-center space-x-2">
+          <span>⚙️</span>
+          <h3 style="font-family: var(--cth-font-display); font-size: 9px; color: var(--cth-ink-900);">Munder Difflin • AI Engines &amp; Custom Models</h3>
+          <span class="cth-badge cth-badge-working" style="font-size: 9px; padding: 1px 6px;">BYOK Multi-Provider</span>
+        </div>
+        <button onclick="window.AOECommandCenter.closeAiEnginesModal()" style="font-weight: 700; color: var(--cth-ink-500); cursor: pointer; padding: 4px;" title="Close modal">✕</button>
+      </div>
+
+      <!-- Scrollable Body -->
+      <div class="p-4 space-y-3.5 overflow-y-auto flex-1 text-xs">
+        
+        <!-- BYOK Overview Banner -->
+        <div class="p-2.5 rounded text-[11px] leading-relaxed" style="background: var(--cth-lemon-light); color: var(--cth-ink-900); box-shadow: inset 0 0 0 1px var(--cth-lemon);">
+          <strong style="color: var(--cth-lemon);">Bring-Your-Own-Key (BYOK) Architecture:</strong>
+          Configure custom providers and model slugs below. All credentials remain 100% local-first and are persisted directly to your project's <code style="font-family: var(--cth-font-mono); font-size: 10px;">.env</code> file.
+        </div>
+
+        <!-- Provider Selection Grid -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="font-bold text-[11px]" style="color: var(--cth-ink-700);">1. Select AI Provider</label>
+            <span style="font-size: 10px; color: var(--cth-ink-500);">Cloud APIs &amp; Local Offline</span>
+          </div>
+          <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5" id="ai-provider-grid">
+            <button type="button" onclick="window.AOECommandCenter.selectAiProvider('gemini')" id="ai-prov-gemini" class="p-2 rounded flex flex-col items-center justify-center text-center transition-all" style="background: var(--cth-cream-300); box-shadow: inset 0 0 0 2px var(--cth-lemon);">
+              <span class="text-base">✨</span>
+              <span style="font-size: 10px; font-weight: 700; margin-top: 2px;">Gemini</span>
+            </button>
+            <button type="button" onclick="window.AOECommandCenter.selectAiProvider('openai')" id="ai-prov-openai" class="p-2 rounded flex flex-col items-center justify-center text-center transition-all" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+              <span class="text-base">🟢</span>
+              <span style="font-size: 10px; font-weight: 700; margin-top: 2px;">OpenAI</span>
+            </button>
+            <button type="button" onclick="window.AOECommandCenter.selectAiProvider('anthropic')" id="ai-prov-anthropic" class="p-2 rounded flex flex-col items-center justify-center text-center transition-all" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+              <span class="text-base">🟣</span>
+              <span style="font-size: 10px; font-weight: 700; margin-top: 2px;">Claude</span>
+            </button>
+            <button type="button" onclick="window.AOECommandCenter.selectAiProvider('groq')" id="ai-prov-groq" class="p-2 rounded flex flex-col items-center justify-center text-center transition-all" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+              <span class="text-base">⚡</span>
+              <span style="font-size: 10px; font-weight: 700; margin-top: 2px;">Groq</span>
+            </button>
+            <button type="button" onclick="window.AOECommandCenter.selectAiProvider('ollama')" id="ai-prov-ollama" class="p-2 rounded flex flex-col items-center justify-center text-center transition-all" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+              <span class="text-base">🦙</span>
+              <span style="font-size: 10px; font-weight: 700; margin-top: 2px;">Ollama</span>
+            </button>
+            <button type="button" onclick="window.AOECommandCenter.selectAiProvider('openrouter')" id="ai-prov-openrouter" class="p-2 rounded flex flex-col items-center justify-center text-center transition-all" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+              <span class="text-base">🌐</span>
+              <span style="font-size: 10px; font-weight: 700; margin-top: 2px;">Custom</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Model Slug Input + Quick-Pick Presets -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="font-bold text-[11px]" style="color: var(--cth-ink-700);">2. Model Slug / Custom ID</label>
+            <span style="font-size: 10px; color: var(--cth-ink-500);">Type any custom model or click preset</span>
+          </div>
+          <input type="text" id="ai-model-input" value="gemini-2.0-flash" style="width: 100%; padding: 6px 10px; font-family: var(--cth-font-mono); font-size: 11px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;" placeholder="e.g. gemini-2.0-flash, gpt-4o, claude-3-7-sonnet">
+          <div class="flex items-center justify-between mt-1.5">
+            <span style="font-size: 10px; color: var(--cth-ink-500);">Quick-Pick Models:</span>
+            <div id="ai-model-presets" class="flex flex-wrap gap-1">
+              <!-- Rendered by command_center.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- API Key Input -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="font-bold text-[11px]" style="color: var(--cth-ink-700);">3. Provider API Key</label>
+            <button type="button" onclick="window.AOECommandCenter.toggleApiKeyVisibility()" style="font-size: 10px; color: var(--cth-ink-500); cursor: pointer; text-decoration: underline;" id="ai-key-toggle-btn">Show Key</button>
+          </div>
+          <input type="password" id="ai-key-input" style="width: 100%; padding: 6px 10px; font-family: var(--cth-font-mono); font-size: 11px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;" placeholder="Enter your API key (leave blank for local Ollama)...">
+          <div style="font-size: 10px; color: var(--cth-ink-500); margin-top: 3px;">
+            🔒 Local-first privacy: API keys are stored only in your local <code style="font-family: var(--cth-font-mono);">.env</code>. Never uploaded.
+          </div>
+        </div>
+
+        <!-- Base URL Input (Ollama, OpenRouter, vLLM, LM Studio) -->
+        <div id="ai-base-url-container">
+          <div class="flex items-center justify-between mb-1">
+            <label class="font-bold text-[11px]" style="color: var(--cth-ink-700);">4. Custom Base URL (Optional)</label>
+            <span style="font-size: 10px; color: var(--cth-ink-500);">For Ollama, OpenRouter, vLLM, LM Studio</span>
+          </div>
+          <input type="text" id="ai-base-url-input" style="width: 100%; padding: 6px 10px; font-family: var(--cth-font-mono); font-size: 11px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;" placeholder="http://localhost:11434 or https://openrouter.ai/api/v1">
+        </div>
+
+        <!-- Connection Test Result / Latency Card -->
+        <div id="ai-test-result-box" class="p-2.5 rounded hidden" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <span id="ai-test-icon">⚡</span>
+              <span id="ai-test-msg" style="font-weight: 600; font-size: 11px; color: var(--cth-ink-900);">Testing connection...</span>
+            </div>
+            <span id="ai-test-latency" class="cth-badge cth-badge-working" style="font-size: 9px; font-family: var(--cth-font-mono);">-- ms</span>
+          </div>
+          <div id="ai-test-reply" class="text-[10px] font-mono mt-1 text-slate-500 dark:text-slate-400 italic"></div>
+        </div>
+
+      </div>
+
+      <!-- Footer Action Buttons -->
+      <div style="padding: 10px 14px; border-top: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+        <button onclick="window.AOECommandCenter.testAiConnection()" id="ai-test-btn" class="cth-btn cth-btn-secondary" style="height: 28px; font-size: 11px; padding: 0 12px;" title="Send ping probe to test model latency">
+          <span>⚡</span>
+          <span>Test Connection</span>
+        </button>
+        <div class="flex items-center space-x-2">
+          <button onclick="window.AOECommandCenter.closeAiEnginesModal()" class="cth-btn cth-btn-ghost" style="height: 28px; font-size: 11px;">Cancel</button>
+          <button onclick="window.AOECommandCenter.saveAiConfig()" id="ai-save-btn" class="cth-btn cth-btn-primary" style="height: 28px; font-size: 11px; padding: 0 14px;">
+            💾 Save Configuration
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 1. MICHAEL SCOTT MODAL -->
+  <div id="modal-michael" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div style="width: 100%; max-width: 440px; background: var(--cth-cream-100); box-shadow: var(--cth-panel-border-dialog), 4px 4px 0 rgba(0,0,0,0.3); border: 1px solid var(--cth-ink-900); overflow: hidden; display: flex; flex-direction: column;">
+      <div style="height: 40px; border-bottom: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; align-items: center; justify-content: space-between; padding: 0 14px;">
+        <div class="flex items-center space-x-2">
+          <span>👔</span>
+          <h3 style="font-family: var(--cth-font-display); font-size: 9px; color: var(--cth-ink-900);">Michael Scott • Regional Manager Desk</h3>
+        </div>
+        <button onclick="window.AOECommandCenter.closeCharacterModal('michael')" style="font-weight: 700; color: var(--cth-ink-500); cursor: pointer;">✕</button>
+      </div>
+      <div class="p-4 space-y-3 text-xs">
+        <div class="p-2.5 rounded italic" style="background: var(--cth-lemon-light); color: var(--cth-lemon); box-shadow: inset 0 0 0 1px var(--cth-lemon);">
+          "World's Best Boss mug is full. Conference room is reserved. What company are we taking down today?"
+        </div>
+        <div>
+          <label class="block font-bold mb-1" style="color: var(--cth-ink-700);">Target Company</label>
+          <input type="text" id="michael-company" value="Spotify" style="width: 100%; padding: 6px 10px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;">
+        </div>
+        <div>
+          <label class="block font-bold mb-1" style="color: var(--cth-ink-700);">Role Title</label>
+          <input type="text" id="michael-role" value="Senior Product Designer" style="width: 100%; padding: 6px 10px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;">
+        </div>
+        <div>
+          <label class="block font-bold mb-1" style="color: var(--cth-ink-700);">Executive Directive</label>
+          <textarea id="michael-directive" rows="3" style="width: 100%; padding: 6px 10px; font-family: var(--cth-font-mono); font-size: 11px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;">Find core requirements, build militant 1-page Bahnschrift CV, print on green copier, and draft 3-sentence outreach.</textarea>
+        </div>
+      </div>
+      <div style="padding: 10px 14px; border-top: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+        <button onclick="window.AOECommandCenter.closeCharacterModal('michael')" class="cth-btn cth-btn-ghost" style="height: 28px; font-size: 11px;">Close</button>
+        <button onclick="dispatchMichaelMission()" class="cth-btn cth-btn-primary" style="height: 28px; font-size: 11px; padding: 0 12px;">
+          🚀 Delegate Swarm Mission
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. JIM HALPERT MODAL (PUBLIC JOB SCOUT) -->
+  <div id="modal-jim" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div style="width: 100%; max-width: 520px; max-height: 85vh; background: var(--cth-cream-100); box-shadow: var(--cth-panel-border-dialog), 4px 4px 0 rgba(0,0,0,0.3); border: 1px solid var(--cth-ink-900); overflow: hidden; display: flex; flex-direction: column;">
+      <div style="height: 40px; border-bottom: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; align-items: center; justify-content: space-between; padding: 0 14px; shrink-0;">
+        <div class="flex items-center space-x-2">
+          <span>📞</span>
+          <h3 style="font-family: var(--cth-font-display); font-size: 9px; color: var(--cth-ink-900);">Jim Halpert • Public Job Scout Desk</h3>
+          <span class="cth-badge cth-badge-working" style="font-size: 9px; padding: 1px 6px;">Live Feeds</span>
+        </div>
+        <button onclick="window.AOECommandCenter.closeCharacterModal('jim')" style="font-weight: 700; color: var(--cth-ink-500); cursor: pointer;">✕</button>
+      </div>
+      <div class="p-4 space-y-3 overflow-y-auto flex-1 text-xs">
+        <div class="flex items-center space-x-2">
+          <input type="text" id="jim-search-query" value="designer" style="flex: 1; padding: 6px 10px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;">
+          <button onclick="window.AOECommandCenter.searchPublicJobs(document.getElementById('jim-search-query').value)" class="cth-btn cth-btn-primary" style="height: 28px; font-size: 11px;">
+            🔍 Scout Feeds
+          </button>
+        </div>
+        <div class="text-[11px] flex items-center justify-between" style="color: var(--cth-ink-500);">
+          <span>Connected: <strong>Arbeitnow Live API</strong> + Remote Tech Feeds</span>
+          <span>Click card to handoff to Dwight</span>
+        </div>
+        <div id="jim-jobs-container" class="space-y-2 pt-1">
+          <!-- Populated by searchPublicJobs -->
+        </div>
+      </div>
+      <div style="padding: 8px 14px; border-top: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; justify-content: flex-end;">
+        <button onclick="window.AOECommandCenter.closeCharacterModal('jim')" class="cth-btn cth-btn-ghost" style="height: 26px; font-size: 11px;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. DWIGHT SCHRUTE MODAL (1-PAGE PDF ARCHITECT) -->
+  <div id="modal-dwight" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div style="width: 100%; max-width: 480px; background: var(--cth-cream-100); box-shadow: var(--cth-panel-border-dialog), 4px 4px 0 rgba(0,0,0,0.3); border: 1px solid var(--cth-ink-900); overflow: hidden; display: flex; flex-direction: column;">
+      <div style="height: 40px; border-bottom: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; align-items: center; justify-content: space-between; padding: 0 14px;">
+        <div class="flex items-center space-x-2">
+          <span>📑</span>
+          <h3 style="font-family: var(--cth-font-display); font-size: 9px; color: var(--cth-ink-900);">Dwight Schrute • 1-Page Bahnschrift PDF Architect</h3>
+        </div>
+        <button onclick="window.AOECommandCenter.closeCharacterModal('dwight')" style="font-weight: 700; color: var(--cth-ink-500); cursor: pointer;">✕</button>
+      </div>
+      <div class="p-4 space-y-3 text-xs">
+        <div class="p-2.5 rounded font-mono text-[11px]" style="background: var(--cth-lemon-light); color: var(--cth-lemon); box-shadow: inset 0 0 0 1px var(--cth-lemon);">
+          "Question: What bear is best? False. Black bear. And false: A 2-page resume is an ATS death sentence. Enforcing 1-page Bahnschrift budget!"
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold mb-1" style="color: var(--cth-ink-700);">Company</label>
+            <input type="text" id="dwight-target-company" value="Spotify" style="width: 100%; padding: 5px 8px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;">
+          </div>
+          <div>
+            <label class="block font-bold mb-1" style="color: var(--cth-ink-700);">Role</label>
+            <input type="text" id="dwight-target-role" value="Senior Product Designer" style="width: 100%; padding: 5px 8px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold mb-1" style="color: var(--cth-ink-700);">Extracted Requirements Snippet</label>
+          <textarea id="dwight-target-snippet" rows="3" style="width: 100%; padding: 5px 8px; font-family: var(--cth-font-mono); font-size: 11px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;">Figma, Design Systems, Mobile UI, WCAG AA Accessibility, micro-interactions, cross-functional agile leadership.</textarea>
+        </div>
+        <div class="p-2.5 rounded flex items-center justify-between" style="background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-100);">
+          <div>
+            <div style="font-weight: 700; color: var(--cth-ink-900);">1-Page Budget Metric:</div>
+            <div style="font-size: 10px; color: var(--cth-ink-500);">Strict Bahnschrift font metrics, zero overflow</div>
+          </div>
+          <span class="cth-badge cth-badge-working" style="font-weight: 700;">1.0 PAGE EXACT</span>
+        </div>
+        <div id="dwight-build-status" class="text-xs font-mono"></div>
+      </div>
+      <div style="padding: 10px 14px; border-top: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+        <button onclick="window.AOECommandCenter.closeCharacterModal('dwight')" class="cth-btn cth-btn-ghost" style="height: 28px; font-size: 11px;">Close</button>
+        <button onclick="window.AOECommandCenter.triggerDwightBuild()" class="cth-btn cth-btn-primary" style="height: 28px; font-size: 11px; padding: 0 12px;">
+          🖨️ Compile 1-Page PDF &amp; Print on Copier
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. PAM BEESLY MODAL (RECEPTION & INTAKE) -->
+  <div id="modal-pam" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div style="width: 100%; max-width: 440px; background: var(--cth-cream-100); box-shadow: var(--cth-panel-border-dialog), 4px 4px 0 rgba(0,0,0,0.3); border: 1px solid var(--cth-ink-900); overflow: hidden; display: flex; flex-direction: column;">
+      <div style="height: 40px; border-bottom: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; align-items: center; justify-content: space-between; padding: 0 14px;">
+        <div class="flex items-center space-x-2">
+          <span>☕</span>
+          <h3 style="font-family: var(--cth-font-display); font-size: 9px; color: var(--cth-ink-900);">Pam Beesly • Reception &amp; Candidate Vault</h3>
+        </div>
+        <button onclick="window.AOECommandCenter.closeCharacterModal('pam')" style="font-weight: 700; color: var(--cth-ink-500); cursor: pointer;">✕</button>
+      </div>
+      <div class="p-4 space-y-3 text-xs">
+        <div class="p-2.5 rounded italic" style="background: var(--cth-coral-light); color: var(--cth-coral); box-shadow: inset 0 0 0 1px var(--cth-coral);">
+          "Dunder Mifflin, this is Pam. I manage your master evidence vault, portfolio assets, and interview intake."
+        </div>
+        <div>
+          <label class="block font-bold mb-1" style="color: var(--cth-ink-700);">Candidate Master Portfolio Link</label>
+          <input type="text" id="pam-portfolio" value="https://readcv.com/candidate" style="width: 100%; padding: 6px 10px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;">
+        </div>
+        <div>
+          <label class="block font-bold mb-1" style="color: var(--cth-ink-700);">Core Focus Tags</label>
+          <input type="text" id="pam-tags" value="Fullstack, Product Design, AI Engineering, ReportLab" style="width: 100%; padding: 6px 10px; background: var(--cth-paper-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); border: none; color: var(--cth-ink-900); outline: none;">
+        </div>
+      </div>
+      <div style="padding: 10px 14px; border-top: 1px solid var(--cth-ink-300); background: var(--cth-cream-200); display: flex; justify-content: flex-end; gap: 8px;">
+        <button onclick="window.AOECommandCenter.closeCharacterModal('pam')" class="cth-btn cth-btn-ghost" style="height: 28px; font-size: 11px;">Close</button>
+        <button onclick="window.AOECommandCenter.closeCharacterModal('pam'); window.AOECommandCenter.logTerminal('✓ Pam indexed candidate vault assets.', 'info');" class="cth-btn cth-btn-secondary" style="height: 28px; font-size: 11px; padding: 0 12px;">
+          Save Evidence Vault
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/portrait_art.js"></script>
+  <script src="js/office_canvas.js"></script>
+  <script src="js/command_center.js"></script>
+  <script>
+    // Theme toggle function for Staging
+    function toggleMunderTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-cth-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-cth-theme', next);
+
+      const icon = document.getElementById('theme-toggle-icon');
+      if (icon) {
+        icon.textContent = next === 'dark' ? '☀' : '☾';
+      }
+
+      // Repaint current character portrait
+      if (window.AOECommandCenter && window.AOECommandCenter.selectedAgent) {
+        window.AOECommandCenter.onAgentSelected(window.AOECommandCenter.selectedAgent);
+      }
+      if (window.AOECommandCenter && typeof window.AOECommandCenter.renderRoster === 'function') {
+        window.AOECommandCenter.renderRoster();
+      }
+    }
+
+    function dispatchMichaelMission() {
+      const company = document.getElementById('michael-company').value || 'Acme Corp';
+      const role = document.getElementById('michael-role').value || 'Software Engineer';
+      const directive = document.getElementById('michael-directive').value || '';
+
+      window.AOECommandCenter.closeCharacterModal('michael');
+      window.AOECommandCenter.logTerminal(`[MICHAEL SCOTT] "Team assemble! Mission: ${role} at ${company}. Jim, pull taxonomy!"`, 'info');
+
+      if (window.AOECommandCenter.engine) {
+        window.AOECommandCenter.engine.showBubble('michael', 'Team assemble!', 160);
+        window.AOECommandCenter.engine.setAgentStatus('michael', 'working', 'Delegating mission');
+        setTimeout(() => {
+          window.AOECommandCenter.engine.sendEnvelope('michael', 'jim', `${role} @ ${company}`);
+          window.AOECommandCenter.engine.setAgentStatus('jim', 'working', 'Scouting feeds');
+          window.AOECommandCenter.engine.showBubble('jim', 'On it, Michael!', 160);
+        }, 1200);
+      }
+    }
+
+    // Initialize application on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const engine = new window.OfficeFloorEngine('office-canvas');
+      window.AOECommandCenter.setEngine(engine);
+    });
+  </script>
+</body>
+</html>
