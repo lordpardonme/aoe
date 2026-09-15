@@ -62,10 +62,27 @@
 * **Decision:** Implement an algorithmic attention retention auditor (`src/services/first_reader.py`) that scores pitches (0-100) based on hook quality, word count budgets (75-125 words optimal), reading ease, and low-friction call-to-action questions before allowing dispatch.
 * **Why this approach?** Enforces behavioral quality standards on all AI-generated or user-edited drafts, maximizing recruiter response rates.
 
-### Decision 10: Stalled Applications Autopsy & Resurrection Pulse
-* **Context:** Candidates frequently submit job applications that receive no response after 7–14 days. Without proactive tracking, these applications become silent dead-ends.
-* **Decision:** Implement an autonomous autopsy service (`src/services/autopsy_service.py`) that scans the `applications` and `leads` database, assigns a probable cause of death (ATS Blackhole, Ghosting, Incomplete Pipeline), calculates a Resurrection Pulse score (0-100), and provides 1-click tailored follow-up drafting.
-* **Why this approach?** Transforms dormant job applications into active second-chance interview opportunities.
+### Decision 11: Munder Difflin Multi-Agent Hive Orchestration & MCP Protocol Server
+* **Context:** Research into [`munder-difflin`](https://github.com/chaitanyagiri/munder-difflin.git) revealed a local-first multi-agent architecture where role-specialized agents coordinate through a shared ledger and circuit breakers. AOE previously ran application tailoring through a single sequential pipeline. Additionally, external desktop agent harnesses (Munder Difflin, Claude Code, Antigravity `agy`) need a standardized way to drive AOE workflows.
+* **Decision:**
+  1. Implement an autonomous multi-agent Hive coordinator (`src/hive.py`) featuring four specialized sub-agents:
+     - **`ScoutAgent`**: Analyzes JD text/URL, matches candidate taxonomy, calculates fit score.
+     - **`ResumeArchitectAgent`**: Tailors bullet points to high-impact achievements and enforces the strict 1-page ReportLab layout.
+     - **`CopywriterAgent`**: Crafts punchy cold outreach email and 7-day follow-up conversion copy.
+     - **`QualityReviewerAgent`**: Runs First-Reader attention scoring (0-100), audits WCAG AA contrast compliance, and enforces word count budgets.
+     - **`HiveCoordinator`**: Supervisor ("God Agent") managing task ledgers and safety circuit breakers (`steer` -> `constrain` -> `stop`).
+  2. Implement an MCP (Model Context Protocol) JSON-RPC 2.0 stdio server (`src/mcp_server.py`) exposing AOE tools (`aoe_run_hive_pipeline`, `aoe_list_leads`, `aoe_get_stats`, `aoe_scan_recruiter_replies`) to external desktop orchestrators including Munder Difflin and Antigravity.
+  3. Wire `/api/hive/orchestrate` and `/api/hive/status` into the FastAPI web application (`src/web/app.py`).
+* **Why this approach?** Unlocks true multi-agent collaboration with audit trails and circuit breakers inside AOE, while enabling plug-and-play integration with Munder Difflin and other MCP-compliant developer tools.
+
+### Decision 12: 100% Authentic Munder Difflin 2D Retro Architecture & LimeZu Pixel Art Floor in Staging Orbit
+* **Context:** User requested extracting and implementing the authentic design language, graphics, and multi-agent interaction model from `munder-difflin` (`https://github.com/chaitanyagiri/munder-difflin.git`) in staging (`/staging_office.html`). Early prototypes used canvas primitives and had Z-ordering bugs where monitors were occluding character faces and bodies.
+* **Decision:**
+  1. **TiledMap & Layer Compositing:** Extract and pre-rasterize the authentic LimeZu RPG Modern Office tileset (`interiors.png`, `office-tileset.png`, `a5-office-floors-walls.png`) and Tiled map (`office.tmj`) into a single full composite `office_floor_full.png` (1088x704). Following Munder Difflin's container hierarchy (`TiledMapRenderer.ts`), all tile layers render first, and characters render on top.
+  2. **Seated Character Sprites & Desks:** Station all 15 authentic Scranton characters (Michael, Jim, Dwight, Pam, Ryan, Angela, Andy, Kevin, Oscar, Stanley, Phyllis, Kelly, Meredith, Toby, Creed) on their exact stools. Implement `PortraitArt.paintSeatedSprite` which crops the bottom 8px (legs under desk) and sits the bust and torso cleanly on the chair without any occlusion.
+  3. **Munder Difflin Design System:** Implement the exact design tokens (`--cth-cream-50`, `--cth-cream-100`, `--cth-paper-100`, `--cth-ink-900`, `--cth-lemon`, `--cth-sky`, `--cth-coral`), `PixelPanel` styling with 1px inset hairlines, `PixelButton` retro buttons, `PixelBadge` with square status pips, and 220x78px `AgentCard` dock items with token gauges and Michael's golden `BOSS` surface.
+  4. **Observable 20s Swarm Simulation:** Wire an observable multi-agent swarm handoff with overhead speech bubbles, flying paper envelopes, Xerox copier paper ejection with blinking green LED, animated CRT monitor desktops (`DeskScreen` scan lines), and live terminal logs.
+* **Why this approach?** Delivers 100% authentic visual parity with Munder Difflin while keeping staging completely isolated from production.
 
 ---
 
@@ -329,7 +346,134 @@ An automated, headless Playwright test suite was executed against `http://127.0.
     - **Anti-AI Training**: Explicitly blocks automated ingestion into LLM or ML training datasets.
     - **Evaluation Only**: Source is viewable solely for personal technical inspection and security auditing.
     - **Contributor Assignment**: In `CONTRIBUTING.md`, all community contributions are legally assigned to `@lordpardonme`.
-  - Updated `README.md` license badge to `Proprietary / Strict` and added prominent legal notices.
+---
+
+### Phase 10: 2D Multi-Agent Operations Floor & Staging Environment Isolation [COMPLETED]
+
+#### Decision 16: Strict Staging/UAT Orbit Isolation for 2D Operations Floor
+* **Context**: Inspired by Munder-Difflin, the user requested a retro 2D pixel-art virtual office floor where multiple specialized agents occupy desks and communicate via animated flying envelopes. The user specifically required that this new design be deployed exclusively to UAT/Staging and not interfere with or pollute the live Production orbit.
+* **Decision**:
+  - Keep Production (`APP_ENV=production`, port 8000) completely untouched and stable.
+  - Dynamically gate the Operations Floor in `frontend/index.html` via `checkAppEnvironment()`:
+    - In Staging (`APP_ENV=staging`, port 8002) and UAT (`APP_ENV=uat`, port 8001), reveal the `🏢 Operations Floor [STAGING]` top tab, sidebar nav item, and `#view-office` section.
+    - In Production (`APP_ENV=production`), hide `tab-office` and `nav-office` completely (`classList.add('hidden')`).
+  - Create a dedicated standalone staging review page: `frontend/staging_office.html` at `http://127.0.0.1:8002/staging_office.html` for focused evaluation.
+* **Why this approach?** Guarantees zero risk to the production application while providing an interactive, full-fidelity testing sandbox in Staging and UAT.
+
+#### Decision 17: UI/UX Pro Max 2D Canvas Engine with Parabolic Envelope Handoffs & SSE Command Center
+* **Context**: Static tables fail to visualize the stigmergic coordination between autonomous agents during resume tailoring and outreach generation.
+* **Decision**:
+  - Implement native HTML5 Canvas 2D engine (`frontend/js/office_canvas.js`) operating at 60 FPS with `image-rendering: pixelated`:
+    - 6 dedicated stations: Supervisor Corner Office (Michael), Scout Radar Station, Resume Architect Drafting Table, Copywriter Vintage Typewriter, Quality Reviewer Inspection Station, and Breakroom Recruiter Radar (coffee steam and Gmail listener).
+    - Living character animations: idle breathing, rapid typing bobs, glowing CRT monitors, speech bubbles.
+    - Parabolic flying envelope handoffs with golden sparkle particle dust between desks.
+  - Build interactive Command Center (`frontend/js/command_center.js`):
+    - Real-time Server-Sent Events (SSE) listener (`GET /api/hive/stream`).
+    - Live terminal stream with ANSI color-coding, pipeline monitor, tasks ledger, agent memory, and queue list.
+    - Interactive Supervisor chat (`POST /api/hive/chat`) with natural language commands (`"tailor"`, `"scan"`, `"status"`).
+    - Bottom Agent Roster with color-coded badges and status pills.
+  - Adhere to `ui-ux-pro-max` standards: WCAG AA contrast (4.5:1 on dark surfaces), touch targets >= 44px, 150-300ms transitions, and responsive drawers.
+
+---
+
+### Phase 11: Authentic Scranton Cast & Munder Difflin Pixel-Art Replication [COMPLETED]
+
+#### Decision 18: Total Purge of Generic Roles & High-Fidelity Munder Difflin 2D Canvas Engine
+* **Context**: Initial prototypes used generic role labels ("Boss", "Scout", "Architecture", "Copywriter", "Reviewer") across canvas desk plaques, roster cards, and terminal logs. The user mandated complete alignment with the authentic Dunder Mifflin Scranton cast from *The Office* as depicted in the reference screenshot `media_1789400136267.png`, including Andy Bernard, retro desktop window styling, authentic bullpen desk arrangements, and a continuous 10–15 minute automated play-testing loop.
+* **Decision**:
+  1. **Purged All Generic Titles**: Systematically replaced all occurrences of "Supervisor", "Scout", "Resume Architect", "Copywriter", "Reviewer", and "Auditor" with canonical cast identities:
+     - **Michael Scott**: Regional Manager (Supervision, Mission Delegation, Banter)
+     - **Jim Halpert**: Sales / Lead Scout (Live Public Job Board Querying & Scraping)
+     - **Dwight Schrute**: Assistant to the Regional Manager / 1-Page Resume Architect (Bahnschrift Layout, Jell-O stapler, Bobblehead, Xerox Copier)
+     - **Pam Beesly**: Reception & Candidate Evidence Vault (Intake Counter, Portfolio Assets)
+     - **Ryan Howard**: Temp / Cold Outreach Studio (3-Sentence Hook Copywriting)
+     - **Angela Martin**: Accounting / Quality & Compliance Gate (First-Reader 100/100 scoring, WCAG AA Audit, Official Stamp)
+     - **Andy Bernard**: Regional Sales & Network Outreach (Cornell '95 A Cappella / Acoustic Pitch Studio)
+     - **Toby Flenderson**: Annex HR & Recruiter Radar (Gmail Inbound Response Scanner)
+  2. **High-Fidelity Munder Difflin Canvas Styling (`frontend/js/office_canvas.js`)**:
+     - Warm parchment outer window frame (`#dfd9ce`) with authentic retro desktop title bar (`Munder Difflin` with `File Edit View Window` menu and `_ □ ✕` buttons).
+     - Sage-green linoleum floor (`#9fb39b`) with 26px grid lines and `#738676` diamond cross dots.
+     - Michael's Executive Corner Office with hardwood parquet planks (`#c4975f`), Scranton calendar, wall clock, World's Best Boss mug, Dundie trophy, and live `awaiting` speech bubble.
+     - Scranton Conference Room with two exterior double windows, white mullions, whiteboard, mahogany table, 8 purple conference chairs, and ficus plants.
+     - Storage Archive partition with 4 stacked cardboard archive boxes.
+     - 10 Bullpen desks with retro CRT monitors, honey/orange swivel chairs, and bespoke character props.
+     - Breakroom with water cooler blue bubbles, kitchenette coffee steam, and animated green Xerox copier.
+     - Solid brass desk nameplates with screw rivets for all 8 characters.
+  3. **Continuous 10–15 Minute Play-Test Verification (`scratch/comprehensive_scranton_playtest.py`)**:
+     - Automated headless Playwright script running continuous multi-stage cycles for 12 minutes.
+     - Exercises all 8 cast stations, live job querying, 1-page PDF compilation, pitch generation, compliance auditing, tab switching, and 20-second observable multi-agent swarm handoffs.
+     - Asserts 0 console errors and 0 page errors throughout the entire endurance run.
 
 
+#### Decision 19: Ingestion of Full Munder Difflin Design Language, Graphic Assets, and Procedural Pixel-Art Engine
+* **Context**: The user instructed to pull the whole design language, graphics, and visual assets from `https://github.com/chaitanyagiri/munder-difflin.git` into the Scranton staging operations floor.
+* **Decision**:
+  1. **Graphic Tilesets & Maps**: Cloned repository and migrated authentic 32×32 tilesets (`interiors.png`, `office-tileset.png`, `a5-office-floors-walls.png`, and `office.tmj`) into `job-agent/frontend/assets/tilesets/` and `job-agent/frontend/assets/maps/` with complete copyright attribution to LimeZu (`LIMEZUASSETS-LICENSE.txt`, `ATTRIBUTION.md`).
+  2. **Comprehensive Design Tokens (`frontend/css/munder_difflin.css`)**:
+     - Ported complete token palette: `--cth-cream-*` (surfaces), `--cth-ink-*` (text & borders), `--cth-status-*` (idle, thinking, working, blocked, success), character accents (`coral`, `mint`, `sky`, `lemon`, `lilac`, `peach`).
+     - Implemented full Light/Dark mode themes (`:root[data-cth-theme='dark']`) with instant theme switcher.
+     - Hard offset drop shadows (`3px 3px 0 rgba(26,19,32,0.14)`) and Google Fonts (`Press Start 2P`, `Inter`, `JetBrains Mono`).
+     - Canonical component primitives: `.cth-panel`, `.cth-btn`, `.cth-badge`, `.cth-agent-card`, `.cth-gauge`, and `.cth-tab-strip`.
+  3. **Procedural Pixel-Art Bust & Sprite Engine (`frontend/js/portrait_art.js`)**:
+     - Ported complete procedural generation engine (`portraitArt.ts`) creating exact 18×28 pixel bust portraits and 18×32 scene sprites for all 15 canonical characters: *Michael, Jim, Pam, Dwight, Kevin, Angela, Oscar, Stanley, Phyllis, Andy, Kelly, Ryan, Toby, Creed, and Meredith*.
+     - Generates hairstyles, glasses, ties, cardigans, facial hair, lashes, and multi-tone shading via procedural Uint8ClampedArray pixel buffers.
+     - Implemented in-memory offscreen canvas caching (`spriteCanvasCache`) for high-performance 60 FPS drawing in `office_canvas.js`.
+  4. **Canonical 220×78 px Docked Agent Cards (`frontend/js/command_center.js`)**:
+     - Docked cards strictly conform to Munder Difflin geometry (220×78 px).
+     - Michael Scott features the distinctive `is-god` tinted lemon surface, inset gold border, and `BOSS` badge.
+     - All cards render real-time procedural busts, uppercase character names in `Press Start 2P`, live status chips, and 8-segment context memory gauges.
+  5. **Automated Headless Playwright Verification (`scratch/verify_munder_difflin_design.py`)**:
+     - Verified all 15 character recipes, 220×78 px card geometry, procedural canvas pixel data, theme toggling, tab strip navigation, and swarm handoffs with 0 console and 0 page errors.
 
+#### Decision 20: User-Choice Task Assignment Engine & Dual Roster Filtering (Active Crew vs. Full Scranton Cast)
+* **Context**: Stationing all 15 authentic Scranton branch characters provided full cast art and canonical desk layout, but displaying all 15 in the dock simultaneously created visual noise, and running only fixed 20s swarm scripts limited user agency. The user asked: *"then why are we using 15 of them? shouldnt we give user a choice to assign task?"*.
+* **Decision**:
+  1. **Dual Roster Architecture (Talent Pool vs. Active Squad)**:
+     - Retained all 15 characters on the 2D floor map as the available Scranton Branch Talent Pool.
+     - Added a dock view toggle: **`All Staff (15)`** to browse the full branch, and **`Active Crew`** which filters the bottom dock strip to only display agents currently working on tasks (or with assigned missions) plus Michael Scott (`BOSS`), mirroring Munder Difflin's clean active process strip.
+  2. **Universal "Assign Task" Modal (`#modal-assign-task`)**:
+     - Accessible from: Header **[⚡ Assign Task]**, Selected Agent Profile **[⚡ Assign Task to {Name}]**, Dock **[➕ Assign Task]**, or clicking any agent's desk on the 2D floor.
+     - Features an interactive 15-character picker with 8-bit procedural bust canvases.
+     - Selecting any character updates the spotlight card, canonical quotes, and populates 3 one-click preset task templates matching their canonical abilities:
+       - *Jim*: Scout Arbeitnow / Remote tech feeds, extract core keywords.
+       - *Dwight*: Enforce militant 1-page Bahnschrift PDF budget & trigger green Xerox copier print.
+       - *Andy*: Cornell alumni warm networking outreach & memorable referral requests.
+       - *Ryan*: Shubham Saboo 3-sentence high-retention outreach hook.
+       - *Angela*: 100/100 WCAG AA contrast & 30-second scan audit.
+       - *Kelly*: 7-day ghosting recruiter follow-up pitch & interview thank-you notes.
+       - *Oscar*: Salary band percentiles & fact-grounded counter-offer negotiation math.
+       - *Stanley*: Direct no-fluff application dispatch (Crossword mode).
+       - *Toby*: Scan Gmail radar for interview invites & calendar links.
+       - *Creed*: Red-team QA & portfolio easter-egg hooks.
+       - *Michael*: Full branch swarm delegation brief.
+       - *Pam, Kevin, Phyllis, Meredith*: Evidence vault intake, application accounting, warm introductions, unconventional outreach.
+     - Provides a free-form `Custom Directive / Prompt` textarea allowing the user to assign *any* custom prompt, company, or role to any chosen character.
+  3. **Observable Floor & Ledger Reaction**:
+     - The assigned agent transitions to `status = 'working'`, desk CRT screen animates with code lines, and a custom speech bubble appears above their head on the 2D canvas.
+     - Dwight triggers the animated green Xerox copy machine with flying paper.
+     - The task is tracked live in the **📋 Tasks Ledger** (`#cc-dynamic-tasks-list`) with progress bar and timestamp, and color-logged in the **💻 Terminal**.
+     - Tasks auto-complete with verified outputs and update the agent's completed stats.
+  4. **Automated Verification (`scratch/test_task_assignment_engine.py`)**:
+     - Verified modal opening, character picker, preset filling, custom prompt dispatch, Andy speech bubble, Dwight copier printing, active crew filtering, and tasks ledger completion with 0 console and 0 page errors.
+
+#### Decision 21: Multi-Provider AI Engines Hub & Per-Task Custom Model Assignment
+* **Context**: The user asked: *"what is goal for this? i mean what problem is this solving? i mean can we do it better, give user option to add custom models and providers"*. While AOE backend supported multi-provider execution (`src/llm/adapters.py`), the Staging Orbit lacked a dedicated Munder Difflin-styled modal to inspect, test latency, and persist custom LLM providers and model slugs, as well as the ability to assign individual tasks to specific model engines.
+* **Decision**:
+  1. **AI Engines & Custom Model Hub Modal (`#modal-ai-engines`)**:
+     - Built authentic retro Munder Difflin modal accessible via the header `[⚙️ AI Engines]` button.
+     - Supports 6 primary provider runtimes:
+       - **Google Gemini**: Defaults to `gemini-2.0-flash` (with `gemini-1.5-pro` & `gemini-2.0-flash-lite` chips).
+       - **OpenAI**: Defaults to `gpt-4o-mini` (with `gpt-4o`, `o3-mini`, `gpt-4-turbo` chips).
+       - **Anthropic Claude**: Defaults to `claude-3-5-sonnet-20241022` (with `claude-3-7-sonnet-20250219`, `claude-3-5-haiku-20241022` chips).
+       - **Groq Fast**: Defaults to `llama-3.3-70b-versatile` (with `deepseek-r1-distill-llama-70b`, `mixtral-8x7b-32768` chips).
+       - **Ollama (Local Offline)**: Defaults to `llama3.2` on `http://localhost:11434` (with `qwen2.5-coder:32b`, `deepseek-r1:14b` chips).
+       - **OpenRouter / Custom (vLLM / LM Studio)**: Defaults to `deepseek/deepseek-r1` on `https://openrouter.ai/api/v1` (with `anthropic/claude-3.7-sonnet`, `meta-llama/llama-3.3-70b-instruct`).
+     - Includes model slug input with reactive quick-pick chips, password show/hide key toggle, and custom base URL configuration.
+     - Features live **`[⚡ Test Connection]`** probe sending a test prompt to `POST /api/test/llm` and rendering real-time response latency and diagnostic badges.
+     - Features **`[💾 Save Configuration]`** calling `POST /api/config` to persist the chosen provider, key, model, and base URL directly to local `.env`.
+  2. **Per-Task Engine & Model Selection (`#modal-assign-task`)**:
+     - Updated Step 6 in the Universal Task Assignment modal with `#task-model-select`, letting users override the default engine per task dispatch (e.g. run Dwight with Claude 3.7 Sonnet, run Jim with Groq Llama 3.3 70B, or run Michael with local Ollama).
+     - Captured engine model in the task ledger (`#cc-dynamic-tasks-list`) with dedicated model badge (e.g. `CLAUDE`, `GEMINI`, `GROQ`) and logged to the Scranton Terminal.
+  3. **Automated Verification (`scratch/test_ai_engines_modal.py`)**:
+     - Verified modal launch, provider switching (Gemini → Claude → Ollama → Gemini), preset chip selection, show/hide key toggle, configuration saving, per-task custom model dispatch to Dwight, task ledger badge, and terminal logging with 0 console errors and 0 page errors.
+     - Captured artifacts: `scranton_ai_engines_modal.png` and `scranton_custom_model_dispatched.png`.

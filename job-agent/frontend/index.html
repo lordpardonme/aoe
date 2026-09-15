@@ -343,13 +343,28 @@
           dot.className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
           text.innerText = "UAT (Port " + (data.port || 8001) + ")";
         } else if (env === 'staging') {
-          badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-blue-50 text-blue-800 border border-blue-300 flex items-center space-x-1 shadow-sm";
-          dot.className = "w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse";
+          badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-purple-50 text-purple-800 border border-purple-300 flex items-center space-x-1 shadow-sm";
+          dot.className = "w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse";
           text.innerText = "STAGING (Port " + (data.port || 8002) + ")";
         } else {
           badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-1 shadow-sm";
           dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse";
           text.innerText = "PROD (Live Orbit)";
+        }
+
+        // Staging/UAT Environment Gate: Operations Floor only visible in Staging/UAT
+        const isStagingOrUat = env === 'staging' || env === 'uat' || window.location.search.includes('staging') || window.location.search.includes('office');
+        const tabOffice = document.getElementById('tab-office');
+        const navOffice = document.getElementById('nav-office');
+        const sidebarOfficeSec = document.getElementById('sidebar-office-section');
+        if (isStagingOrUat) {
+          if (tabOffice) tabOffice.classList.remove('hidden');
+          if (navOffice) navOffice.classList.remove('hidden');
+          if (sidebarOfficeSec) sidebarOfficeSec.classList.remove('hidden');
+        } else {
+          if (tabOffice) tabOffice.classList.add('hidden');
+          if (navOffice) navOffice.classList.add('hidden');
+          if (sidebarOfficeSec) sidebarOfficeSec.classList.add('hidden');
         }
       } catch (e) {
         console.error("Could not fetch environment info:", e);
@@ -495,6 +510,19 @@
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           </button>
         </div>
+
+        <!-- 5. Operations Floor (Staging Sandbox) -->
+        <div id="sidebar-office-section" class="pt-3 hidden">
+          <div class="px-3 pb-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Multi-Agent Swarm</div>
+          
+          <button onclick="switchView('office')" id="nav-office" class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-sidebarHover transition-all">
+            <div class="flex items-center space-x-3">
+              <span>🏢</span>
+              <span>Operations Floor</span>
+            </div>
+            <span class="text-[10px] bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded font-mono">Staging</span>
+          </button>
+        </div>
       </nav>
     </div>
 
@@ -557,6 +585,10 @@
         </button>
         <button onclick="switchView('copilot')" id="tab-copilot" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all">
           🤖 Copilot
+        </button>
+        <button onclick="switchView('office')" id="tab-office" class="hidden px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all items-center space-x-1">
+          <span>🏢 Operations Floor</span>
+          <span class="px-1.5 py-0.2 rounded text-[9px] bg-purple-100 text-purple-700 font-bold">STAGING</span>
         </button>
       </div>
 
@@ -1308,8 +1340,231 @@
         </div>
       </section>
 
+      <!-- ==================== VIEW 6: OPERATIONS FLOOR (STAGING) ==================== -->
+      <section id="view-office" class="hidden flex-1 flex flex-col min-h-[680px] bg-slate-950 text-slate-100 -m-8 rounded-2xl border border-slate-800/90 shadow-2xl relative overflow-hidden select-none">
+        
+        <!-- Staging Operations Floor Header -->
+        <div class="h-12 px-5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs shrink-0">
+          <div class="flex items-center space-x-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-500 animate-pulse"></span>
+            <span class="font-bold text-white tracking-tight flex items-center space-x-1.5">
+              <span>Virtual Floor Engine</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                Staging Sandbox
+              </span>
+            </span>
+            <span class="text-slate-600">|</span>
+            <span class="text-slate-400 font-mono text-[11px]">6 Stations Stationed • 60 FPS Canvas</span>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <button onclick="openAssignMissionModal()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/30 flex items-center space-x-1 transition-all">
+              <span>⚡</span>
+              <span>Assign Mission</span>
+            </button>
+            <button onclick="simulateDemoMission()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 hover:text-white rounded-xl text-xs font-semibold border border-slate-700 transition-all flex items-center space-x-1">
+              <span>🚀</span>
+              <span>Simulate Swarm</span>
+            </button>
+            <a href="/staging_office.html" target="_blank" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-purple-300 hover:text-purple-200 rounded-xl text-xs font-semibold border border-purple-800/40 transition-all flex items-center space-x-1">
+              <span>↗ Standalone</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Main Workspace (Canvas + Command Center) -->
+        <div class="flex-1 flex min-h-0 relative">
+          
+          <!-- 1. Canvas Floor Area -->
+          <div class="flex-1 flex flex-col min-w-0 bg-slate-950 relative overflow-hidden border-r border-slate-800">
+            <!-- Canvas Viewport -->
+            <div class="flex-1 relative flex items-center justify-center p-3 overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+              <canvas id="office-canvas" class="w-full h-full max-w-[1200px] max-h-[675px] rounded-2xl shadow-2xl border border-slate-800/80 bg-slate-950 cursor-crosshair transition-all"></canvas>
+            </div>
+
+            <!-- Bottom Roster Bar -->
+            <div class="h-16 bg-slate-900/90 border-t border-slate-800 px-4 flex items-center space-x-3 shrink-0 overflow-x-auto z-10">
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-2 flex items-center space-x-1">
+                <span>👥</span>
+                <span>Agents</span>
+              </div>
+              <div id="office-roster-container" class="flex items-center space-x-2.5 overflow-x-auto py-1">
+                <!-- Dynamically rendered by command_center.js -->
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Command Center Drawer -->
+          <div class="w-80 lg:w-96 flex flex-col bg-slate-900/95 border-l border-slate-800 shrink-0 select-text">
+            <!-- Agent Header -->
+            <div class="p-3 border-b border-slate-800 bg-slate-900 flex items-center justify-between">
+              <div class="flex items-center space-x-2.5">
+                <div id="cc-agent-avatar-box" class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center font-black text-white text-sm shadow-inner border border-white/10">
+                  👔
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center space-x-1.5">
+                    <h3 id="cc-agent-name" class="font-bold text-xs text-white truncate">Michael Scott</h3>
+                    <span id="cc-agent-status-pill" class="px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase">
+                      IDLE
+                    </span>
+                  </div>
+                  <p id="cc-agent-role" class="text-[11px] text-slate-400 truncate">Regional Manager</p>
+                </div>
+              </div>
+              <button onclick="openAssignMissionModal()" class="px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[11px] font-bold transition-all shadow-sm">
+                + Assign
+              </button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex items-center space-x-1 p-2 bg-slate-950/70 border-b border-slate-800 text-xs">
+              <button id="cc-tab-btn-terminal" onclick="window.AOECommandCenter.switchTab('terminal')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-sky-400 shadow-inner">
+                💻 Terminal
+              </button>
+              <button id="cc-tab-btn-monitor" onclick="window.AOECommandCenter.switchTab('monitor')" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-colors">
+                📊 Monitor
+              </button>
+              <button id="cc-tab-btn-tasks" onclick="window.AOECommandCenter.switchTab('tasks')" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-colors">
+                📋 Tasks
+              </button>
+              <button id="cc-tab-btn-memory" onclick="window.AOECommandCenter.switchTab('memory')" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-colors">
+                🧠 Memory
+              </button>
+              <button id="cc-tab-btn-queue" onclick="window.AOECommandCenter.switchTab('queue')" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-colors flex items-center space-x-1">
+                <span>📬</span>
+                <span id="cc-queue-count" class="px-1 py-0.2 rounded-full text-[9px] bg-blue-500/30 text-blue-300 font-mono">0</span>
+              </button>
+            </div>
+
+            <!-- Tab Content Panes -->
+            <div class="flex-1 overflow-y-auto p-3 min-h-0 bg-slate-950/40">
+              <!-- Terminal -->
+              <div id="cc-tab-content-terminal" class="h-full flex flex-col">
+                <div id="command-terminal-output" class="flex-1 bg-black/90 p-2.5 rounded-xl border border-slate-800 font-mono text-[10.5px] leading-relaxed text-slate-300 overflow-y-auto space-y-1 select-text">
+                  <div class="text-slate-500">[SYSTEM] Dunder Mifflin Scranton Floor online.</div>
+                  <div class="text-sky-400">[MICHAEL SCOTT] "World's Best Boss standing by! Ready for mission dispatch."</div>
+                </div>
+              </div>
+
+              <!-- Monitor -->
+              <div id="cc-tab-content-monitor" class="hidden space-y-2">
+                <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
+                  <div class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Swarm Pipeline Stages</div>
+                  <div class="space-y-1.5 text-xs">
+                    <div class="p-2 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between">
+                      <span>1. Jim Halpert (Job Scout)</span>
+                      <span class="text-[10px] text-emerald-400 font-bold">READY</span>
+                    </div>
+                    <div class="p-2 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between">
+                      <span>2. Dwight Schrute (1-Page PDF)</span>
+                      <span class="text-[10px] text-emerald-400 font-bold">READY</span>
+                    </div>
+                    <div class="p-2 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between">
+                      <span>3. Ryan Howard (Outreach Pitch)</span>
+                      <span class="text-[10px] text-emerald-400 font-bold">READY</span>
+                    </div>
+                    <div class="p-2 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between">
+                      <span>4. Angela Martin (Compliance Gate)</span>
+                      <span class="text-[10px] text-emerald-400 font-bold">READY</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tasks -->
+              <div id="cc-tab-content-tasks" class="hidden space-y-2 text-xs">
+                <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1.5">
+                  <div class="text-[11px] font-bold text-white">Current Subtasks</div>
+                  <div class="text-[11px] text-slate-300 space-y-1">
+                    <div>✓ Taxonomy Extraction</div>
+                    <div>✓ 1-Page Space Allocation</div>
+                    <div>✓ Direct Value Proposition Pitch</div>
+                    <div>✓ Quality Gate Review</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Memory -->
+              <div id="cc-tab-content-memory" class="hidden">
+                <div id="cc-memory-content" class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-xs text-slate-300">
+                  Select an agent station to view localized memory.
+                </div>
+              </div>
+
+              <!-- Queue -->
+              <div id="cc-tab-content-queue" class="hidden space-y-2">
+                <div class="flex items-center justify-between pb-1 text-xs">
+                  <span class="font-bold text-slate-300">Pending Leads</span>
+                  <button onclick="window.AOECommandCenter.loadQueueLeads()" class="text-[10px] text-blue-400 hover:underline">↺ Refresh</button>
+                </div>
+                <div id="cc-queue-list" class="space-y-1.5"></div>
+              </div>
+            </div>
+
+            <!-- Michael Scott Chat Input -->
+            <div class="p-2.5 border-t border-slate-800 bg-slate-900 flex flex-col space-y-1.5">
+              <div class="flex items-center space-x-1.5">
+                <input type="text" id="cc-chat-input" placeholder="Instruct Michael Scott (e.g. 'That\'s what she said', 'tailor Spotify')..." class="flex-1 px-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                <button id="cc-btn-send-chat" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-sm transition-all shrink-0">
+                  Send
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
     </div>
   </main>
+
+  <!-- ==================== ASSIGN MISSION MODAL (OPERATIONS FLOOR) ==================== -->
+  <div id="assign-mission-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden flex flex-col text-slate-100">
+      <div class="h-14 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-950">
+        <div class="flex items-center space-x-2">
+          <span class="text-base">⚡</span>
+          <h3 class="font-bold text-sm text-white">Assign Swarm Mission</h3>
+          <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full font-mono">5-Stage Swarm</span>
+        </div>
+        <button onclick="closeAssignMissionModal()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+
+      <div class="p-6 space-y-4 overflow-y-auto max-h-[75vh]">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Company Name</label>
+          <input type="text" id="mission-company" placeholder="e.g. Spotify, Figma, Stripe" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Role Title</label>
+          <input type="text" id="mission-role" placeholder="e.g. Senior Product Designer, Lead UX Engineer" class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-bold text-slate-300">Job Description (JD)</label>
+            <button onclick="loadSampleMissionJD()" class="text-[11px] text-indigo-400 hover:underline">Insert Sample JD</button>
+          </div>
+          <textarea id="mission-jd" rows="5" placeholder="Paste full job posting or requirements here..." class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono placeholder-slate-600 focus:outline-none focus:border-indigo-500"></textarea>
+        </div>
+
+        <div class="p-3 bg-indigo-950/30 rounded-xl border border-indigo-900/50 flex items-start space-x-2.5 text-xs text-indigo-300">
+          <span>ℹ️</span>
+          <span>Michael Scott will delegate: <strong>Jim Halpert</strong> (Scout) ➔ <strong>Dwight Schrute</strong> (1-Page PDF) ➔ <strong>Ryan Howard</strong> (Pitch) ➔ <strong>Angela Martin</strong> (Compliance Gate).</span>
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-slate-800 bg-slate-950 flex items-center justify-end space-x-3">
+        <button onclick="closeAssignMissionModal()" class="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white">Cancel</button>
+        <button id="btn-launch-mission" onclick="executeAssignMission()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition-all">
+          🚀 Launch Swarm Mission
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== CV PREVIEW MODAL ==================== -->
   <div id="cv-preview-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -1801,7 +2056,7 @@
     // View Navigation Logic
     function switchView(viewName) {
       triggerPageTransition();
-      const views = ['apply', 'dashboard', 'leads', 'tracker', 'profile', 'copilot'];
+      const views = ['apply', 'dashboard', 'leads', 'tracker', 'profile', 'copilot', 'office'];
       views.forEach(v => {
         const el = document.getElementById('view-' + v);
         if (el) el.classList.add('hidden');
@@ -1834,7 +2089,8 @@
         leads: 'Leads Queue Hub',
         tracker: 'Applied Pipeline Tracker',
         profile: 'Candidate Evidence Hub',
-        copilot: 'Career Copilot AI'
+        copilot: 'Career Copilot AI',
+        office: 'Operations Floor [STAGING]'
       };
       const topTitle = document.getElementById('topbar-title');
       if (topTitle) topTitle.innerText = titles[viewName] || 'AOE';
@@ -1845,7 +2101,8 @@
         leads: { text: '590+ Stored Target Leads & Batch Engine', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200' },
         tracker: { text: 'Application History & Gmail Status', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200' },
         profile: { text: 'Candidate Evidence Bank & Master CV', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200' },
-        copilot: { text: 'Career Copilot AI Assistant', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200' }
+        copilot: { text: 'Career Copilot AI Assistant', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200' },
+        office: { text: '2D Multi-Agent Swarm Simulation', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200' }
       };
       const subtagEl = document.getElementById('topbar-subtag');
       if (subtagEl && subtags[viewName]) {
@@ -1868,6 +2125,122 @@
         loadLeadsStats();
         loadLeadsTable();
       }
+      if (viewName === 'office') {
+        window.location.href = '/staging_office.html';
+        return;
+      }
+    }
+
+    // Operations Floor Modal Helpers
+    function openAssignMissionModal() {
+      const modal = document.getElementById('assign-mission-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeAssignMissionModal() {
+      const modal = document.getElementById('assign-mission-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function loadSampleMissionJD() {
+      const c = document.getElementById('mission-company');
+      const r = document.getElementById('mission-role');
+      const j = document.getElementById('mission-jd');
+      if (c) c.value = 'Linear App';
+      if (r) r.value = 'Senior Product Designer';
+      if (j) j.value = `Linear is looking for a Senior Product Designer to craft intuitive, keyboard-first developer and team experiences.\nRequirements:\n- 5+ years crafting high-velocity desktop web and mobile interfaces.\n- Expert mastery of Figma, design tokens, micro-interactions, and component architecture.\n- Demonstrated experience turning complex developer workflows into lightning-fast interactions.\n- Track record of shipping customer-facing features with high craft and attention to detail.`;
+    }
+
+    async function executeAssignMission() {
+      const companyEl = document.getElementById('mission-company');
+      const roleEl = document.getElementById('mission-role');
+      const jdEl = document.getElementById('mission-jd');
+      const company = (companyEl ? companyEl.value.trim() : '') || 'Target Company';
+      const role = (roleEl ? roleEl.value.trim() : '') || 'Product Designer';
+      const jd = jdEl ? jdEl.value.trim() : '';
+
+      const btn = document.getElementById('btn-launch-mission');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Dispatching Swarm...';
+      }
+
+      closeAssignMissionModal();
+
+      if (window.AOECommandCenter) {
+        window.AOECommandCenter.logTerminal(`🚀 Launching Swarm Mission for ${company} (${role})...`, 'info');
+      }
+
+      try {
+        const res = await fetch(API_BASE + '/api/hive/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: `Tailor lead for ${company} with role ${role}`,
+            jd_text: jd || `Role: ${role} at ${company}. Focus on product design systems, user experience polish, and rapid execution.`
+          })
+        });
+        const data = await res.json();
+        if (window.AOECommandCenter) {
+          window.AOECommandCenter.logTerminal(data.reply || 'Mission completed successfully!', 'success');
+        }
+      } catch (err) {
+        if (window.AOECommandCenter) {
+          window.AOECommandCenter.logTerminal('Mission error: ' + err.message, 'error');
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = '🚀 Launch Swarm Mission';
+        }
+      }
+    }
+
+    function simulateDemoMission() {
+      if (window.AOECommandCenter && typeof window.AOECommandCenter.simulateDemoMission === 'function') {
+        window.AOECommandCenter.simulateDemoMission();
+        return;
+      }
+      if (!window.AOEOfficeFloor || !window.AOECommandCenter) return;
+      const floor = window.AOEOfficeFloor;
+      const cc = window.AOECommandCenter;
+
+      cc.logTerminal('=== [SWARM INITIATED] Scranton Multi-Agent Swarm Handoff ===', 'info');
+      floor.setAgentStatus('michael', 'working', 'Delegating Spotify...');
+
+      setTimeout(() => {
+        floor.setAgentStatus('jim', 'working', 'Scouting JD...');
+        floor.sendEnvelope('michael', 'jim', 'Spotify JD Brief');
+        cc.logTerminal('[JIM HALPERT] "Scouting live tech requirements and matching taxonomy profile..."', 'info');
+      }, 2000);
+
+      setTimeout(() => {
+        floor.setAgentStatus('jim', 'idle', 'Job Scouted ✓');
+        floor.setAgentStatus('dwight', 'working', 'Enforcing 1-Page PDF...');
+        floor.sendEnvelope('jim', 'dwight', 'Matched Taxonomy');
+        cc.logTerminal('[DWIGHT SCHRUTE] "False! A 2-page resume is an ATS death sentence. Enforcing ReportLab Bahnschrift budget!"', 'info');
+      }, 5500);
+
+      setTimeout(() => {
+        floor.setAgentStatus('dwight', 'idle', 'PDF Fitted ✓');
+        floor.setAgentStatus('ryan', 'working', 'Drafting Hook...');
+        floor.sendEnvelope('dwight', 'ryan', 'Fitted 1-Page PDF');
+        cc.logTerminal('[RYAN HOWARD] "Drafting high-conversion 3-sentence digital pitch for hiring lead..."', 'info');
+      }, 9500);
+
+      setTimeout(() => {
+        floor.setAgentStatus('ryan', 'idle', 'Hook Drafted ✓');
+        floor.setAgentStatus('angela', 'working', 'Auditing Packet...');
+        floor.sendEnvelope('ryan', 'angela', 'Complete Packet');
+        cc.logTerminal('[ANGELA MARTIN] "Inspecting 100/100 WCAG AA compliance and candidate evidence integrity..."', 'info');
+      }, 14000);
+
+      setTimeout(() => {
+        floor.setAgentStatus('angela', 'idle', 'Approved 100/100 ✓');
+        floor.setAgentStatus('michael', 'idle', 'Mission Delivered!');
+        floor.sendEnvelope('angela', 'michael', 'Approved Artifact');
+        cc.logTerminal('🎉 [MICHAEL SCOTT] "Boom! That\'s what she said! Application packet delivered and ready to dispatch!"', 'success');
+      }, 18500);
     }
 
     // Country Change Handler (Only shows sample JD prompt AFTER country is picked)
@@ -3341,5 +3714,9 @@
     }
 
   </script>
+
+  <!-- Hive & Operations Floor Scripts -->
+  <script src="js/office_canvas.js"></script>
+  <script src="js/command_center.js"></script>
 </body>
 </html>

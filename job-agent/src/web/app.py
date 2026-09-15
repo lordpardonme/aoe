@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -1574,5 +1574,313 @@ async def start_autonomous_background_scheduler():
 
     asyncio.create_task(scheduler_task())
 
+# =============================================================================
+# HIVE MULTI-AGENT ORCHESTRATION (Munder Difflin Architecture)
+# =============================================================================
+
+class HiveOrchestrateRequest(BaseModel):
+    company: Optional[str] = None
+    role: Optional[str] = None
+    text: str
+    url: Optional[str] = None
+
+
+@app.post("/api/hive/orchestrate")
+def hive_orchestrate_endpoint(req: HiveOrchestrateRequest):
+    """Run the Munder Difflin-inspired Hive multi-agent pipeline on a job description."""
+    from ..hive import HiveCoordinator
+    try:
+        coordinator = HiveCoordinator()
+        result = coordinator.run_pipeline(
+            text=req.text,
+            company=req.company,
+            role=req.role,
+            url=req.url
+        )
+        return {"status": "ok", "result": result}
+    except Exception as e:
+        logger.error(f"Hive pipeline error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/hive/status")
+def hive_status_endpoint():
+    """Retrieve Hive multi-agent coordinator status, circuit breaker, and recent ledgers."""
+    from ..hive import HiveCoordinator, HIVE_DIR
+    coordinator = HiveCoordinator()
+    recent_ledgers = sorted(list(HIVE_DIR.glob("*.json")), key=lambda p: p.stat().st_mtime, reverse=True)[:5]
+    ledgers_summary = []
+    for p in recent_ledgers:
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+            ledgers_summary.append({
+                "session_id": data.get("session_id"),
+                "status": data.get("board", {}).get("status"),
+                "tasks_count": len(data.get("tasks", [])),
+                "artifacts": data.get("board", {}).get("artifacts", {})
+            })
+        except Exception:
+            continue
+    return {
+        "circuit_breaker": {
+            "state": coordinator.breaker.state,
+            "failures": coordinator.breaker.failures
+        },
+        "agents": ["michael", "jim", "dwight", "pam", "ryan", "angela", "toby", "scout", "resume_architect", "copywriter", "quality_reviewer", "supervisor"],
+        "characters": [
+            {"id": "michael", "name": "Michael Scott", "role": "Regional Manager", "desc": "Hive god-agent dispatcher & team leader"},
+            {"id": "jim", "name": "Jim Halpert", "role": "Job Scout", "desc": "Public job board search & JD keyword extraction"},
+            {"id": "dwight", "name": "Dwight Schrute", "role": "Resume Architect", "desc": "Militant 1-page Bahnschrift PDF builder"},
+            {"id": "pam", "name": "Pam Beesly", "role": "Intake & Reception", "desc": "Candidate evidence bank & portfolio intake"},
+            {"id": "ryan", "name": "Ryan Howard", "role": "Cold Outreach Copywriter", "desc": "3-sentence high-conversion pitch creator"},
+            {"id": "angela", "name": "Angela Martin", "role": "Quality & Compliance", "desc": "First-Reader retention & WCAG AA contrast auditor"},
+            {"id": "toby", "name": "Toby Flenderson", "role": "Inbound Recruiter Radar", "desc": "Gmail API recruiter reply & invite scanner"}
+        ],
+        "recent_runs": ledgers_summary
+    }
+
+
+# =============================================================================
+# PUBLIC JOB BOARDS API (Jim Halpert's Scout Desk)
+# =============================================================================
+
+@app.get("/api/public-jobs/search")
+def search_public_jobs_endpoint(query: Optional[str] = "designer", limit: int = 10):
+    """Query live public job feeds (Arbeitnow + tech fallbacks) for Jim's Scout desk."""
+    import urllib.request
+    results = []
+    q_clean = (query or "").strip().lower()
+
+    # Attempt live Arbeitnow public API
+    try:
+        req = urllib.request.Request(
+            "https://www.arbeitnow.com/api/job-board-api",
+            headers={"User-Agent": "AOE-Scout/1.0"}
+        )
+        with urllib.request.urlopen(req, timeout=3.5) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            for item in data.get("data", []):
+                t = item.get("title", "")
+                c = item.get("company_name", "")
+                desc = item.get("description", "")
+                tags = item.get("tags", [])
+                text_to_match = f"{t} {c} {' '.join(tags)} {desc}".lower()
+                if not q_clean or q_clean in text_to_match:
+                    results.append({
+                        "company": c,
+                        "role": t,
+                        "location": item.get("location", "Remote"),
+                        "url": item.get("url", ""),
+                        "tags": tags[:4],
+                        "snippet": (desc[:180] + "...") if len(desc) > 180 else desc,
+                        "source": "Arbeitnow Live Feed"
+                    })
+                if len(results) >= limit:
+                    break
+    except Exception as err:
+        logger.debug(f"Live job board fetch skipped/failed: {err}")
+
+    # Rich curated backup tech jobs to ensure instant, reliable Scout queries
+    curated_pool = [
+        {
+            "company": "Spotify",
+            "role": "Senior Product Designer",
+            "location": "Stockholm / Remote",
+            "url": "https://lifeatspotify.com/jobs",
+            "tags": ["Design Systems", "Figma", "Mobile UI", "Audio UX"],
+            "snippet": "Spotify is seeking a Senior Product Designer to drive personalized music discovery experiences for 600M+ global listeners.",
+            "source": "Scout Curated Feed"
+        },
+        {
+            "company": "Stripe",
+            "role": "Frontend Infrastructure Engineer",
+            "location": "San Francisco / Remote",
+            "url": "https://stripe.com/jobs",
+            "tags": ["TypeScript", "React", "Web Performance", "API Design"],
+            "snippet": "Craft developer platforms and lightning-fast checkout experiences handling billions of dollars in global commerce.",
+            "source": "Scout Curated Feed"
+        },
+        {
+            "company": "Figma",
+            "role": "Design Systems Engineer",
+            "location": "New York / Remote",
+            "url": "https://figma.com/careers",
+            "tags": ["Figma Plugins", "Canvas 2D", "WebGL", "TypeScript"],
+            "snippet": "Build the next generation of multiplayer design tools, interactive tokens, and high-velocity vector editing primitives.",
+            "source": "Scout Curated Feed"
+        },
+        {
+            "company": "Linear",
+            "role": "Senior Product Engineer",
+            "location": "Remote (Global)",
+            "url": "https://linear.app/careers",
+            "tags": ["TypeScript", "React", "Desktop Apps", "Keyboard First"],
+            "snippet": "Craft magical, keyboard-first issue tracking and project planning tools for modern software development teams.",
+            "source": "Scout Curated Feed"
+        },
+        {
+            "company": "Apple",
+            "role": "Software Engineer - AI Tools",
+            "location": "Cupertino / Remote",
+            "url": "https://jobs.apple.com",
+            "tags": ["Python", "FastAPI", "Machine Learning", "Workflow Automation"],
+            "snippet": "Create developer toolchains, AI agent orchestration pipelines, and intelligent interfaces across Apple platforms.",
+            "source": "Scout Curated Feed"
+        },
+        {
+            "company": "Airbnb",
+            "role": "Lead UX Engineer",
+            "location": "San Francisco / Remote",
+            "url": "https://careers.airbnb.com",
+            "tags": ["Design Systems", "WCAG AA", "React", "Micro-Interactions"],
+            "snippet": "Lead accessibility, micro-animations, and unified design token standards across Airbnb web and mobile platforms.",
+            "source": "Scout Curated Feed"
+        },
+        {
+            "company": "GitHub",
+            "role": "Full Stack Engineer (Copilot Team)",
+            "location": "Remote",
+            "url": "https://github.com/about/careers",
+            "tags": ["Python", "TypeScript", "LLM Pipelines", "Developer Tools"],
+            "snippet": "Build developer-first generative AI agent capabilities integrated directly into the developer workflow.",
+            "source": "Scout Curated Feed"
+        }
+    ]
+
+    for item in curated_pool:
+        if len(results) >= limit:
+            break
+        text_to_match = f"{item['company']} {item['role']} {' '.join(item['tags'])} {item['snippet']}".lower()
+        if not q_clean or q_clean in text_to_match:
+            if not any(r["company"] == item["company"] and r["role"] == item["role"] for r in results):
+                results.append(item)
+
+    return {"query": query, "count": len(results), "jobs": results}
+
+
+# =============================================================================
+# REAL-TIME EVENT STREAMING & SUPERVISOR CHAT
+# =============================================================================
+
+_HIVE_EVENT_QUEUES: List[asyncio.Queue] = []
+
+def _on_hive_event(payload: Dict[str, Any]) -> None:
+    loop = None
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        pass
+    for q in list(_HIVE_EVENT_QUEUES):
+        if loop and loop.is_running():
+            loop.call_soon_threadsafe(q.put_nowait, payload)
+        else:
+            try:
+                q.put_nowait(payload)
+            except Exception:
+                pass
+
+from ..hive import subscribe_hive_events
+subscribe_hive_events(_on_hive_event)
+
+
+@app.get("/api/hive/stream")
+async def hive_stream_endpoint():
+    """Server-Sent Events endpoint streaming real-time Hive agent state to the 2D office canvas."""
+    q: asyncio.Queue = asyncio.Queue()
+    _HIVE_EVENT_QUEUES.append(q)
+
+    async def event_generator():
+        try:
+            yield f"data: {json.dumps({'type': 'connected', 'message': 'Subscribed to AOE Operations Floor event stream'})}\n\n"
+            while True:
+                try:
+                    payload = await asyncio.wait_for(q.get(), timeout=15.0)
+                    yield f"data: {json.dumps(payload)}\n\n"
+                except asyncio.TimeoutError:
+                    yield f"data: {json.dumps({'type': 'heartbeat'})}\n\n"
+        finally:
+            if q in _HIVE_EVENT_QUEUES:
+                _HIVE_EVENT_QUEUES.remove(q)
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+class HiveChatRequest(BaseModel):
+    message: str
+    context_lead_id: Optional[int] = None
+
+
+@app.post("/api/hive/chat")
+async def hive_chat_endpoint(req: HiveChatRequest):
+    """Chat with Michael Scott (Regional Manager) to dispatch tasks or query the floor."""
+    msg = req.message.strip().lower()
+    from ..hive import HiveCoordinator
+    
+    if "that's what she said" in msg or "thats what she said" in msg:
+        return {
+            "reply": 'Michael Scott: "THAT\'S WHAT SHE SAID! Ha! Classic. Now back to business. Which company are we targeting today?"',
+            "action": "banter"
+        }
+
+    if "tailor" in msg or "apply" in msg or "run" in msg or "dispatch" in msg:
+        target_lead = None
+        if req.context_lead_id:
+            target_lead = get_lead(req.context_lead_id)
+        else:
+            leads = list_leads(limit=20)
+            for l in leads:
+                if l.get("status") in ["To Contact", "Not Contacted", None]:
+                    target_lead = l
+                    break
+        
+        if target_lead:
+            company = target_lead.get("company", "Target")
+            role = target_lead.get("role", "Product Designer")
+            text = f"{company} is looking for a {role}. Requirements: end-to-end UX/UI, design systems, Figma, agile collaboration."
+            
+            coordinator = HiveCoordinator()
+            loop = asyncio.get_running_loop()
+            result = await loop.run_in_executor(None, lambda: coordinator.run_pipeline(
+                text=text,
+                company=company,
+                role=role,
+                url=target_lead.get("job_url") or target_lead.get("website")
+            ))
+            return {
+                "reply": f'Michael Scott: "Boom! Dispatched the Scranton team for **{company}** ({role}). Jim (Scout), Dwight (Architect), Ryan (Copywriter), and Angela (Reviewer) nailed it!"',
+                "action": "orchestrated",
+                "result": result
+            }
+        else:
+            return {
+                "reply": 'Michael Scott: "I\'m ready! Paste a job description or pick a lead from your Leads Queue, and I\'ll send Jim (Scout) and Dwight (Architect) straight to work."',
+                "action": "prompt_jd"
+            }
+
+    elif "status" in msg or "how" in msg or "who" in msg or "report" in msg:
+        apps = list_applications()
+        leads = list_leads(limit=500)
+        return {
+            "reply": f'Michael Scott: "Dunder Mifflin Scranton Regional Manager reporting! We have **{len(leads)} target leads** in the queue, **{len(apps)} applications** logged. Jim (Scout) is on the phones, Dwight (Architect) is guarding the paper, Pam is managing reception, Ryan is on his laptop, Angela is auditing, and Toby is in the annex."',
+            "action": "status"
+        }
+
+    elif "scan" in msg or "reply" in msg or "inbox" in msg or "toby" in msg:
+        client = GmailClient()
+        replies = client.check_replies(max_results=10)
+        return {
+            "reply": f'Toby Flenderson: "Scanned Gmail in the breakroom... found **{len(replies)} recruiter response(s)** in your connected account."',
+            "action": "scanned",
+            "replies": replies
+        }
+
+    else:
+        return {
+            "reply": f'Michael Scott: "Regional Manager standing by! Tell me: \'Tailor next lead\', \'Scan recruiter replies\', or \'Search jobs at Spotify\'. Or click on Jim, Dwight, or Pam\'s desk!"',
+            "action": "default"
+        }
+
+
 if FRONTEND_DIR.exists():
     app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
+
