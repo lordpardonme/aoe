@@ -15,6 +15,11 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "shadcn": "^4.21.0"
+  },
+  "dependencies": {
+    "motion": "^13.3.0"
   }
 }
-

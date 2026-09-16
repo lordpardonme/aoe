@@ -149,11 +149,17 @@ def init_db() -> None:
             INSERT OR IGNORE INTO profile (id, full_name, target_role, updated_at)
             VALUES (1, 'Candidate Name', 'Senior Product Designer', datetime('now'))
         """)
-        # Ensure column activation_passkey exists if upgrading existing DB
-        try:
-            conn.execute("ALTER TABLE profile ADD COLUMN activation_passkey TEXT DEFAULT ''")
-        except sqlite3.OperationalError:
-            pass
+        # Ensure column activation_passkey and onboarding fields exist if upgrading existing DB
+        for col_def in [
+            ("activation_passkey", "TEXT DEFAULT ''"),
+            ("projects_summary", "TEXT DEFAULT ''"),
+            ("achievements_summary", "TEXT DEFAULT ''"),
+            ("is_onboarded", "INTEGER DEFAULT 0")
+        ]:
+            try:
+                conn.execute(f"ALTER TABLE profile ADD COLUMN {col_def[0]} {col_def[1]}")
+            except sqlite3.OperationalError:
+                pass
 
 
         # Safe column additions for leads table
@@ -165,12 +171,30 @@ def init_db() -> None:
             ("salary_min", "TEXT DEFAULT ''"),
             ("salary_max", "TEXT DEFAULT ''"),
             ("currency", "TEXT DEFAULT ''"),
-            ("job_fingerprint", "TEXT DEFAULT ''")
+            ("job_fingerprint", "TEXT DEFAULT ''"),
+            ("is_unmasked", "INTEGER DEFAULT 0")
         ]:
             try:
                 conn.execute(f"ALTER TABLE leads ADD COLUMN {col_def[0]} {col_def[1]}")
             except sqlite3.OperationalError:
                 pass
+
+        # User quota and credit engine
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS user_quota (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                tier TEXT DEFAULT 'free',
+                unmasks_remaining INTEGER DEFAULT 3,
+                crowdsourced_credits INTEGER DEFAULT 0,
+                is_pro INTEGER DEFAULT 0,
+                license_key TEXT DEFAULT '',
+                updated_at TEXT
+            )
+        """)
+        conn.execute("""
+            INSERT OR IGNORE INTO user_quota (id, tier, unmasks_remaining, crowdsourced_credits, is_pro, updated_at)
+            VALUES (1, 'free', 3, 0, 0, datetime('now'))
+        """)
 
         conn.commit()
 
@@ -194,6 +218,9 @@ def get_profile() -> Dict[str, Any]:
         except Exception:
             data["extracted_skills"] = []
         data["dry_run"] = bool(data.get("dry_run", 1))
+        data["is_onboarded"] = bool(data.get("is_onboarded", 0))
+        data["projects_summary"] = data.get("projects_summary") or ""
+        data["achievements_summary"] = data.get("achievements_summary") or ""
         return data
 
 
@@ -217,6 +244,7 @@ def save_profile(data: Dict[str, Any]) -> Dict[str, Any]:
         skills_str = "[]"
 
     dry_run_val = 1 if data.get("dry_run", True) else 0
+    is_onboarded_val = 1 if data.get("is_onboarded", False) else 0
 
     with sqlite3.connect(get_db_path()) as conn:
         conn.execute("""
@@ -234,6 +262,9 @@ def save_profile(data: Dict[str, Any]) -> Dict[str, Any]:
                 portfolio_links = :portfolio_links,
                 resume_markdown = :resume_markdown,
                 extracted_skills = :extracted_skills,
+                projects_summary = :projects_summary,
+                achievements_summary = :achievements_summary,
+                is_onboarded = :is_onboarded,
                 llm_provider = :llm_provider,
                 llm_api_key = :llm_api_key,
                 llm_model = :llm_model,
@@ -257,6 +288,9 @@ def save_profile(data: Dict[str, Any]) -> Dict[str, Any]:
             "portfolio_links": links_str,
             "resume_markdown": data.get("resume_markdown", ""),
             "extracted_skills": skills_str,
+            "projects_summary": data.get("projects_summary", ""),
+            "achievements_summary": data.get("achievements_summary", ""),
+            "is_onboarded": is_onboarded_val,
             "llm_provider": data.get("llm_provider", "gemini"),
             "llm_api_key": data.get("llm_api_key", ""),
             "llm_model": data.get("llm_model", "gemini-1.5-flash"),
@@ -749,3 +783,197 @@ def update_lead_email_verification(lead_id: int, status: str, details: Dict[str,
         """, (status, json.dumps(details), lead_id))
         conn.commit()
         return True
+
+
+def ingest_rss_leads(leads_list: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Atomically insert leads fetched from RSS feeds into the active database.
+    Performs deterministic deduplication on (company, role) and (job_url).
+    """
+    init_db()
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    total_fetched = len(leads_list)
+    new_leads_added = 0
+    duplicates_skipped = 0
+
+    with sqlite3.connect(get_db_path()) as conn:
+        cur = conn.cursor()
+        # Fetch existing keys for deduplication
+        cur.execute("SELECT LOWER(company), LOWER(role), LOWER(COALESCE(job_url, '')) FROM leads")
+        existing_keys = set()
+        existing_urls = set()
+        for row in cur.fetchall():
+            existing_keys.add((row[0].strip(), row[1].strip()))
+            if row[2] and row[2].strip():
+                existing_urls.add(row[2].strip())
+
+        for item in leads_list:
+            company = str(item.get("company", "")).strip()
+            role = str(item.get("role", "")).strip()
+            url = str(item.get("job_url", "")).strip()
+
+            if not company or not role:
+                duplicates_skipped += 1
+                continue
+
+            comp_lower = company.lower()
+            role_lower = role.lower()
+            url_lower = url.lower() if url else ""
+
+            # Check if exists
+            if (comp_lower, role_lower) in existing_keys or (url_lower and url_lower in existing_urls):
+                duplicates_skipped += 1
+                continue
+
+            country = str(item.get("country") or "Remote (Worldwide)").strip()
+            category = str(item.get("category") or "Direct Employers").strip()
+            source_sheet = str(item.get("source_sheet") or "RSS Feed (Remote)").strip()
+            notes = str(item.get("notes") or "").strip()
+            website = str(item.get("website") or "").strip()
+
+            cur.execute("""
+                INSERT INTO leads (
+                    source_sheet, company, role, country, category, contact_email,
+                    website, job_url, status, notes, matched_skills, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                source_sheet, company, role, country, category, "",
+                website, url, "To Contact", notes, "[]", now_str
+            ))
+
+            existing_keys.add((comp_lower, role_lower))
+            if url_lower:
+                existing_urls.add(url_lower)
+            new_leads_added += 1
+
+        conn.commit()
+
+    return {
+        "total_fetched": total_fetched,
+        "new_leads_added": new_leads_added,
+        "duplicates_skipped": duplicates_skipped
+    }
+
+
+def get_user_quota() -> Dict[str, Any]:
+    """Retrieve user billing tier, unmask credits, and Pro status."""
+    init_db()
+    with sqlite3.connect(get_db_path()) as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM user_quota WHERE id = 1")
+        row = cur.fetchone()
+        if not row:
+            return {
+                "tier": "free",
+                "unmasks_remaining": 3,
+                "crowdsourced_credits": 0,
+                "is_pro": False,
+                "license_key": ""
+            }
+        return {
+            "tier": row["tier"] or "free",
+            "unmasks_remaining": int(row["unmasks_remaining"] if row["unmasks_remaining"] is not None else 3),
+            "crowdsourced_credits": int(row["crowdsourced_credits"] or 0),
+            "is_pro": bool(row["is_pro"]),
+            "license_key": row["license_key"] or ""
+        }
+
+
+def update_user_quota(
+    unmasks_remaining: Optional[int] = None,
+    is_pro: Optional[bool] = None,
+    tier: Optional[str] = None,
+    license_key: Optional[str] = None,
+    crowdsourced_credits: Optional[int] = None
+) -> Dict[str, Any]:
+    """Update user quota and subscription details."""
+    init_db()
+    current = get_user_quota()
+    new_tier = tier if tier is not None else current["tier"]
+    new_unmasks = unmasks_remaining if unmasks_remaining is not None else current["unmasks_remaining"]
+    new_pro = int(is_pro) if is_pro is not None else int(current["is_pro"])
+    new_key = license_key if license_key is not None else current["license_key"]
+    new_crowd = crowdsourced_credits if crowdsourced_credits is not None else current["crowdsourced_credits"]
+
+    with sqlite3.connect(get_db_path()) as conn:
+        conn.execute("""
+            UPDATE user_quota
+            SET tier = ?, unmasks_remaining = ?, is_pro = ?, license_key = ?, crowdsourced_credits = ?, updated_at = datetime('now')
+            WHERE id = 1
+        """, (new_tier, new_unmasks, new_pro, new_key, new_crowd))
+        conn.commit()
+
+    return get_user_quota()
+
+
+def consume_unmask_credit(lead_id: int) -> Dict[str, Any]:
+    """
+    Consumes 1 unmask credit for Free users (or unlimited for Pro),
+    marks lead as is_unmasked=1 in SQLite, and returns unmasked contact info.
+    """
+    init_db()
+    lead = get_lead(lead_id)
+    if not lead:
+        return {"status": "error", "message": "Lead not found"}
+
+    quota = get_user_quota()
+    is_pro = quota["is_pro"]
+
+    if not is_pro and quota["unmasks_remaining"] <= 0:
+        return {
+            "status": "quota_exceeded",
+            "message": "No unmask credits remaining. Upgrade to Pro or import CSV leads to earn more credits.",
+            "unmasks_remaining": 0,
+            "is_pro": False
+        }
+
+    with sqlite3.connect(get_db_path()) as conn:
+        conn.execute("UPDATE leads SET is_unmasked = 1 WHERE id = ?", (lead_id,))
+        if not is_pro:
+            conn.execute("UPDATE user_quota SET unmasks_remaining = MAX(0, unmasks_remaining - 1), updated_at = datetime('now') WHERE id = 1")
+        conn.commit()
+
+    updated_quota = get_user_quota()
+    contact_email = lead.get("contact_email") or ""
+    if not contact_email or "@" not in contact_email:
+        domain = (lead.get("website") or "").replace("https://", "").replace("http://", "").split("/")[0] or "company.com"
+        contact_email = f"talent@{domain}"
+
+    return {
+        "status": "ok",
+        "lead_id": lead_id,
+        "company": lead.get("company"),
+        "contact_email": contact_email,
+        "is_unmasked": True,
+        "unmasks_remaining": updated_quota["unmasks_remaining"],
+        "is_pro": updated_quota["is_pro"]
+    }
+
+
+def grant_unmask_credits(count: int) -> int:
+    """Give-to-get credit grant (e.g. +1 per valid crowdsourced lead)."""
+    if count <= 0:
+        return 0
+    init_db()
+    with sqlite3.connect(get_db_path()) as conn:
+        conn.execute("""
+            UPDATE user_quota
+            SET unmasks_remaining = unmasks_remaining + ?,
+                crowdsourced_credits = crowdsourced_credits + ?,
+                updated_at = datetime('now')
+            WHERE id = 1
+        """, (count, count))
+        conn.commit()
+    return get_user_quota()["unmasks_remaining"]
+
+
+def is_lead_unmasked(lead_id: int) -> bool:
+    """Check if specific lead has been unmasked."""
+    init_db()
+    with sqlite3.connect(get_db_path()) as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT is_unmasked FROM leads WHERE id = ?", (lead_id,))
+        row = cur.fetchone()
+        return bool(row[0]) if row and row[0] else False
+

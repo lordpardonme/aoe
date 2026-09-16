@@ -20,10 +20,11 @@ class GeminiClient(BaseLLMClient):
         self.model = config.model or "gemini-2.0-flash"
 
     def generate(self, prompt: str, system_prompt: str = "") -> str:
-        if not self.config.api_key:
+        api_key = (self.config.api_key or "").strip()
+        if not api_key:
             raise ValueError("Google Gemini API Key is missing. Please set it in Settings.")
 
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.config.api_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={api_key}"
         
         payload = {
             "contents": [{"role": "user", "parts": [{"text": prompt}]}],
@@ -35,12 +36,22 @@ class GeminiClient(BaseLLMClient):
         if system_prompt:
             payload["systemInstruction"] = {"parts": [{"text": system_prompt}]}
 
-        resp = requests.post(url, json=payload, headers={"Content-Type": "application/json"}, timeout=60)
-        resp.raise_for_status()
-        data = resp.json()
-        
         try:
+            resp = requests.post(url, json=payload, headers={"Content-Type": "application/json"}, timeout=60)
+            resp.raise_for_status()
+            data = resp.json()
             return data["candidates"][0]["content"]["parts"][0]["text"]
+        except requests.exceptions.HTTPError as err:
+            detail = ""
+            try:
+                err_data = resp.json()
+                if "error" in err_data:
+                    err_val = err_data["error"]
+                    detail = err_val.get("message", str(err_val)) if isinstance(err_val, dict) else str(err_val)
+            except Exception:
+                detail = resp.text[:200] if resp and resp.text else ""
+            msg = f"{resp.status_code} Error: {detail}" if detail else str(err)
+            raise RuntimeError(msg) from err
         except (KeyError, IndexError) as e:
             log.error("Unexpected Gemini response structure: %s", data)
             raise RuntimeError(f"Gemini API returned unexpected format: {data}") from e
@@ -51,17 +62,25 @@ class OpenAIClient(BaseLLMClient):
 
     def __init__(self, config: LLMConfig, default_model: str = "gpt-4o-mini", default_base_url: str = "https://api.openai.com/v1") -> None:
         super().__init__(config)
-        self.model = config.model or default_model
-        self.base_url = (config.base_url or default_base_url).rstrip("/")
+        self.model = (config.model or default_model).strip()
+        raw_url = (config.base_url or default_base_url).strip().rstrip("/")
+        # Auto-upgrade http to https for remote API endpoints to prevent 301 POST-to-GET redirect drops
+        if raw_url.startswith("http://") and "localhost" not in raw_url and "127.0.0.1" not in raw_url:
+            raw_url = "https://" + raw_url[7:]
+        self.base_url = raw_url
 
     def generate(self, prompt: str, system_prompt: str = "") -> str:
-        if not self.config.api_key and "localhost" not in self.base_url:
+        api_key = (self.config.api_key or "").strip()
+        if api_key.startswith("Bearer "):
+            api_key = api_key[7:].strip()
+
+        if not api_key and "localhost" not in self.base_url:
             raise ValueError("OpenAI / Groq API Key is missing. Please set it in Settings.")
 
         url = f"{self.base_url}/chat/completions"
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.config.api_key}",
+            "Authorization": f"Bearer {api_key}",
         }
         
         messages = []
@@ -76,12 +95,22 @@ class OpenAIClient(BaseLLMClient):
             "max_tokens": self.config.max_tokens,
         }
 
-        resp = requests.post(url, json=payload, headers=headers, timeout=60)
-        resp.raise_for_status()
-        data = resp.json()
-
         try:
+            resp = requests.post(url, json=payload, headers=headers, timeout=60)
+            resp.raise_for_status()
+            data = resp.json()
             return data["choices"][0]["message"]["content"]
+        except requests.exceptions.HTTPError as err:
+            detail = ""
+            try:
+                err_data = resp.json()
+                if "error" in err_data:
+                    err_val = err_data["error"]
+                    detail = err_val.get("message", str(err_val)) if isinstance(err_val, dict) else str(err_val)
+            except Exception:
+                detail = resp.text[:200] if resp and resp.text else ""
+            msg = f"{resp.status_code} Error: {detail}" if detail else str(err)
+            raise RuntimeError(msg) from err
         except (KeyError, IndexError) as e:
             log.error("Unexpected OpenAI response: %s", data)
             raise RuntimeError(f"OpenAI API returned unexpected format: {data}") from e
@@ -103,16 +132,17 @@ class AnthropicClient(BaseLLMClient):
 
     def __init__(self, config: LLMConfig) -> None:
         super().__init__(config)
-        self.model = config.model or "claude-3-5-sonnet-20241022"
+        self.model = (config.model or "claude-3-5-sonnet-20241022").strip()
 
     def generate(self, prompt: str, system_prompt: str = "") -> str:
-        if not self.config.api_key:
+        api_key = (self.config.api_key or "").strip()
+        if not api_key:
             raise ValueError("Anthropic API Key is missing. Please set it in Settings.")
 
         url = "https://api.anthropic.com/v1/messages"
         headers = {
             "Content-Type": "application/json",
-            "x-api-key": self.config.api_key,
+            "x-api-key": api_key,
             "anthropic-version": "2023-06-01",
         }
 
@@ -125,12 +155,22 @@ class AnthropicClient(BaseLLMClient):
         if system_prompt:
             payload["system"] = system_prompt
 
-        resp = requests.post(url, json=payload, headers=headers, timeout=60)
-        resp.raise_for_status()
-        data = resp.json()
-
         try:
+            resp = requests.post(url, json=payload, headers=headers, timeout=60)
+            resp.raise_for_status()
+            data = resp.json()
             return data["content"][0]["text"]
+        except requests.exceptions.HTTPError as err:
+            detail = ""
+            try:
+                err_data = resp.json()
+                if "error" in err_data:
+                    err_val = err_data["error"]
+                    detail = err_val.get("message", str(err_val)) if isinstance(err_val, dict) else str(err_val)
+            except Exception:
+                detail = resp.text[:200] if resp and resp.text else ""
+            msg = f"{resp.status_code} Error: {detail}" if detail else str(err)
+            raise RuntimeError(msg) from err
         except (KeyError, IndexError) as e:
             log.error("Unexpected Anthropic response: %s", data)
             raise RuntimeError(f"Anthropic API returned unexpected format: {data}") from e

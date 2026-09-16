@@ -1107,9 +1107,16 @@
 
     async testAiConnection() {
       const provider = this.selectedAiProvider || 'gemini';
-      const model = (document.getElementById('ai-model-input') || {}).value || '';
-      const apiKey = (document.getElementById('ai-key-input') || {}).value || '';
-      const baseUrl = (document.getElementById('ai-base-url-input') || {}).value || '';
+      const model = ((document.getElementById('ai-model-input') || {}).value || '').trim();
+      const apiKey = ((document.getElementById('ai-key-input') || {}).value || '').trim();
+      let baseUrl = ((document.getElementById('ai-base-url-input') || {}).value || '').trim();
+
+      // Ensure remote base URLs don't carry http:// to avoid 301 POST-to-GET drop
+      if (baseUrl.startsWith('http://') && !baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')) {
+        baseUrl = 'https://' + baseUrl.slice(7);
+        const baseUrlInput = document.getElementById('ai-base-url-input');
+        if (baseUrlInput) baseUrlInput.value = baseUrl;
+      }
 
       const testBox = document.getElementById('ai-test-result-box');
       const icon = document.getElementById('ai-test-icon');
@@ -1194,9 +1201,12 @@
 
     async saveAiConfig() {
       const provider = this.selectedAiProvider || 'gemini';
-      const model = (document.getElementById('ai-model-input') || {}).value || '';
-      const apiKey = (document.getElementById('ai-key-input') || {}).value || '';
-      const baseUrl = (document.getElementById('ai-base-url-input') || {}).value || '';
+      const model = ((document.getElementById('ai-model-input') || {}).value || '').trim();
+      const apiKey = ((document.getElementById('ai-key-input') || {}).value || '').trim();
+      let baseUrl = ((document.getElementById('ai-base-url-input') || {}).value || '').trim();
+      if (baseUrl.startsWith('http://') && !baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')) {
+        baseUrl = 'https://' + baseUrl.slice(7);
+      }
       const saveBtn = document.getElementById('ai-save-btn');
 
       if (saveBtn) {

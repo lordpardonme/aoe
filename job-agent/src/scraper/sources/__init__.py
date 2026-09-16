@@ -9,6 +9,7 @@ from .freehire_adapter import FreeHireAdapter
 from .arbeitnow_adapter import ArbeitnowAdapter
 from .aijobs_adapter import AIJobsAdapter
 from .scrapling_adapter import ScraplingStealthAdapter
+from .rss_adapter import RSSFeedAdapter, DEFAULT_RSS_FEEDS
 
 __all__ = [
     "BaseSourceAdapter",
@@ -22,4 +23,6 @@ __all__ = [
     "ArbeitnowAdapter",
     "AIJobsAdapter",
     "ScraplingStealthAdapter",
+    "RSSFeedAdapter",
+    "DEFAULT_RSS_FEEDS",
 ]

@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 import os
+import random
 import shutil
 import sqlite3
 import time
@@ -35,6 +36,9 @@ from ..utils import slugify
 from ..services.public_apis import verify_email_deliverability
 from ..services.jobspy_service import scraper_service
 from ..services.first_reader import audit_outreach_pitch
+from ..email_finder import discover_and_score_emails
+from ..scraper.sources.rss_adapter import RSSFeedAdapter, DEFAULT_RSS_FEEDS
+from ..services.autopilot_service import autopilot_service
 from ..services.autopsy_service import run_applications_autopsy
 from .db import (
     ingest_scraped_batch, get_ingestion_history, update_lead_email_verification,
@@ -42,7 +46,9 @@ from .db import (
     delete_application, clear_all_applications,
     get_profile, save_profile, get_dashboard_analytics, record_inbound_reply,
     list_inbound_replies, record_lead, list_leads, get_lead,
-    update_lead_status, bulk_insert_leads, get_leads_stats, DB_PATH
+    update_lead_status, bulk_insert_leads, get_leads_stats, DB_PATH,
+    ingest_rss_leads, get_user_quota, update_user_quota, consume_unmask_credit,
+    grant_unmask_credits, is_lead_unmasked
 )
 
 app = FastAPI(title="AOE - Autonomous Outreach Engine API", version="2.0.0")
@@ -74,6 +80,16 @@ class EmailVerifyRequest(BaseModel):
 class PitchAuditRequest(BaseModel):
     subject: str = ""
     body: str = ""
+
+class FindEmailRequest(BaseModel):
+    company: str = ""
+    contact_name: str = ""
+    domain: Optional[str] = None
+    lead_id: Optional[int] = None
+
+class VerifyProRequest(BaseModel):
+    passkey: str = ""
+
 class ConfigPayload(BaseModel):
     candidate_name: str = ""
     candidate_email: str = ""
@@ -212,6 +228,36 @@ class CsvImportRequest(BaseModel):
     leads: Optional[List[Dict[str, Any]]] = None
 
 
+class IngestRSSRequest(BaseModel):
+    channels: Optional[List[str]] = Field(default_factory=lambda: ["wwr_design", "remoteok_all"])
+    custom_rss_url: Optional[str] = None
+    max_per_feed: int = 25
+
+
+
+class AutoPilotRunRequest(BaseModel):
+    lead_id: Optional[int] = None
+    company: Optional[str] = None
+    role: Optional[str] = None
+    job_url: Optional[str] = None
+    jd_text: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_person: Optional[str] = None
+    profession: Optional[str] = "product-designer"
+    llm_provider: Optional[str] = None
+    llm_api_key: Optional[str] = None
+
+
+class BillingCheckoutRequest(BaseModel):
+    tier: str = "pro"
+    email: Optional[str] = None
+    payment_method: Optional[str] = "simulated_card"
+
+
+class UnmaskLeadRequest(BaseModel):
+    lead_id: int
+
+
 class BatchRunRequest(BaseModel):
     lead_ids: List[int]
     mode: str = "draft"  # "draft", "dry_run", "live_send"
@@ -245,6 +291,24 @@ class CopilotChatRequest(BaseModel):
     message: str
     action_topic: Optional[str] = None
     history: List[Dict[str, str]] = Field(default_factory=list)
+
+
+class ExtractCvRequest(BaseModel):
+    cv_text: str
+
+
+class RegisterCandidateRequest(BaseModel):
+    full_name: str
+    email: str
+    phone: Optional[str] = ""
+    target_role: Optional[str] = "Senior Product Designer"
+    location: Optional[str] = ""
+    experience_years: Optional[str] = "5+ Years"
+    cv_text: Optional[str] = ""
+    portfolio_links: Optional[Dict[str, str]] = Field(default_factory=dict)
+    projects_summary: Optional[str] = ""
+    achievements_summary: Optional[str] = ""
+    is_onboarded: bool = True
 
 
 # --- Endpoints ---
@@ -360,10 +424,12 @@ def list_professions_endpoint():
 
 @app.post("/api/test/llm")
 def test_llm_endpoint(payload: Dict[str, Any]):
-    provider = payload.get("provider", "gemini")
-    api_key = payload.get("api_key") or os.getenv(f"{provider.upper()}_API_KEY") or os.getenv("LLM_API_KEY") or ""
-    model = payload.get("model") or ""
-    base_url = payload.get("base_url")
+    provider = (payload.get("provider") or "gemini").strip().lower()
+    api_key = (payload.get("api_key") or os.getenv(f"{provider.upper()}_API_KEY") or os.getenv("LLM_API_KEY") or "").strip()
+    if api_key.startswith("Bearer "):
+        api_key = api_key[7:].strip()
+    model = (payload.get("model") or "").strip()
+    base_url = (payload.get("base_url") or "").strip() or None
 
     config = LLMConfig(provider=provider, api_key=api_key, model=model, base_url=base_url)
     client = get_llm_client(config)
@@ -448,11 +514,17 @@ def analyze_job_endpoint(req: AnalyzeJobRequest):
     except Exception:
         pass
 
+    fit_level = "High Alignment" if score >= 75.0 else ("Strong Match" if score >= 60.0 else "Moderate Fit")
+
     return {
         "match_score": score,
         "matched_skills": matched,
         "gap_skills": gaps,
         "strategy": strategy,
+        "positioning_angle": strategy,
+        "fit_level": fit_level,
+        "matched_count": len(matched),
+        "gap_count": len(gaps),
     }
 
 
@@ -1011,6 +1083,127 @@ def save_profile_endpoint(payload: ProfilePayload):
     return {"status": "ok", "profile": res}
 
 
+@app.post("/api/profile/extract-cv")
+def extract_cv_endpoint(req: ExtractCvRequest):
+    """Parses raw pasted CV text into structured onboarding candidate fields."""
+    import re
+    text = req.cv_text.strip()
+    if not text:
+        return {"status": "error", "message": "Empty CV text provided"}
+
+    extracted = {
+        "full_name": "",
+        "email": "",
+        "phone": "",
+        "target_role": "",
+        "location": "",
+        "portfolio_links": {},
+        "projects_summary": "",
+        "achievements_summary": "",
+        "skills": []
+    }
+
+    # 1. Email extraction
+    email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text)
+    if email_match:
+        extracted["email"] = email_match.group(0)
+
+    # 2. Phone extraction
+    phone_match = re.search(r'(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3}[-.\s]?\d{4}', text)
+    if phone_match:
+        extracted["phone"] = phone_match.group(0)
+
+    # 3. Name extraction (first non-empty line if reasonably short)
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    if lines:
+        first_line = lines[0]
+        if len(first_line) < 40 and not any(c in first_line for c in ['@', 'http', ':', '/', '\\']):
+            extracted["full_name"] = first_line
+
+    # 4. Links extraction
+    figma_match = re.search(r'https?://[^\s]*figma\.com/[^\s]*', text, re.IGNORECASE)
+    if figma_match: extracted["portfolio_links"]["figma"] = figma_match.group(0)
+    behance_match = re.search(r'https?://[^\s]*behance\.net/[^\s]*', text, re.IGNORECASE)
+    if behance_match: extracted["portfolio_links"]["behance"] = behance_match.group(0)
+    notion_match = re.search(r'https?://[^\s]*notion\.(?:so|site)/[^\s]*', text, re.IGNORECASE)
+    if notion_match: extracted["portfolio_links"]["notion"] = notion_match.group(0)
+    github_match = re.search(r'https?://[^\s]*github\.com/[^\s]*', text, re.IGNORECASE)
+    if github_match: extracted["portfolio_links"]["github"] = github_match.group(0)
+    linkedin_match = re.search(r'https?://[^\s]*linkedin\.com/in/[^\s]*', text, re.IGNORECASE)
+    if linkedin_match: extracted["portfolio_links"]["linkedin"] = linkedin_match.group(0)
+    showreel_match = re.search(r'https?://[^\s]*(?:loom\.com|drive\.google\.com|youtube\.com|vimeo\.com)/[^\s]*', text, re.IGNORECASE)
+    if showreel_match: extracted["portfolio_links"]["showreel"] = showreel_match.group(0)
+
+    # 5. Role detection
+    role_titles = [
+        "Founding Product Designer", "Staff Product Designer", "Senior Product Designer", "Product Designer",
+        "Lead Product Designer", "UI/UX Designer", "Staff Software Engineer", "Senior Software Engineer",
+        "Full Stack Engineer", "Frontend Engineer", "Backend Engineer", "Engineering Manager", "Head of Product"
+    ]
+    for rt in role_titles:
+        if rt.lower() in text.lower():
+            extracted["target_role"] = rt
+            break
+
+    # 6. Quantified achievements extraction (bullet lines with metrics: %, $, +, x, etc.)
+    achievements = []
+    projects = []
+    for line in lines:
+        cleaned = line.lstrip('•-*+> ').strip()
+        if not cleaned: continue
+        # Detect metrics
+        if any(c in cleaned for c in ['%', '$', '+']) and any(w in cleaned.lower() for w in ['increased', 'reduced', 'improved', 'scaled', 'growth', 'retention', 'revenue', 'velocity', 'users', 'latenc']):
+            achievements.append("• " + cleaned)
+        elif any(w in cleaned.lower() for w in ['led', 'built', 'designed', 'architected', 'spearheaded', 'developed', 'launched', 'created', 'managed', 'founded', 'engineered']):
+            projects.append("• " + cleaned)
+
+    if achievements:
+        extracted["achievements_summary"] = "\n".join(achievements[:4])
+    if projects:
+        extracted["projects_summary"] = "\n".join(projects[:4])
+
+    res = dict(extracted)
+    res["status"] = "success"
+    res["extracted"] = extracted
+    return res
+
+
+@app.post("/api/auth/register")
+def register_candidate_endpoint(req: RegisterCandidateRequest):
+    """Registers candidate, saves detailed profile & craft links, and sets is_onboarded to True."""
+    payload = {
+        "full_name": req.full_name,
+        "email": req.email,
+        "phone": req.phone,
+        "target_role": req.target_role,
+        "location": req.location,
+        "experience_years": req.experience_years,
+        "resume_markdown": req.cv_text,
+        "portfolio_links": req.portfolio_links,
+        "projects_summary": req.projects_summary,
+        "achievements_summary": req.achievements_summary,
+        "is_onboarded": True
+    }
+    updated = save_profile(payload)
+    return {
+        "status": "success",
+        "message": "Candidate profile successfully registered and onboarded.",
+        "profile": updated
+    }
+
+
+@app.get("/api/auth/session")
+def auth_session_endpoint():
+    """Checks session state and returns candidate onboarding status."""
+    profile = get_profile()
+    is_onboarded = profile.get("is_onboarded", False)
+    return {
+        "authenticated": True,
+        "is_onboarded": is_onboarded,
+        "profile": profile
+    }
+
+
 @app.get("/api/dashboard/stats")
 def get_dashboard_stats_endpoint():
     return get_dashboard_analytics()
@@ -1219,12 +1412,197 @@ def import_csv_endpoint(req: CsvImportRequest):
         raise HTTPException(status_code=400, detail="No valid leads found in import payload")
 
     inserted = bulk_insert_leads(imported_leads)
+    credits_remaining = grant_unmask_credits(inserted)
     return {
         "status": "ok",
         "inserted": inserted,
         "total_imported": len(imported_leads),
+        "credits_granted": inserted,
+        "unmasks_remaining": credits_remaining,
         "stats": get_leads_stats(),
     }
+
+
+@app.post("/api/leads/find-email")
+def find_email_endpoint(req: FindEmailRequest):
+    """
+    Generate corporate email permutations, test domain DNS,
+    and verify deliverability on candidate emails.
+    """
+    res = discover_and_score_emails(
+        contact_name=req.contact_name,
+        company=req.company,
+        domain=req.domain,
+        verify_top=2,
+    )
+    if req.lead_id and res.get("primary_email"):
+        try:
+            lead = get_lead(req.lead_id)
+            if lead and not lead.get("contact_email"):
+                update_lead_status(req.lead_id, lead.get("status", "To Contact"), lead.get("notes", ""))
+        except Exception:
+            pass
+    return res
+
+
+@app.get("/api/staging/leads-feed")
+def get_staging_leads_feed(
+    is_pro: bool = Query(False),
+    limit: int = Query(25),
+    refresh: bool = Query(False),
+    category: Optional[str] = Query(None),
+):
+    """
+    Staging Leads Feed with 25-Lead 72h limit for Free tier and full access for Pro.
+    Free tier masks emails (e.g. j***@company.com) with is_locked=True.
+    """
+    all_leads = list_leads(category=category, limit=1000)
+    all_leads = sorted(all_leads, key=lambda l: l.get("id", 0), reverse=True)
+    
+    if is_pro:
+        return {
+            "is_pro": True,
+            "total_available": len(all_leads),
+            "showing": min(limit, len(all_leads)),
+            "leads": all_leads[:limit],
+            "message": "Pro Access Active: Full 590+ database unlocked."
+        }
+    
+    # Free tier: 25 randomized sample from latest 72h pool
+    sample_pool = all_leads[:150] if len(all_leads) > 150 else all_leads
+    sample_size = min(limit, len(sample_pool))
+    sampled = random.sample(sample_pool, sample_size) if sample_pool else []
+    
+    masked_leads = []
+    for ld in sampled:
+        copy_lead = dict(ld)
+        lead_id = copy_lead.get("id")
+        unmasked = is_lead_unmasked(lead_id) if lead_id else False
+        raw_email = copy_lead.get("contact_email") or ""
+
+        if unmasked:
+            copy_lead["is_masked"] = False
+            copy_lead["is_locked"] = False
+            copy_lead["is_unmasked"] = True
+            masked_leads.append(copy_lead)
+            continue
+
+        if raw_email and "@" in raw_email:
+            parts = raw_email.split("@", 1)
+            user_part = parts[0]
+            dom_part = parts[1]
+            masked_user = (user_part[:1] + "***") if len(user_part) > 1 else "***"
+            copy_lead["contact_email"] = f"{masked_user}@{dom_part}"
+            copy_lead["is_masked"] = True
+        else:
+            copy_lead["contact_email"] = "🔒 Upgrade to Reveal"
+            copy_lead["is_masked"] = True
+        copy_lead["is_locked"] = True
+        copy_lead["is_unmasked"] = False
+        masked_leads.append(copy_lead)
+        
+    return {
+        "is_pro": False,
+        "sample_period": "Latest 72 Hours (25 Leads Sample)",
+        "total_available": len(all_leads),
+        "showing": len(masked_leads),
+        "leads": masked_leads,
+        "upgrade_cta": "Upgrade to Pro to unlock all 590+ leads and direct verified emails."
+    }
+
+
+@app.post("/api/staging/verify-pro")
+def verify_staging_pro_endpoint(req: VerifyProRequest):
+    """
+    Verifies license code or activation passkey for Pro tier.
+    """
+    code = (req.passkey or "").strip()
+    profile = get_profile()
+    active_passkey = (profile.get("activation_passkey") or "").strip()
+    
+    valid_keys = {"PRO-AOE-2026", "LIFETIME-ACCESS", "VIP-SCALE", "PRO2026", "DUNDER-MIFFLIN-PRO"}
+    if active_passkey:
+        valid_keys.add(active_passkey.upper())
+        valid_keys.add(active_passkey)
+        
+    if code.upper() in valid_keys or (active_passkey and code == active_passkey) or code.upper().startswith("PRO-AOE-"):
+        update_user_quota(is_pro=True, tier="pro", license_key=code)
+        return {
+            "status": "ok",
+            "is_pro": True,
+            "message": "Pro Access Activated! All 590+ leads and direct emails unlocked."
+        }
+    else:
+        raise HTTPException(
+            status_code=403,
+            detail="Invalid passkey or license code. Try 'PRO-AOE-2026' or check Settings."
+        )
+
+
+@app.get("/api/staging/rss-sources")
+def get_staging_rss_sources_endpoint():
+    """
+    Returns available curated RSS channels for staging ingestion.
+    """
+    return {
+        "status": "ok",
+        "channels": [
+            {
+                "key": k,
+                "name": v["name"],
+                "url": v["url"],
+                "category": v["category"],
+                "default_role": v["default_role"]
+            }
+            for k, v in DEFAULT_RSS_FEEDS.items()
+        ]
+    }
+
+
+@app.post("/api/staging/ingest-rss")
+def ingest_staging_rss_endpoint(req: IngestRSSRequest):
+    """
+    Ingests live jobs from curated WeWorkRemotely and RemoteOK RSS feeds
+    directly into the staging SQLite database with deterministic deduplication.
+    """
+    adapter = RSSFeedAdapter()
+    all_leads = []
+
+    # 1. SSRF Early Validation: Check custom RSS URL first if provided
+    if req.custom_rss_url:
+        try:
+            adapter.validate_url(req.custom_rss_url)
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"SSRF violation: {str(e)}")
+
+    channels = req.channels if req.channels is not None else ["wwr_design", "remoteok_all"]
+    errors = []
+
+    # Sync selected pre-configured channels
+    for ch in channels:
+        try:
+            leads = adapter.sync_channel(ch, max_items=req.max_per_feed)
+            all_leads.extend(leads)
+        except Exception as e:
+            errors.append(f"Channel '{ch}' error: {str(e)}")
+
+    # Sync custom RSS URL if provided
+    if req.custom_rss_url:
+        try:
+            xml_text = adapter.fetch_feed_xml(req.custom_rss_url)
+            custom_leads = adapter.parse_feed(xml_text, channel_key="Custom Feed")
+            all_leads.extend(custom_leads[:req.max_per_feed])
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Feed error: {str(e)}")
+
+    if not all_leads and errors:
+        raise HTTPException(status_code=400, detail="; ".join(errors))
+
+    ingest_result = ingest_rss_leads(all_leads)
+    ingest_result["status"] = "ok"
+    ingest_result["channels_synced"] = channels
+    ingest_result["errors"] = errors
+    return ingest_result
 
 
 # --- Autonomous Batch Engine (Phase 3) ---
@@ -1480,8 +1858,18 @@ def draft_follow_up_endpoint(req: FollowUpRequest):
 @app.post("/api/scraper/trigger")
 async def trigger_scraper_endpoint(req: ScraperTriggerRequest):
     """Trigger background job scrape and ingestion run."""
+    if req.freshness_hours <= 0 or req.freshness_hours > 720:
+        raise HTTPException(status_code=400, detail="Invalid freshness_hours: must be between 1 and 720 hours.")
+    valid_modes = ["express", "comprehensive"]
+    if req.mode.lower() not in valid_modes:
+        raise HTTPException(status_code=400, detail=f"Invalid mode: must be one of {valid_modes}.")
+    
+    clean_role = req.role.strip()
+    if not clean_role or len(clean_role) > 100:
+        raise HTTPException(status_code=400, detail="Role keyword must be between 1 and 100 characters.")
+
     res = await scraper_service.trigger_scrape(
-        role=req.role,
+        role=clean_role,
         seniority=req.seniority,
         geo=req.geography,
         freshness=req.freshness_hours,
@@ -1637,6 +2025,207 @@ def hive_status_endpoint():
             {"id": "toby", "name": "Toby Flenderson", "role": "Inbound Recruiter Radar", "desc": "Gmail API recruiter reply & invite scanner"}
         ],
         "recent_runs": ledgers_summary
+    }
+
+
+# =============================================================================
+# 90-SECOND AUTONOMOUS CONVERSION MACHINE ENDPOINTS
+# =============================================================================
+
+@app.post("/api/autopilot/run-90s")
+def run_autopilot_90s_endpoint(req: AutoPilotRunRequest):
+    """
+    Executes the unified 90-second co-pilot pipeline:
+    ATS keyword gap scoring, recruiter email discovery, 1-page Bahnschrift PDF CV,
+    attention-scored cold pitch, application logging, and Day +7 follow-up schedule.
+    """
+    try:
+        result = autopilot_service.run_90s_pipeline(
+            lead_id=req.lead_id,
+            company=req.company,
+            role=req.role,
+            job_url=req.job_url,
+            jd_text=req.jd_text,
+            contact_email=req.contact_email,
+            contact_person=req.contact_person,
+            profession=req.profession or "product-designer",
+            llm_provider=req.llm_provider,
+            llm_api_key=req.llm_api_key,
+        )
+        return result
+    except Exception as exc:
+        logger.exception(f"AutoPilot 90s pipeline error: {exc}")
+        raise HTTPException(status_code=500, detail=f"AutoPilot execution error: {str(exc)}")
+
+
+@app.get("/api/conversion/telemetry")
+def get_conversion_telemetry_endpoint():
+    """
+    Returns real-time campaign conversion telemetry:
+    100-target campaign progress, cycle time velocity (<90s), and recruiter response rate vs 18% benchmark.
+    """
+    return autopilot_service.get_conversion_telemetry()
+
+
+# =============================================================================
+# COMMERCIAL MICRO-SAAS ASSET: BILLING, UNMASK CREDITS & SHOWCASE
+# =============================================================================
+
+@app.get("/api/billing/tiers")
+def get_billing_tiers_endpoint():
+    """Returns commercial pricing tiers catalog."""
+    return {
+        "status": "ok",
+        "tiers": [
+            {
+                "id": "free",
+                "name": "Free Hunter",
+                "price": "$0",
+                "period": "forever",
+                "badge": "Active Default",
+                "leads_limit": "25 fresh leads / 72h sample",
+                "unmasks_included": 3,
+                "features": [
+                    "25 curated fresh leads every 72 hours",
+                    "3 direct recruiter email unmask credits",
+                    "Give-to-Get: +1 credit per imported lead",
+                    "Basic ATS keyword check & score",
+                    "1-Page ReportLab CV preview"
+                ]
+            },
+            {
+                "id": "starter",
+                "name": "Starter Hunter",
+                "price": "$19",
+                "period": "/mo",
+                "badge": "Entry",
+                "leads_limit": "100 leads / week",
+                "unmasks_included": 50,
+                "features": [
+                    "100 fresh leads per week",
+                    "50 recruiter email unmasks & MX check",
+                    "1-Page Bahnschrift PDF CV export",
+                    "Standard cold outreach pitch drafts",
+                    "Email deliverability verification"
+                ]
+            },
+            {
+                "id": "pro",
+                "name": "Pro Conversion Co-Pilot",
+                "price": "$49",
+                "period": "/mo",
+                "badge": "Most Popular · High ROI",
+                "popular": True,
+                "leads_limit": "Unlimited (590+ database)",
+                "unmasks_included": "Unlimited",
+                "features": [
+                    "Full access to 590+ target companies",
+                    "Unlimited verified direct recruiter emails",
+                    "⚡ 90-Second Autonomous Conversion Machine",
+                    "First-Reader attention score optimizer (90+ rating)",
+                    "Automated 7-Day Follow-Up Sequencer",
+                    "Priority RSS & JobSpy multi-board sync"
+                ]
+            },
+            {
+                "id": "lifetime",
+                "name": "Lifetime Hunter",
+                "price": "$99",
+                "period": "one-time",
+                "badge": "Best Value",
+                "leads_limit": "Lifetime Unlimited",
+                "unmasks_included": "Lifetime Unlimited",
+                "features": [
+                    "Lifetime access to all future lead updates",
+                    "Unlimited scraper & private RSS channel runs",
+                    "One-click CSV & JSON lead exports",
+                    "VIP Discord community & feature access"
+                ]
+            }
+        ]
+    }
+
+
+@app.get("/api/billing/user-quota")
+def get_user_quota_endpoint():
+    """Returns active billing tier, remaining unmask credits, and Pro status."""
+    return get_user_quota()
+
+
+@app.post("/api/billing/checkout")
+def billing_checkout_endpoint(req: BillingCheckoutRequest):
+    """
+    Processes simulated subscription/lifetime checkout, generates an authentic license passkey,
+    and updates user quota in SQLite.
+    """
+    tier = req.tier.lower().strip()
+    if tier not in ["starter", "pro", "lifetime"]:
+        tier = "pro"
+
+    import secrets
+    random_hex = secrets.token_hex(4).upper()
+    license_key = f"PRO-AOE-{random_hex}" if tier != "lifetime" else f"LIFETIME-AOE-{random_hex}"
+
+    is_pro = True
+    unmasks = 99999 if tier in ["pro", "lifetime"] else 50
+
+    quota = update_user_quota(
+        unmasks_remaining=unmasks,
+        is_pro=is_pro,
+        tier=tier,
+        license_key=license_key
+    )
+
+    return {
+        "status": "success",
+        "message": f"Payment processed successfully! {tier.title()} tier activated.",
+        "tier": tier,
+        "is_pro": True,
+        "license_key": license_key,
+        "quota": quota
+    }
+
+
+@app.post("/api/leads/unmask")
+def unmask_lead_endpoint(req: UnmaskLeadRequest):
+    """
+    Consumes 1 unmask credit for Free tier users (or unlimited for Pro),
+    marks lead as unmasked in SQLite, and returns verified email.
+    """
+    result = consume_unmask_credit(req.lead_id)
+    if result.get("status") == "quota_exceeded":
+        raise HTTPException(
+            status_code=403,
+            detail="No unmask credits remaining. Upgrade to Pro or import CSV leads (+1 credit per lead)."
+        )
+    if result.get("status") == "error":
+        raise HTTPException(status_code=404, detail=result.get("message"))
+    return result
+
+
+@app.get("/api/public/showcase")
+def get_public_showcase_endpoint():
+    """
+    Public preview endpoint for community sharing of sanitized lead batches.
+    """
+    all_leads = list_leads(limit=25)
+    sanitized = []
+    for l in all_leads:
+        sanitized.append({
+            "company": l.get("company"),
+            "role": l.get("role") or "Product Designer",
+            "category": l.get("category") or "Direct",
+            "country": l.get("country") or "Remote",
+            "website": l.get("website") or "",
+            "sample_snippet": (l.get("notes") or "")[:120]
+        })
+    return {
+        "status": "ok",
+        "community_name": "AOE Open Recruiter Showcase",
+        "total_targets_catalog": 590,
+        "sample_preview_count": len(sanitized),
+        "leads": sanitized,
+        "share_url": "http://127.0.0.1:8002/#leads"
     }
 
 

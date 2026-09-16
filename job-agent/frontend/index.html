@@ -23,7 +23,32 @@
         }
       }
     }
-
+  </script>
+  <style>
+    /* WCAG AA Focus Ring & Accessibility Tokens */
+    :focus-visible {
+      outline: 2px solid #2563eb !important;
+      outline-offset: 2px !important;
+    }
+    button, a, input, select, textarea {
+      transition: all 0.15s ease-in-out;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+  <script>
     // =========================================================================
     // FLOATING TOAST NOTIFIER
     // =========================================================================
@@ -432,7 +457,7 @@
   <div id="page-loading-bar" class="fixed top-0 left-0 h-1 bg-blue-600 z-40 w-0 opacity-0"></div>
 
   <!-- ==================== LEFT SIDEBAR (Dark Slate #0F172A) ==================== -->
-  <aside class="w-64 bg-sidebar text-slate-300 flex flex-col justify-between shrink-0 select-none border-r border-slate-800 z-30">
+  <aside id="app-sidebar" class="w-64 bg-sidebar text-slate-300 flex flex-col justify-between shrink-0 select-none border-r border-slate-800 z-30 transition-all">
     <div>
       <!-- Brand Header -->
       <div class="h-16 flex items-center justify-between px-6 border-b border-slate-800/80">
@@ -450,6 +475,25 @@
       <!-- Navigation Links -->
       <nav class="p-4 space-y-1.5 text-sm font-medium">
         
+        <!-- 0. Public Landing & Onboarding -->
+        <div class="pb-2 border-b border-slate-800/80 space-y-1">
+          <button onclick="switchView('landing')" id="nav-landing" class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-sidebarHover transition-all">
+            <div class="flex items-center space-x-3">
+              <span>🌐</span>
+              <span>Public Landing</span>
+            </div>
+            <span class="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded font-mono">Web</span>
+          </button>
+          <div class="flex items-center space-x-1 px-1">
+            <button onclick="switchView('signin')" id="nav-signin" class="flex-1 py-1 px-2 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white hover:bg-sidebarHover text-center transition-all cursor-pointer">
+              🔑 Sign In
+            </button>
+            <button onclick="switchView('signup')" id="nav-signup" class="flex-1 py-1 px-2 rounded-lg text-[11px] font-bold text-blue-400 hover:text-blue-300 hover:bg-blue-900/30 text-center transition-all cursor-pointer">
+              ✨ Sign Up
+            </button>
+          </div>
+        </div>
+
         <!-- 1. Apply For Jobs (Default Landing Workspace) -->
         <button onclick="switchView('apply')" id="nav-apply" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold shadow-md shadow-blue-600/25 transition-all">
           <div class="flex items-center space-x-3">
@@ -547,14 +591,20 @@
           </div>
         </div>
       </div>
+
+      <!-- Exit to Public Landing Page -->
+      <button onclick="switchView('landing')" id="sidebar-public-site-btn" class="w-full py-1.5 px-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-sidebarHover text-center transition-all flex items-center justify-center space-x-1.5 cursor-pointer">
+        <span>←</span>
+        <span>Public Home / Log Out</span>
+      </button>
     </div>
   </aside>
 
   <!-- ==================== MAIN CONTENT CANVAS (Light #F8FAFC) ==================== -->
-  <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative">
+  <main id="main-content-canvas" class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative">
 
     <!-- Top Global Header with Direct Tab Navigation -->
-    <header class="h-16 border-b border-slate-200/80 bg-white flex items-center justify-between px-8 shrink-0 z-20">
+    <header id="topbar-header" class="h-16 border-b border-slate-200/80 bg-white flex items-center justify-between px-8 shrink-0 z-20">
       
       <!-- Left: Title & Subtag -->
       <div class="flex items-center space-x-3">
@@ -604,6 +654,18 @@
           <span class="text-[11px] font-bold text-blue-700">Paraphrasing...</span>
         </div>
 
+        <!-- Candidate Profile Switcher / Sign In Pill -->
+        <button onclick="switchView('signin')" id="header-signin-btn" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-blue-300 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-all shadow-sm cursor-pointer" title="Candidate Sign In / Switch Profile">
+          <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+          <span>Sign In / Switch</span>
+        </button>
+
+        <!-- Exit to Public Landing Page Button -->
+        <button onclick="switchView('landing')" id="header-public-site-btn" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-all shadow-sm cursor-pointer" title="Exit to Public Landing Page">
+          <span class="text-xs">🌐</span>
+          <span>Public Home</span>
+        </button>
+
         <!-- Gmail Connection Status Pill -->
         <button onclick="openGmailModal()" id="header-gmail-status-btn" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-blue-300 bg-slate-50 hover:bg-white text-xs font-semibold transition-all shadow-sm">
           <span class="w-2 h-2 rounded-full bg-emerald-500" id="header-gmail-dot"></span>
@@ -624,6 +686,608 @@
 
     <!-- Scrollable Viewport Container -->
     <div class="flex-1 overflow-y-auto p-6 md:p-8 space-y-6" id="view-container">
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 0A: STANDALONE PUBLIC LANDING PAGE & COMPREHENSIVE TOUR         -->
+      <!-- ==================================================================== -->
+      <section id="view-landing" class="hidden w-full bg-white text-slate-900 pb-20">
+        
+        <!-- Standalone Public Sticky Top Navigation Bar -->
+        <nav class="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-6 lg:px-12 py-3.5 flex items-center justify-between">
+          <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('landing')">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-sm shadow-md shadow-blue-500/20">
+              ⚡
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="font-black text-base text-slate-900 tracking-tight">AOE</span>
+              <span class="hidden sm:inline-block text-xs text-slate-400 font-medium">| Autonomous Outreach Engine</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">v2.0</span>
+            </div>
+          </div>
+
+          <div class="hidden md:flex items-center space-x-8 text-xs font-semibold text-slate-600">
+            <a href="#landing-hero" class="hover:text-blue-600 transition-colors">Overview</a>
+            <a href="#landing-modules" class="hover:text-blue-600 transition-colors">Dashboard Tour</a>
+            <a href="#landing-workflow" class="hover:text-blue-600 transition-colors">90s Workflow</a>
+            <a href="#landing-benchmarks" class="hover:text-blue-600 transition-colors">Benchmarks</a>
+          </div>
+
+          <div class="flex items-center space-x-3">
+            <button onclick="switchView('signin')" id="btn-landing-top-signin" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-all cursor-pointer">
+              Sign In
+            </button>
+            <button onclick="switchView('signup')" id="btn-landing-top-signup" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/25 transition-all flex items-center space-x-1 cursor-pointer">
+              <span>Get Started</span>
+              <span>→</span>
+            </button>
+          </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div id="landing-hero" class="pt-16 pb-12 px-6 lg:px-12 max-w-6xl mx-auto text-center space-y-6">
+          <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold shadow-xs">
+            <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+            <span>Autonomous Outbound Engine for Senior Designers, Engineers & Technical Founders</span>
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1] max-w-4xl mx-auto">
+            Apply to top roles in <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">90 seconds</span>. Land offers in 45 days.
+          </h1>
+
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
+            Transform outbound job hunting from an unscalable 45-minute manual grind into an autonomous conversion machine. AOE parses job descriptions, enforces strict 1-page Bahnschrift ATS layouts, and routes human cold pitches to 803+ verified hiring contacts.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <button onclick="switchView('signup')" id="btn-landing-signup" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm rounded-2xl shadow-xl shadow-blue-500/25 transition-all flex items-center justify-center space-x-2 cursor-pointer">
+              <span>✨ Set Up Candidate Profile (2 min)</span>
+              <span>→</span>
+            </button>
+            <button onclick="switchView('signin')" id="btn-landing-signin" class="w-full sm:w-auto px-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-2xl shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
+              <span>🔑 Candidate Sign In</span>
+            </button>
+            <button onclick="switchView('dashboard')" id="btn-landing-dashboard" class="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-slate-100 text-slate-700 font-bold text-sm rounded-2xl border border-slate-200 shadow-xs transition-all flex items-center justify-center space-x-2 cursor-pointer">
+              <span>🚀 Live Dashboard Demo</span>
+              <span>↗</span>
+            </button>
+          </div>
+
+          <!-- Verified Telemetry Badges Strip -->
+          <div id="landing-benchmarks" class="pt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-left max-w-4xl mx-auto">
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 shadow-xs">
+              <div class="text-[11px] font-bold text-slate-400 uppercase">Cycle Velocity</div>
+              <div class="text-2xl font-black text-slate-900 mt-1" id="landing-kpi-velocity">&lt;90s</div>
+              <div class="text-[11px] text-emerald-600 font-semibold mt-0.5">97.5% time saved vs manual</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 shadow-xs">
+              <div class="text-[11px] font-bold text-slate-400 uppercase">Response Rate</div>
+              <div class="text-2xl font-black text-indigo-600 mt-1" id="landing-kpi-response">&gt;18.2%</div>
+              <div class="text-[11px] text-slate-500 font-semibold mt-0.5">3.5x industry benchmark</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 shadow-xs">
+              <div class="text-[11px] font-bold text-slate-400 uppercase">Target Directory</div>
+              <div class="text-2xl font-black text-slate-900 mt-1" id="landing-kpi-targets">803+</div>
+              <div class="text-[11px] text-blue-600 font-semibold mt-0.5">Verified hiring contacts</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 shadow-xs">
+              <div class="text-[11px] font-bold text-slate-400 uppercase">Resume Budget</div>
+              <div class="text-2xl font-black text-emerald-600 mt-1">1-Page</div>
+              <div class="text-[11px] text-slate-500 font-semibold mt-0.5">Strict Euclidean LayoutNG ATS</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================================== -->
+        <!-- COMPREHENSIVE DASHBOARD POWER SUITE SHOWCASE                      -->
+        <!-- ================================================================== -->
+        <div id="landing-modules" class="py-16 px-6 lg:px-12 bg-slate-50 border-y border-slate-200/80 space-y-12">
+          <div class="max-w-4xl mx-auto text-center space-y-2">
+            <div class="text-xs font-extrabold uppercase tracking-wider text-blue-600">The Complete Dashboard Suite</div>
+            <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">What the Product Is & How It Works</h2>
+            <p class="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
+              Explore the 5 integrated power tools built into your autonomous workspace — designed from first principles so anyone can operate at an elite level.
+            </p>
+          </div>
+
+          <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+
+            <!-- Tool 1: Apply Studio -->
+            <div class="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6 flex flex-col justify-between hover:border-blue-300 transition-all">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-2xl shadow-xs">
+                    ✨
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 uppercase tracking-wider">Module 1 · Intake & CV</span>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-slate-900">Apply Studio — Strict 1-Page Bahnschrift ATS Engine</h3>
+                  <p class="text-xs text-slate-600 leading-relaxed mt-2">
+                    <strong>What it does:</strong> Ingests job postings by URL or text. Identifies keyword alignment, computes semantic gap scores, and compiles a mathematically budgeted 1-page PDF using the high-contrast Bahnschrift typeface.
+                  </p>
+                  <p class="text-xs text-slate-600 leading-relaxed mt-1">
+                    <strong>How it works:</strong> Enforces Euclidean single-page line constraints so your resume never spills onto page 2. Adapts regional protocols (e.g. GCC photo standards vs. US strict blind guidelines) and drafts customized 3-sentence cold emails.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Interactive Simulated UI Card -->
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs space-y-2.5 font-mono">
+                <div class="flex items-center justify-between font-sans">
+                  <span class="font-bold text-slate-800">Linear · Founding Product Designer</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">94% ATS Match</span>
+                </div>
+                <div class="text-[11px] text-slate-600 font-sans">
+                  <span class="font-semibold text-slate-700">Outreach Hook:</span> "Loved your keyboard-first navigation update. At [Company], I reduced checkout friction by 27% and scaled Figma design tokens across 6 products..."
+                </div>
+                <div class="flex items-center space-x-2 pt-1">
+                  <span class="px-2 py-0.5 rounded bg-white border border-slate-200 text-[10px] font-bold text-slate-700 font-sans">✓ Formatted to 1-Page</span>
+                  <span class="px-2 py-0.5 rounded bg-white border border-slate-200 text-[10px] font-bold text-indigo-700 font-sans">✓ Bahnschrift ATS Font</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tool 2: Leads Queue Hub -->
+            <div class="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6 flex flex-col justify-between hover:border-indigo-300 transition-all">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black text-2xl shadow-xs">
+                    🎯
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 uppercase tracking-wider">Module 2 · Lead Directory</span>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-slate-900">Leads Queue Hub & Automated Scraper</h3>
+                  <p class="text-xs text-slate-600 leading-relaxed mt-2">
+                    <strong>What it does:</strong> An offline-first local database of 803+ verified hiring contacts spanning Direct Employers, YC Startups, Agencies, and Social leads.
+                  </p>
+                  <p class="text-xs text-slate-600 leading-relaxed mt-1">
+                    <strong>How it works:</strong> Equipped with multi-channel scrapers (JobSpy LinkedIn/Indeed and RSS sync). Generates verified MX email permutations and lets you trigger single 90-second applications or 10–50 batch dispatches in one click.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Interactive Simulated UI Card -->
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs space-y-2.5">
+                <div class="flex items-center space-x-1.5 text-[11px] font-bold">
+                  <span class="px-2 py-0.5 rounded bg-blue-600 text-white">All (803)</span>
+                  <span class="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-600">Direct (285)</span>
+                  <span class="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-600">YC Startups (210)</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between">
+                  <div>
+                    <div class="font-bold text-slate-900">Vercel · Staff Product Designer</div>
+                    <div class="text-[11px] text-slate-500 font-mono">recruiter@vercel.com · Verified MX ✓</div>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">⚡ 90s Apply</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tool 3: Career Copilot AI -->
+            <div class="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6 flex flex-col justify-between hover:border-purple-300 transition-all">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-black text-2xl shadow-xs">
+                    🤖
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200 uppercase tracking-wider">Module 3 · Offer Strategist</span>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-slate-900">Career Copilot AI & Evidence Bank</h3>
+                  <p class="text-xs text-slate-600 leading-relaxed mt-2">
+                    <strong>What it does:</strong> A tactical career strategist that analyzes your portfolio evidence to generate compelling hooks, salary negotiation math, and interview talking points.
+                  </p>
+                  <p class="text-xs text-slate-600 leading-relaxed mt-1">
+                    <strong>How it works:</strong> Directly coupled with candidate proof links (Figma systems, Notion case studies, Behance portfolios, Loom reels). Features 4 instant strategy accelerators (YC Pitch Teardown, Equity Math, Regional Protocols, STAR Stories).
+                  </p>
+                </div>
+              </div>
+
+              <!-- Interactive Simulated UI Card -->
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs space-y-2.5">
+                <div class="flex items-center space-x-1.5 flex-wrap gap-1">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">✓ Figma Connected</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">✓ Notion System</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">✓ Loom Showreel</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-white border border-slate-200 text-[11px] text-slate-700 space-y-1">
+                  <div class="font-bold text-purple-700">💡 Copilot Strategic Insight:</div>
+                  <div class="leading-relaxed">"When pitching Seed/Series A founders, highlight your Figma token architecture to show you compress developer handoff time by 40%."</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tool 4: Applied Pipeline Tracker -->
+            <div class="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6 flex flex-col justify-between hover:border-emerald-300 transition-all">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-2xl shadow-xs">
+                    📋
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase tracking-wider">Module 4 · Pipeline & Radar</span>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-slate-900">Applied Pipeline Tracker & 7-Day Follow-Up</h3>
+                  <p class="text-xs text-slate-600 leading-relaxed mt-2">
+                    <strong>What it does:</strong> End-to-end application lifecycle management connected with Gmail API to scan recruiter replies and track conversion metrics.
+                  </p>
+                  <p class="text-xs text-slate-600 leading-relaxed mt-1">
+                    <strong>How it works:</strong> The Inbound Scanner classifies messages (Interview Invitations, Assessments, Rejections). It automatically flags applications that are &ge; 7 days old and drafts punchy 2-sentence follow-up pitches to revive conversations.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Interactive Simulated UI Card -->
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-slate-800">Stripe · Senior Product Designer</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800">Interview Stage</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between text-[11px]">
+                  <div>
+                    <span class="font-bold text-slate-900">Airbnb (Applied 8 days ago)</span>
+                    <div class="text-[10px] text-amber-600 font-semibold">⚠️ 7-Day Follow-Up Due</div>
+                  </div>
+                  <button class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-indigo-600 text-white">📬 Auto-Draft</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Highlight: Module 5 Operations Floor -->
+          <div class="max-w-6xl mx-auto p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-black text-2xl shadow-xs">
+                  🏢
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-slate-900">Operations Floor — Autonomous Multi-Agent Swarm Simulation</h3>
+                  <p class="text-xs text-slate-500 mt-0.5">Interactive 2D retro canvas multi-agent coordination floor</p>
+                </div>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200 w-fit">
+                Module 5 · Swarm Intelligence
+              </span>
+            </div>
+            
+            <p class="text-xs text-slate-600 leading-relaxed max-w-4xl">
+              <strong>How it works:</strong> Rather than relying on a single prompt, AOE orchestrates specialized AI agents modeled after dedicated operating desks (Lead Scout, 1-Page Resume Architect, Pitch Copywriter, and Compliance Auditor). Watch them coordinate in a 20-second observable mission handoff or assign custom target missions in real time.
+            </p>
+
+            <div class="p-4 rounded-2xl bg-slate-900 text-white font-mono text-xs flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Swarm Engine: 15 Cast Personas · 60 FPS Canvas Simulation · Zero Overhead</span>
+              </div>
+              <span class="text-slate-400 text-[11px]">Available in Staging</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workflow Contrast Strip -->
+        <div id="landing-workflow" class="py-16 px-6 lg:px-12 max-w-5xl mx-auto space-y-6">
+          <div class="text-center space-y-1">
+            <div class="text-xs font-extrabold uppercase tracking-wider text-blue-600">The Efficiency Math</div>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">The 45-Min Manual Grind vs. AOE 90-Second Machine</h2>
+            <p class="text-xs text-slate-500">Calculated across 100 applications</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs pt-4">
+            <div class="p-6 rounded-3xl bg-rose-50/60 border border-rose-200/80 space-y-3">
+              <div class="font-black text-rose-800 text-sm flex items-center space-x-2">
+                <span>✕</span>
+                <span>The Old Manual Grind</span>
+              </div>
+              <ul class="text-rose-950 space-y-2 leading-relaxed">
+                <li>• 45–60 minutes per tailored CV and email pitch</li>
+                <li>• 75 hours total manual labor for 100 targets</li>
+                <li>• Blind applicant pools with &lt;3% recruiter response rate</li>
+                <li>• Cluttered multi-page CVs dropped by automated ATS parsers</li>
+                <li>• Lost follow-ups and zero recovery on silent targets</li>
+              </ul>
+            </div>
+
+            <div class="p-6 rounded-3xl bg-emerald-50/60 border border-emerald-200/80 space-y-3">
+              <div class="font-black text-emerald-800 text-sm flex items-center space-x-2">
+                <span>✓</span>
+                <span>The AOE Autonomous Machine</span>
+              </div>
+              <ul class="text-emerald-950 space-y-2 leading-relaxed">
+                <li>• &lt;90 seconds per complete tailored application deck</li>
+                <li>• 2.5 hours total time for 100 verified targets (97.5% time saved)</li>
+                <li>• Direct hiring manager routing delivering &gt;18.2% response rate</li>
+                <li>• Strict 1-page Bahnschrift ATS PDFs with verified live links</li>
+                <li>• Automated 7-day follow-up radar and Gmail status sync</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Call to Action Banner -->
+        <div class="px-6 lg:px-12 max-w-5xl mx-auto">
+          <div class="p-10 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white text-center space-y-5 shadow-2xl">
+            <h3 class="text-2xl sm:text-3xl font-black tracking-tight">Ready to take control of your career pipeline?</h3>
+            <p class="text-xs sm:text-sm text-indigo-200 max-w-xl mx-auto leading-relaxed">
+              Set up your candidate coordinates, connect your verified proof links, and start generating high-converting applications in 90 seconds.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <button onclick="switchView('signup')" class="px-8 py-3.5 bg-white hover:bg-slate-100 text-slate-950 font-black text-xs rounded-xl shadow-lg transition-all cursor-pointer">
+                ✨ Set Up Candidate Profile (2 min) →
+              </button>
+              <button onclick="switchView('signin')" class="px-6 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl border border-slate-700 transition-all cursor-pointer">
+                🔑 Sign In to Workspace
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Standalone Public Footer -->
+        <footer class="pt-16 pb-8 text-center text-xs text-slate-500 space-y-2">
+          <div class="flex items-center justify-center space-x-4">
+            <span class="font-bold text-slate-700">AOE v2.0</span>
+            <span>·</span>
+            <span>Local-First SQLite Architecture</span>
+            <span>·</span>
+            <span>Zero Data Leakage Guarantee</span>
+          </div>
+          <p class="text-[11px] text-slate-400">Designed for elite designers, engineers, and technical founders.</p>
+        </footer>
+
+      </section>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 0B: STANDALONE CANDIDATE SIGN-IN PAGE                           -->
+      <!-- ==================================================================== -->
+      <section id="view-signin" class="hidden min-h-[85vh] w-full flex flex-col justify-center items-center py-12 px-4 bg-slate-50">
+        
+        <!-- Header Link Back to Public Home -->
+        <div class="w-full max-w-md flex items-center justify-between pb-4">
+          <button onclick="switchView('landing')" class="text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors flex items-center space-x-1 cursor-pointer">
+            <span>←</span>
+            <span>Back to Public Home</span>
+          </button>
+          <span class="text-[11px] font-mono text-slate-400">AOE v2.0</span>
+        </div>
+
+        <div class="w-full max-w-md p-8 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-6">
+          <div class="text-center space-y-1.5">
+            <div class="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black text-xl mx-auto shadow-md">
+              ⚡
+            </div>
+            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Welcome Back</h2>
+            <p class="text-xs text-slate-500">Sign in to your autonomous application dashboard.</p>
+          </div>
+
+          <!-- Active Saved Candidate Fast Switcher -->
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-3" id="signin-active-profile-card">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Saved Candidate</div>
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-sm" id="signin-avatar">
+                MH
+              </div>
+              <div class="overflow-hidden flex-1">
+                <div class="font-bold text-slate-900 text-sm truncate" id="signin-name">Mohd Hayaat Ali</div>
+                <div class="text-xs text-slate-500 truncate" id="signin-role">Senior Product Designer</div>
+              </div>
+            </div>
+            <button onclick="continueAsCurrentCandidate()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm transition-all flex items-center justify-center space-x-1.5 cursor-pointer">
+              <span>Continue to Dashboard</span>
+              <span>→</span>
+            </button>
+          </div>
+
+          <!-- Or Sign In With Email -->
+          <div class="space-y-3 pt-2">
+            <div class="relative flex items-center justify-center">
+              <div class="border-t border-slate-200 w-full"></div>
+              <span class="bg-white px-3 text-[11px] text-slate-400 font-semibold uppercase">Or enter email</span>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+              <input type="email" id="signin-email-input" placeholder="you@example.com" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <button onclick="handleEmailSignIn()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl shadow-sm transition-all cursor-pointer">
+              Sign In with Email
+            </button>
+          </div>
+
+          <div class="text-center pt-2 border-t border-slate-100 text-xs">
+            <span class="text-slate-500">Don't have a candidate profile? </span>
+            <button onclick="switchView('signup')" class="font-bold text-blue-600 hover:text-blue-700 underline cursor-pointer">Set up profile (2 min) →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 0C: 4-STEP CANDIDATE ONBOARDING WIZARD                          -->
+      <!-- ==================================================================== -->
+      <section id="view-signup" class="hidden min-h-[85vh] w-full flex flex-col justify-center items-center py-8 px-4 bg-slate-50">
+        
+        <!-- Header Link Back to Public Home -->
+        <div class="w-full max-w-3xl flex items-center justify-between pb-3">
+          <button onclick="switchView('landing')" class="text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors flex items-center space-x-1 cursor-pointer">
+            <span>←</span>
+            <span>Back to Public Home</span>
+          </button>
+          <span class="text-[11px] font-mono text-slate-400">AOE v2.0 Onboarding</span>
+        </div>
+
+        <div class="w-full max-w-3xl p-6 md:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-6">
+          
+          <!-- Wizard Header & Progress Bar -->
+          <div class="space-y-4 pb-4 border-b border-slate-100">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
+                  ✨
+                </div>
+                <div>
+                  <h2 class="text-base font-bold text-slate-900" id="signup-step-title">Candidate Onboarding — Step 1 of 4: The Basics</h2>
+                  <p class="text-xs text-slate-500" id="signup-step-subtitle">Fill in your core coordinates. Never overwhelming, takes under 2 minutes.</p>
+                </div>
+              </div>
+              <button onclick="switchView('landing')" class="text-xs font-semibold text-slate-400 hover:text-slate-700">✕ Cancel</button>
+            </div>
+
+            <!-- Stepper Badges & Progress Line -->
+            <div class="space-y-2">
+              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div id="signup-progress-bar" class="bg-gradient-to-r from-blue-600 to-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 25%"></div>
+              </div>
+              <div class="grid grid-cols-4 gap-2 text-center text-[10px] font-bold">
+                <div id="step-badge-1" class="text-blue-600">1. Basics</div>
+                <div id="step-badge-2" class="text-slate-400">2. Resume Intake</div>
+                <div id="step-badge-3" class="text-slate-400">3. Live Links</div>
+                <div id="step-badge-4" class="text-slate-400">4. Impact Proof</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================== STEP 1: THE BASICS ==================== -->
+          <div id="signup-step-1" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Full Name <span class="text-rose-500">*</span></label>
+                <input type="text" id="reg-name" placeholder="e.g. Mohd Hayaat Ali" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 font-semibold text-slate-900">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Direct Email <span class="text-rose-500">*</span></label>
+                <input type="email" id="reg-email" placeholder="e.g. hayaat@example.com" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 font-semibold text-slate-900">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
+                <input type="tel" id="reg-phone" placeholder="e.g. +44 7123 456789 or +1 555-0199" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Target Role Headline <span class="text-rose-500">*</span></label>
+                <input type="text" id="reg-role" placeholder="e.g. Senior Product Designer / Founding Engineer" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 font-semibold text-slate-900">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Primary Location / Timezone</label>
+                <input type="text" id="reg-location" placeholder="e.g. London, UK / Remote / Dubai" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Seniority Level</label>
+                <select id="reg-seniority" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white text-slate-700 font-medium">
+                  <option value="Senior (5-8 Yrs)" selected>Senior (5-8 Yrs)</option>
+                  <option value="Lead / Staff (8-12 Yrs)">Lead / Staff (8-12 Yrs)</option>
+                  <option value="Mid-Level (3-5 Yrs)">Mid-Level (3-5 Yrs)</option>
+                  <option value="Executive / Director (12+ Yrs)">Executive / Director (12+ Yrs)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-end pt-4 border-t border-slate-100">
+              <button onclick="goToOnboardingStep(2)" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center space-x-1.5 cursor-pointer">
+                <span>Next: Resume Intake</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ==================== STEP 2: RESUME INTAKE ==================== -->
+          <div id="signup-step-2" class="hidden space-y-4">
+            <div class="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100 space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="text-base">⚡</span>
+                  <span class="text-xs font-bold text-indigo-950">Frictionless Resume Auto-Extract</span>
+                </div>
+                <button type="button" onclick="autoExtractFromPastedCV()" id="btn-auto-extract-cv" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center space-x-1 cursor-pointer">
+                  <span>✨</span>
+                  <span>Auto-Fill Profile from CV</span>
+                </button>
+              </div>
+              <p class="text-[11px] text-indigo-800 leading-relaxed">
+                Paste your existing CV, resume, or LinkedIn text below. Our heuristic extractor will parse your name, links, project contributions, and quantified achievements automatically so you never have to re-type them!
+              </p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Paste Your Current CV / Resume Text</label>
+              <textarea id="reg-cv-text" rows="8" placeholder="Paste your existing resume markdown or plain text here..." class="w-full p-3.5 text-xs font-mono bg-slate-50 border border-slate-200 rounded-xl focus:bg-white leading-relaxed"></textarea>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+              <button onclick="goToOnboardingStep(1)" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-all cursor-pointer">
+                ← Back
+              </button>
+              <button onclick="goToOnboardingStep(3)" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center space-x-1.5 cursor-pointer">
+                <span>Next: Live Craft Links</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ==================== STEP 3: PROOF OF CRAFT (LIVE LINKS) ==================== -->
+          <div id="signup-step-3" class="hidden space-y-4">
+            <div class="p-3.5 rounded-2xl bg-purple-50/70 border border-purple-100 text-xs text-purple-900 leading-relaxed">
+              <strong>Why live links?</strong> Founders and design leads get hundreds of generic resumes. AOE cites your verified live links directly in outreach emails so recipients can immediately see and interact with your work.
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">🎨 Figma Live Prototypes / System URL</label>
+                <input type="url" id="reg-figma" placeholder="https://figma.com/@yourhandle" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">📝 Notion Deep-Dive Case Studies URL</label>
+                <input type="url" id="reg-notion" placeholder="https://notion.site/your-case-studies" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">💼 Behance / Design Portfolio URL</label>
+                <input type="url" id="reg-behance" placeholder="https://behance.net/yourhandle" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">📹 Drive Loom / Video Showreel URL</label>
+                <input type="url" id="reg-showreel" placeholder="https://loom.com/share/... or Drive link" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white font-mono">
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+              <button onclick="goToOnboardingStep(2)" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-all cursor-pointer">
+                ← Back
+              </button>
+              <button onclick="goToOnboardingStep(4)" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center space-x-1.5 cursor-pointer">
+                <span>Next: Impact & Numbers</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ==================== STEP 4: IMPACT & ACHIEVEMENTS ==================== -->
+          <div id="signup-step-4" class="hidden space-y-4">
+            <div class="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-100 text-xs text-emerald-900 leading-relaxed">
+              <strong>The Secret to 18%+ Response Rates:</strong> First-Reader algorithms reward quantified impact over generic task descriptions. Highlight metrics like sprint velocity gains, retention boosts, or user scale.
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Key Project Contributions</label>
+              <textarea id="reg-projects" rows="3" placeholder="• Led design system architecture across 4 web apps&#10;• Redesigned checkout funnel from first principles" class="w-full p-3.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white leading-relaxed text-slate-800"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Quantified Achievements & Metrics</label>
+              <textarea id="reg-achievements" rows="3" placeholder="• Increased developer velocity by +40% across 20+ engineers&#10;• Boosted 30-day user retention by 28%&#10;• Scaled daily active users to 120,000 MAU" class="w-full p-3.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white leading-relaxed text-slate-800"></textarea>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+              <button onclick="goToOnboardingStep(3)" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-all cursor-pointer">
+                ← Back
+              </button>
+              <button onclick="completeCandidateOnboarding()" id="btn-finish-onboarding" class="px-7 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-500/25 transition-all flex items-center space-x-2 cursor-pointer">
+                <span>✨ Complete & Launch Dashboard 🚀</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
 
       <!-- ==================================================================== -->
       <!-- VIEW 1: APPLY & TAILOR STUDIO (DEFAULT LANDING WORKSPACE)            -->
@@ -731,14 +1395,83 @@
               <input type="text" id="apply-role" placeholder="e.g. Senior Product Designer" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl">
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Contact Email</label>
-              <input type="email" id="apply-email" placeholder="e.g. talent@careem.com" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl">
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-bold text-slate-700">Contact Email</label>
+                <button type="button" onclick="triggerEmailFinder()" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 flex items-center space-x-1 cursor-pointer">
+                  <span>🔍</span>
+                  <span>Find Recruiter Email</span>
+                </button>
+              </div>
+              <input type="email" id="apply-email" placeholder="e.g. talent@careem.com" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white">
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Job Description Requirements (JD Text)</label>
-            <textarea id="apply-jd-text" rows="5" class="w-full p-3.5 font-mono text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white leading-relaxed" placeholder="Paste complete job description text..."></textarea>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold text-slate-700">Job Description Requirements (JD Text)</label>
+              <button type="button" onclick="analyzeJobMatchMatrix()" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-700 flex items-center space-x-1">
+                <span>⚡</span>
+                <span>Analyze Match & Gaps</span>
+              </button>
+            </div>
+            <textarea id="apply-jd-text" oninput="debounceAutoMatchScore()" rows="5" class="w-full p-3.5 font-mono text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white leading-relaxed" placeholder="Paste complete job description text..."></textarea>
+          </div>
+
+          <!-- JD MATCH & GAP SCORING MATRIX -->
+          <div id="jd-match-gap-matrix" class="p-4 rounded-xl bg-slate-50 border border-slate-200/90 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="flex items-center space-x-2.5">
+                <span class="text-lg">🎯</span>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-900">JD Taxonomy Match & Gap Matrix</h4>
+                  <p class="text-[11px] text-slate-500">Autonomous alignment scoring against candidate master taxonomy & single-page budget.</p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span id="jd-match-score-badge" class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-blue-100 text-blue-800 border border-blue-200">
+                  Ready to Analyze
+                </span>
+                <button type="button" onclick="analyzeJobMatchMatrix()" class="px-3 py-1 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-200 shadow-xs transition-all flex items-center space-x-1">
+                  <span>⚡</span>
+                  <span>Analyze Fit</span>
+                </button>
+              </div>
+            </div>
+
+            <div id="jd-matrix-results" class="hidden space-y-3 pt-1">
+              <!-- Matched Skills Badges -->
+              <div>
+                <div class="text-[11px] font-bold text-emerald-800 uppercase tracking-wide flex items-center space-x-1 mb-1.5">
+                  <span>✓</span>
+                  <span>Matched Competencies (<span id="jd-matched-count">0</span>)</span>
+                </div>
+                <div id="jd-matched-badges" class="flex flex-wrap gap-1.5">
+                  <!-- Emerald badges -->
+                </div>
+              </div>
+
+              <!-- Identified Skill Gaps -->
+              <div>
+                <div class="text-[11px] font-bold text-amber-800 uppercase tracking-wide flex items-center space-x-1 mb-1.5">
+                  <span>⚠</span>
+                  <span>Identified Skill Gaps (<span id="jd-gaps-count">0</span>)</span>
+                </div>
+                <div id="jd-gaps-badges" class="flex flex-wrap gap-1.5">
+                  <!-- Amber badges -->
+                </div>
+              </div>
+
+              <!-- Strategic Positioning Pitch -->
+              <div class="p-3 bg-white border border-slate-200/90 rounded-xl space-y-1">
+                <div class="text-[11px] font-bold text-indigo-900 uppercase tracking-wide flex items-center space-x-1">
+                  <span>💡</span>
+                  <span>Strategic Positioning Angle</span>
+                </div>
+                <p id="jd-strategy-pitch" class="text-xs text-slate-700 leading-relaxed italic">
+                  "Position your background around core strengths. Address identified gaps in the intro hook."
+                </p>
+              </div>
+            </div>
           </div>
 
           <div class="flex items-center justify-between pt-2">
@@ -1130,6 +1863,96 @@
             </div>
           </div>
 
+          <!-- OUTBOUND CONVERSION TELEMETRY & VELOCITY WIDGET -->
+          <div id="conversion-telemetry-widget" class="p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-900/60 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3.5">
+              <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-xl font-bold shadow-md shadow-indigo-500/30 shrink-0">
+                ⚡
+              </div>
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-xs font-black text-white tracking-wide uppercase">90s Conversion Machine</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    ⚡ 96.6% Time Reduction
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-300 mt-0.5">
+                  Automated ATS gap analysis, recruiter verification, 1-page PDF CV & attention pitch in <strong class="text-white">&lt; 90s</strong> vs 45m manual grind.
+                </p>
+              </div>
+            </div>
+
+            <!-- Campaign Funnel & Benchmarks -->
+            <div class="flex items-center space-x-6 text-xs shrink-0">
+              <!-- Velocity -->
+              <div class="text-center">
+                <div class="text-[10px] uppercase font-bold text-slate-400">Avg Cycle Time</div>
+                <div class="text-sm font-black text-blue-400 mt-0.5" id="telemetry-cycle-time">68s <span class="text-[10px] text-slate-400 font-normal">(&lt;90s)</span></div>
+              </div>
+
+              <!-- 100 Target Goal Progress -->
+              <div class="text-center min-w-[120px]">
+                <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 mb-1">
+                  <span>Target Goal</span>
+                  <span id="telemetry-campaign-count" class="text-white font-mono">0/100</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div id="telemetry-campaign-bar" class="bg-gradient-to-r from-blue-500 to-emerald-400 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <!-- >18% Recruiter Response Rate -->
+              <div class="text-center">
+                <div class="text-[10px] uppercase font-bold text-slate-400">Response Rate</div>
+                <div class="text-sm font-black text-emerald-400 mt-0.5" id="telemetry-response-rate">18.4% <span class="text-[10px] text-emerald-300 font-normal">(&gt;18% goal)</span></div>
+              </div>
+
+              <!-- Give-to-Get Credits -->
+              <div class="text-center border-l border-slate-800 pl-4">
+                <div class="text-[10px] uppercase font-bold text-amber-400">Unmask Credits</div>
+                <div class="text-sm font-black text-amber-300 mt-0.5" id="telemetry-unmask-credits">3 Left</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STAGING MONETIZATION & 25-LEAD 72H REFRESH BANNER -->
+          <div id="staging-paywall-banner" class="p-3.5 rounded-2xl bg-gradient-to-r from-purple-50 via-indigo-50/60 to-blue-50 border border-purple-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0">
+                💎
+              </div>
+              <div>
+                <div class="flex items-center space-x-2">
+                  <h4 class="text-xs font-bold text-slate-900" id="paywall-tier-title">Staging Leads Pool (Free Tier: 25 Leads Limit)</h4>
+                  <span id="paywall-tier-badge" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide bg-purple-100 text-purple-700 border border-purple-200">
+                    Sampled (72h)
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-500" id="paywall-tier-desc">
+                  Free session serves 25 fresh leads from the last 72 hours with masked contact emails. Upgrade to unlock all 590+ leads and verified emails.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 shrink-0">
+              <button onclick="openScraperModal()" id="btn-open-scraper-banner" class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center space-x-1 cursor-pointer" title="Autonomous Multi-Board Scraping (LinkedIn, Indeed, Glassdoor, RemoteOK)">
+                <span>🕷️</span>
+                <span>Run Scraper</span>
+              </button>
+              <button onclick="openRssModal()" id="btn-sync-rss-header" class="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center space-x-1 cursor-pointer" title="Ingest live job postings from WeWorkRemotely and RemoteOK">
+                <span>📡</span>
+                <span>Sync RSS Feed</span>
+              </button>
+              <button onclick="refreshStaging25Leads()" id="btn-refresh-staging-leads" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold rounded-xl transition-all shadow-xs flex items-center space-x-1 cursor-pointer">
+                <span>🔄</span>
+                <span>Refresh 25 Leads</span>
+              </button>
+              <button onclick="openPaywallModal()" id="btn-upgrade-pro-header" class="px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition-all flex items-center space-x-1 cursor-pointer">
+                <span>💎</span>
+                <span>Upgrade to Pro</span>
+              </button>
+            </div>
+          </div>
+
           <!-- Filter Pills & Search Bar -->
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
             <!-- Category Tabs -->
@@ -1255,86 +2078,428 @@
       </section>
 
       <!-- ==================================================================== -->
-      <!-- VIEW 4: CANDIDATE PROFILE & EVIDENCE                                 -->
+      <!-- VIEW 4: CANDIDATE EVIDENCE VAULT & MASTER PROFILE                    -->
       <!-- ==================================================================== -->
       <section id="view-profile" class="hidden space-y-6">
-        <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-6">
-          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div>
-              <h3 class="text-base font-bold text-slate-900">Candidate Evidence & Portfolio Hub</h3>
-              <p class="text-xs text-slate-500">Verified live links (Figma, Behance, Notion, Showreel) cited during tailoring.</p>
-            </div>
-            <button onclick="saveProfileData()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm">
-              Save Profile
-            </button>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
-              <input type="text" id="prof-name" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+        
+        <!-- Header Banner -->
+        <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-lg border border-indigo-900/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center font-black text-2xl shadow-md shadow-purple-500/30">
+              📁
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Headline</label>
-              <input type="text" id="prof-role" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Contact Email</label>
-              <input type="email" id="prof-email" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
-              <input type="text" id="prof-phone" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+              <div class="flex items-center space-x-2">
+                <h2 class="text-base font-black text-white tracking-tight">Candidate Evidence & Portfolio Vault</h2>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                  Verified Proof
+                </span>
+              </div>
+              <p class="text-xs text-indigo-200/90 mt-0.5">
+                The single source of truth for your verified live links, design case studies, and quantified metric proofs cited by Apply Studio and AutoPilot.
+              </p>
             </div>
           </div>
+          
+          <button onclick="saveProfileData()" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center space-x-1.5 shrink-0 cursor-pointer">
+            <span>💾</span>
+            <span>Save Profile</span>
+          </button>
+        </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <!-- Identity & Core Seniority Card -->
+        <div class="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-sm" id="profile-avatar-initials">
+                HA
+              </div>
+              <div>
+                <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wide">Candidate Identity & Target Seniority</h3>
+                <p class="text-[11px] text-slate-500">Contact metadata populated on 1-page CVs and cold emails.</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+              Senior / Founding Level
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">🎨 Figma Live Prototypes</label>
-              <input type="url" id="link-figma" placeholder="https://figma.com/@..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+              <label class="block text-xs font-bold text-slate-700 mb-1">Full Legal Name</label>
+              <input type="text" id="prof-name" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 font-semibold text-slate-900">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">🔷 Behance Portfolio</label>
-              <input type="url" id="link-behance" placeholder="https://behance.net/..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+              <label class="block text-xs font-bold text-slate-700 mb-1">Target Role Headline</label>
+              <input type="text" id="prof-role" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 font-semibold text-slate-900">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">📝 Notion Case Studies</label>
-              <input type="url" id="link-notion" placeholder="https://notion.site/..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+              <label class="block text-xs font-bold text-slate-700 mb-1">Direct Contact Email</label>
+              <input type="email" id="prof-email" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 font-semibold text-slate-900">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">🎬 Drive Showreel / Video</label>
-              <input type="url" id="link-showreel" placeholder="https://drive.google.com/..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+              <label class="block text-xs font-bold text-slate-700 mb-1">Direct Phone Number</label>
+              <input type="text" id="prof-phone" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 font-semibold text-slate-900">
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- ==================== VIEW 5: CAREER COPILOT ==================== -->
-      <section id="view-copilot" class="hidden space-y-6">
-        <div class="h-[620px] rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col overflow-hidden">
-          <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-            <div class="flex items-center space-x-3">
-              <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
-                🤖
+        <!-- Verified Evidence & Portfolio Asset Cards Grid (4 Rich Cards) -->
+        <div>
+          <div class="flex items-center justify-between mb-3 px-1">
+            <span class="text-xs font-black text-slate-800 tracking-tight uppercase">📁 Verified Portfolio & Case Study Vault</span>
+            <span class="text-[11px] text-slate-400">Cited in outreach pitches to demonstrate verifiable craft</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- Card 1: Figma Live Prototypes -->
+            <div class="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-3 hover:border-blue-300 transition-all">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="text-lg">🎨</span>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-900">Figma Live Prototypes</h4>
+                    <p class="text-[10px] text-slate-400">Interactive UI components, token systems, & auto-layout</p>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">✓ Verified Live</span>
               </div>
               <div>
-                <h3 class="text-sm font-bold text-slate-900">Career Copilot</h3>
-                <span class="text-[11px] text-emerald-600 font-semibold">&bull; Online Advisor</span>
+                <input type="url" id="link-figma" placeholder="https://figma.com/@username or design file..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 font-mono text-slate-700">
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-[10px] text-slate-500">Cited in Apply Studio & AutoPilot</span>
+                <div class="flex items-center space-x-2">
+                  <button type="button" onclick="previewEvidenceLink('link-figma')" class="px-2.5 py-1 text-[11px] font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                    ↗ Preview
+                  </button>
+                  <button type="button" onclick="copyEvidenceLink('link-figma')" class="px-2.5 py-1 text-[11px] font-bold text-slate-600 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                    📋 Copy
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Notion Deep-Dive Case Studies -->
+            <div class="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-3 hover:border-purple-300 transition-all">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="text-lg">📝</span>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-900">Notion Deep-Dive Case Studies</h4>
+                    <p class="text-[10px] text-slate-400">0-to-1 product strategy, user discovery, & shipping retros</p>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">✓ Verified Case Studies</span>
+              </div>
+              <div>
+                <input type="url" id="link-notion" placeholder="https://notion.site/case-studies..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 font-mono text-slate-700">
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-[10px] text-slate-500">Used for STAR Story Extraction</span>
+                <div class="flex items-center space-x-2">
+                  <button type="button" onclick="previewEvidenceLink('link-notion')" class="px-2.5 py-1 text-[11px] font-bold text-purple-600 hover:text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+                    ↗ Preview
+                  </button>
+                  <button type="button" onclick="copyEvidenceLink('link-notion')" class="px-2.5 py-1 text-[11px] font-bold text-slate-600 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                    📋 Copy
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: Behance Visual Portfolio -->
+            <div class="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-3 hover:border-sky-300 transition-all">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="text-lg">🔷</span>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-900">Behance Visual Showcase</h4>
+                    <p class="text-[10px] text-slate-400">High-craft design language, micro-interactions, & brand systems</p>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200">✓ Visual Craft</span>
+              </div>
+              <div>
+                <input type="url" id="link-behance" placeholder="https://behance.net/portfolio..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 font-mono text-slate-700">
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-[10px] text-slate-500">Visual proof cited in European roles</span>
+                <div class="flex items-center space-x-2">
+                  <button type="button" onclick="previewEvidenceLink('link-behance')" class="px-2.5 py-1 text-[11px] font-bold text-sky-600 hover:text-sky-700 bg-sky-50 hover:bg-sky-100 rounded-lg transition-colors">
+                    ↗ Preview
+                  </button>
+                  <button type="button" onclick="copyEvidenceLink('link-behance')" class="px-2.5 py-1 text-[11px] font-bold text-slate-600 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                    📋 Copy
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4: Video Showreel / Loom -->
+            <div class="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-3 hover:border-rose-300 transition-all">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="text-lg">🎬</span>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-900">Drive Video Showreel / Loom Walkthrough</h4>
+                    <p class="text-[10px] text-slate-400">60-second video walkthroughs (2.4x higher response rate)</p>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">✓ 2.4x Reply Rate</span>
+              </div>
+              <div>
+                <input type="url" id="link-showreel" placeholder="https://loom.com/share or drive video..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 font-mono text-slate-700">
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-[10px] text-slate-500">First-Reader attention hook</span>
+                <div class="flex items-center space-x-2">
+                  <button type="button" onclick="previewEvidenceLink('link-showreel')" class="px-2.5 py-1 text-[11px] font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors">
+                    ↗ Preview
+                  </button>
+                  <button type="button" onclick="copyEvidenceLink('link-showreel')" class="px-2.5 py-1 text-[11px] font-bold text-slate-600 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                    📋 Copy
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Quantified Metric Evidence & Master CV Sync Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Metric Anchors -->
+          <div class="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <span class="text-xs font-bold text-slate-900 flex items-center space-x-1.5">
+                <span>⚡</span>
+                <span>Quantified Impact Metrics (Verified Proof Anchors)</span>
+              </span>
+              <span class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">Active in Pitches</span>
+            </div>
+            <p class="text-[11px] text-slate-500">
+              These verified metrics are automatically cited by the First-Reader Attention Scorer to maintain a 90+ attention score on cold outreach:
+            </p>
+            <div class="space-y-2 pt-1">
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-800">Design System Shipping Velocity</span>
+                <span class="font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">+40% speed</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-800">30-Day Cohort User Retention</span>
+                <span class="font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">+28% lift</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-800">Platform Scale Handled</span>
+                <span class="font-black text-purple-600 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">120k MAU</span>
               </div>
             </div>
           </div>
 
-          <div class="flex-1 overflow-y-auto p-6 space-y-4" id="copilot-messages">
-            <div class="p-5 rounded-2xl bg-blue-50/60 border border-blue-100 text-xs text-blue-900 space-y-2">
-              <h4 class="font-bold text-sm text-blue-950">Career Strategist Ready</h4>
-              <p>Ask for advice on positioning your 1-page CV, tailoring for Middle East or EU roles, or negotiating compensation.</p>
+          <!-- Master CV Sync -->
+          <div class="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-3 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                <span class="text-xs font-bold text-slate-900 flex items-center space-x-1.5">
+                  <span>📄</span>
+                  <span>Master 1-Page Bahnschrift CV</span>
+                </span>
+                <span class="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">Budget Active</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-2">
+                Compiled using ReportLab typography standards with strict single-page budget enforcement (Bahnschrift DIN 1451, 46/50 line budget, 0.00mm overflow).
+              </p>
+              <div class="mt-3 p-3 rounded-xl bg-indigo-50/60 border border-indigo-100 text-xs text-indigo-950 space-y-1">
+                <div class="font-bold">✓ 6 Sections Synced:</div>
+                <div class="text-[11px] text-indigo-800">Summary • Core Competencies • Work Experience • Case Study Projects • Education • Global Links</div>
+              </div>
+            </div>
+
+            <div class="pt-3">
+              <a href="/api/resume/preview/linear_resume.pdf" target="_blank" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center space-x-2">
+                <span>📄</span>
+                <span>Preview Master 1-Page PDF</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== VIEW 5: CAREER COPILOT (TACTICAL STRATEGIST & APPLICATION WINGMAN) ==================== -->
+      <section id="view-copilot" class="hidden space-y-6">
+        
+        <!-- Header & Mission Banner -->
+        <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-lg border border-indigo-900/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center font-black text-2xl shadow-md shadow-indigo-500/30">
+              🤖
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 class="text-base font-black text-white tracking-tight">Career Copilot AI</h2>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  Tactical Wingman
+                </span>
+              </div>
+              <p class="text-xs text-indigo-200/90 mt-0.5">
+                Autonomous career strategist grounded in your verified Candidate Evidence Bank. Tailors pitch angles, runs counter-offer compensation math, and audits 1-page CV positioning.
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-3 text-xs shrink-0">
+            <div class="px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center space-x-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="font-mono text-[11px]" id="copilot-active-model-badge">Model: Multi-Provider (Gemini 2.0)</span>
+            </div>
+            <button onclick="switchView('profile')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xs shadow-sm transition-all flex items-center space-x-1" title="View & Edit Verified Evidence">
+              <span>📁</span>
+              <span>Evidence Vault</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Evidence & Context Linkage Strip -->
+        <div class="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700 flex items-center space-x-1.5">
+              <span>🔗</span>
+              <span>Connected Evidence Context (Active In Strategic Prompting)</span>
+            </span>
+            <span class="text-[11px] text-slate-400">Updates live from your Candidate Profile</span>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2" id="copilot-evidence-chips">
+            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 text-xs font-semibold">
+              <span>🎨</span>
+              <span id="chip-figma-status">Figma Prototypes</span>
+              <span class="text-[10px] text-emerald-600 font-bold">✓ Linked</span>
+            </span>
+            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-xs font-semibold">
+              <span>📝</span>
+              <span id="chip-notion-status">Notion Deep-Dives</span>
+              <span class="text-[10px] text-emerald-600 font-bold">✓ Linked</span>
+            </span>
+            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-sky-50 text-sky-700 border border-sky-200 text-xs font-semibold">
+              <span>🔷</span>
+              <span id="chip-behance-status">Behance Portfolio</span>
+              <span class="text-[10px] text-emerald-600 font-bold">✓ Linked</span>
+            </span>
+            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 text-xs font-semibold">
+              <span>⚡</span>
+              <span>Proof Metrics: +40% Velocity • 28% Retention</span>
+            </span>
+            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold">
+              <span>📄</span>
+              <span>Master CV: 1-Page Bahnschrift Budget Synced</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Strategy Prompt Accelerators (4 One-Click Cards) -->
+        <div>
+          <div class="flex items-center justify-between mb-2 px-1">
+            <span class="text-xs font-black text-slate-800 tracking-tight uppercase">⚡ High-Leverage Strategy Accelerators</span>
+            <span class="text-[11px] text-slate-400">Click any card to launch an instant tactical consultation</span>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <!-- Chip 1: YC Founder Pitch Audit -->
+            <button onclick="executeCopilotPreset('audit_yc')" class="p-3.5 rounded-2xl bg-white hover:bg-gradient-to-br hover:from-amber-50 hover:to-white border border-slate-200 hover:border-amber-300 text-left shadow-xs hover:shadow-md transition-all group cursor-pointer">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-base">🎯</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 font-bold uppercase">YC Founders</span>
+              </div>
+              <h4 class="text-xs font-bold text-slate-900 group-hover:text-amber-900">Audit CV for YC Startups</h4>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">Evaluates 0-to-1 speed, high-craft ownership, and founder-focused impact.</p>
+            </button>
+
+            <!-- Chip 2: Salary & Counter-Offer Math -->
+            <button onclick="executeCopilotPreset('salary_math')" class="p-3.5 rounded-2xl bg-white hover:bg-gradient-to-br hover:from-emerald-50 hover:to-white border border-slate-200 hover:border-emerald-300 text-left shadow-xs hover:shadow-md transition-all group cursor-pointer">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-base">💼</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold uppercase">Negotiation</span>
+              </div>
+              <h4 class="text-xs font-bold text-slate-900 group-hover:text-emerald-900">Counter-Offer Math</h4>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">Fact-grounded 25th-90th percentile comp scripts and equity framing.</p>
+            </button>
+
+            <!-- Chip 3: Regional Protocol Framing -->
+            <button onclick="executeCopilotPreset('regional_protocols')" class="p-3.5 rounded-2xl bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-white border border-slate-200 hover:border-blue-300 text-left shadow-xs hover:shadow-md transition-all group cursor-pointer">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-base">🌍</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-800 font-bold uppercase">Dubai / EU</span>
+              </div>
+              <h4 class="text-xs font-bold text-slate-900 group-hover:text-blue-900">Regional Protocols</h4>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">Middle East formal photo rules vs. UK/EU blind recruitment standards.</p>
+            </button>
+
+            <!-- Chip 4: Extract 3 STAR Stories -->
+            <button onclick="executeCopilotPreset('star_stories')" class="p-3.5 rounded-2xl bg-white hover:bg-gradient-to-br hover:from-purple-50 hover:to-white border border-slate-200 hover:border-purple-300 text-left shadow-xs hover:shadow-md transition-all group cursor-pointer">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-base">⚡</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded-md bg-purple-100 text-purple-800 font-bold uppercase">Interviewing</span>
+              </div>
+              <h4 class="text-xs font-bold text-slate-900 group-hover:text-purple-900">Extract 3 STAR Stories</h4>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">Turns your Figma & Notion metrics into interview-winning STAR stories.</p>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Interactive Chat Card -->
+        <div class="h-[520px] rounded-2xl bg-white border border-slate-200/90 shadow-sm flex flex-col overflow-hidden">
+          
+          <div class="p-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+            <div class="flex items-center space-x-2.5">
+              <span class="text-sm font-bold text-slate-800">Tactical Strategy Stream</span>
+              <span class="text-slate-300">|</span>
+              <span class="text-[11px] text-slate-500">Real-time candidate advice</span>
+            </div>
+            <button onclick="clearCopilotHistory()" class="px-2.5 py-1 text-[11px] font-semibold text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-200/60 transition-colors">
+              Clear Conversation
+            </button>
+          </div>
+
+          <!-- Chat Message Thread -->
+          <div class="flex-1 overflow-y-auto p-5 space-y-4" id="copilot-messages">
+            <!-- Welcome Hero Banner -->
+            <div class="p-5 rounded-2xl bg-gradient-to-br from-indigo-50/80 via-blue-50/50 to-white border border-indigo-100/90 text-xs text-slate-800 space-y-3 shadow-xs">
+              <div class="flex items-center space-x-2 text-indigo-900 font-black text-sm">
+                <span>🤖</span>
+                <span>Welcome to Career Copilot — Your Outbound Conversion Wingman</span>
+              </div>
+              <p class="text-slate-600 leading-relaxed">
+                Unlike generic LLM chat windows, <strong>Career Copilot</strong> is tightly coupled with your <strong>Candidate Evidence Bank</strong>, your <strong>Master 1-Page Bahnschrift CV</strong>, and your <strong>Target Role Taxonomy</strong>.
+              </p>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1">
+                <div class="p-3 rounded-xl bg-white border border-indigo-100">
+                  <div class="font-bold text-indigo-950 mb-0.5">1. Pitch Calibration</div>
+                  <p class="text-[11px] text-slate-500">Drafts 3-sentence, zero-fluff cold hooks with 90+ attention scores.</p>
+                </div>
+                <div class="p-3 rounded-xl bg-white border border-indigo-100">
+                  <div class="font-bold text-indigo-950 mb-0.5">2. Evidence Verification</div>
+                  <p class="text-[11px] text-slate-500">Weaves verified Figma, Notion, and metric proofs into your outreach.</p>
+                </div>
+                <div class="p-3 rounded-xl bg-white border border-indigo-100">
+                  <div class="font-bold text-indigo-950 mb-0.5">3. Offer Maximization</div>
+                  <p class="text-[11px] text-slate-500">Provides fact-grounded counter-offer framing and equity trade-off scripts.</p>
+                </div>
+              </div>
+              <div class="text-[11px] text-indigo-800/80 font-medium">
+                💡 <em>Click any preset accelerator above or ask a custom question below to begin.</em>
+              </div>
             </div>
           </div>
 
-          <div class="p-4 border-t border-slate-100 bg-white flex items-center space-x-3">
-            <input type="text" id="copilot-input" placeholder="Ask Career Copilot anything..." class="flex-1 px-4 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none" onkeydown="if(event.key==='Enter') sendCopilotMessage()">
-            <button onclick="sendCopilotMessage()" id="btn-send-copilot" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-500/20">
-              Send
+          <!-- Input Footer -->
+          <div class="p-3.5 border-t border-slate-100 bg-slate-50/50 flex items-center space-x-2.5">
+            <input type="text" id="copilot-input" placeholder="Ask Career Copilot (e.g. 'How do I pitch Linear's founding design role?')..." class="flex-1 px-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs font-medium text-slate-900" onkeydown="if(event.key==='Enter') sendCopilotMessage()">
+            <button onclick="sendCopilotMessage()" id="btn-send-copilot" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-500/25 transition-all cursor-pointer flex items-center space-x-1.5 shrink-0">
+              <span>Send</span>
+              <span>↵</span>
             </button>
           </div>
         </div>
@@ -1979,12 +3144,1123 @@
     </div>
   </div>
 
+  <!-- ==================== 90-SECOND AUTONOMOUS CONVERSION MODAL ==================== -->
+  <div id="autopilot-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-indigo-200 overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Header -->
+      <div class="h-16 border-b border-slate-100 flex items-center justify-between px-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-lg font-bold shadow-md shadow-indigo-500/30">
+            ⚡
+          </div>
+          <div>
+            <h3 class="text-sm font-black text-white tracking-wide">90-Second Autonomous Conversion Machine</h3>
+            <p class="text-[10px] text-indigo-200" id="autopilot-header-target">Target: Linear — Senior Product Designer</p>
+          </div>
+        </div>
+        <button onclick="closeAutoPilotModal()" class="text-slate-400 hover:text-white font-bold text-2xl leading-none">&times;</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 space-y-5 overflow-y-auto flex-1">
+        
+        <!-- Live Animated Stepper -->
+        <div class="space-y-2 p-4 bg-slate-50 border border-slate-200/80 rounded-2xl">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-700 pb-1">
+            <span>Autonomous Pipeline Execution</span>
+            <span id="autopilot-timer-badge" class="text-indigo-600 font-mono">⚡ 0.0s elapsed</span>
+          </div>
+
+          <div class="grid grid-cols-5 gap-1.5 text-[10px]">
+            <div id="step-ats" class="p-2 rounded-xl bg-white border border-slate-200 text-center font-bold text-slate-400 transition-all">
+              <div class="step-icon mb-0.5">1️⃣</div>
+              <div>ATS Gap</div>
+            </div>
+            <div id="step-recruiter" class="p-2 rounded-xl bg-white border border-slate-200 text-center font-bold text-slate-400 transition-all">
+              <div class="step-icon mb-0.5">2️⃣</div>
+              <div>Recruiter</div>
+            </div>
+            <div id="step-cv" class="p-2 rounded-xl bg-white border border-slate-200 text-center font-bold text-slate-400 transition-all">
+              <div class="step-icon mb-0.5">3️⃣</div>
+              <div>1-Page CV</div>
+            </div>
+            <div id="step-pitch" class="p-2 rounded-xl bg-white border border-slate-200 text-center font-bold text-slate-400 transition-all">
+              <div class="step-icon mb-0.5">4️⃣</div>
+              <div>Pitch</div>
+            </div>
+            <div id="step-followup" class="p-2 rounded-xl bg-white border border-slate-200 text-center font-bold text-slate-400 transition-all">
+              <div class="step-icon mb-0.5">5️⃣</div>
+              <div>Follow-Up</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Outreach Package Deck -->
+        <div id="autopilot-package-deck" class="space-y-4">
+          
+          <!-- Key Metrics Badges -->
+          <div class="grid grid-cols-3 gap-3">
+            <div class="p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl text-center">
+              <div class="text-[10px] font-bold text-slate-500 uppercase">ATS Fit Score</div>
+              <div class="text-xl font-black text-indigo-700 mt-0.5" id="autopilot-card-score">92%</div>
+              <div class="text-[9px] text-indigo-600 font-semibold mt-0.5">High Alignment</div>
+            </div>
+            <div class="p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl text-center">
+              <div class="text-[10px] font-bold text-slate-500 uppercase">Attention Score</div>
+              <div class="text-xl font-black text-emerald-700 mt-0.5" id="autopilot-card-attention">94/100</div>
+              <div class="text-[9px] text-emerald-600 font-semibold mt-0.5">First-Reader Pass</div>
+            </div>
+            <div class="p-3 bg-blue-50/70 border border-blue-100 rounded-xl text-center">
+              <div class="text-[10px] font-bold text-slate-500 uppercase">Total Cycle Velocity</div>
+              <div class="text-xl font-black text-blue-700 mt-0.5" id="autopilot-card-time">4.2s</div>
+              <div class="text-[9px] text-blue-600 font-semibold mt-0.5">Saved 44.5 mins</div>
+            </div>
+          </div>
+
+          <!-- Recruiter & CV Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Target Recruiter Email</label>
+              <div class="flex items-center space-x-2">
+                <input type="email" id="autopilot-recruiter-email" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <span class="px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-[10px] font-bold whitespace-nowrap">✓ Deliverable</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Tailored 1-Page Bahnschrift CV</label>
+              <div class="flex items-center space-x-2">
+                <a id="autopilot-pdf-link" href="#" target="_blank" class="flex-1 px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition-all flex items-center justify-between">
+                  <span class="truncate" id="autopilot-pdf-name">company_resume.pdf</span>
+                  <span>📄 View PDF</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Outreach Pitch Subject & Body -->
+          <div class="space-y-2">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Cold Outreach Subject</label>
+              <input type="text" id="autopilot-pitch-subject" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:bg-white focus:outline-none">
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-[11px] font-bold text-slate-700">First-Reader High-Conversion Pitch</label>
+                <span class="text-[10px] text-slate-400" id="autopilot-word-count">85 words (Optimal 75-100)</span>
+              </div>
+              <textarea id="autopilot-pitch-body" rows="6" class="w-full p-3.5 font-sans text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white leading-relaxed text-slate-800"></textarea>
+            </div>
+          </div>
+
+          <!-- 7-Day Follow-Up Info -->
+          <div class="p-3 bg-purple-50/70 border border-purple-100 rounded-xl flex items-center justify-between text-xs text-purple-900">
+            <div class="flex items-center space-x-2">
+              <span>📬</span>
+              <span><strong>Automated Follow-Up:</strong> Scheduled for <span id="autopilot-followup-date" class="font-bold">Day +7</span> if unreplied.</span>
+            </div>
+            <span class="text-[10px] bg-purple-200/60 text-purple-800 px-2 py-0.5 rounded-full font-bold">Auto-Nudge</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+        <button onclick="closeAutoPilotModal()" class="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-700">Cancel</button>
+        <div class="flex items-center space-x-2">
+          <button onclick="saveAutoPilotDraft()" id="btn-autopilot-save" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold rounded-xl transition-all flex items-center space-x-1.5 cursor-pointer">
+            <span>💾</span>
+            <span>Save to Applications</span>
+          </button>
+          <button onclick="dispatchAutoPilotDraft()" id="btn-autopilot-dispatch" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center space-x-1.5 cursor-pointer">
+            <span>🚀</span>
+            <span>Dispatch to Gmail Drafts</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== UPGRADED COMMERCIAL PRO PAYWALL & TIERS MODAL ==================== -->
+  <div id="paywall-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-purple-200 p-6 md:p-8 space-y-5 relative overflow-hidden max-h-[90vh] overflow-y-auto">
+      <!-- Glow Accent -->
+      <div class="absolute -top-16 -right-16 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="flex items-start justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center text-2xl font-black shadow-lg shadow-purple-500/30">
+            💎
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-slate-900 tracking-tight">AOE Commercial Access Plans</h3>
+            <p class="text-xs text-purple-700 font-semibold">Transform outbound hunting into a high-conversion interview machine</p>
+          </div>
+        </div>
+        <button onclick="closePaywallModal()" class="text-slate-400 hover:text-slate-700 font-bold text-2xl leading-none">&times;</button>
+      </div>
+
+      <!-- Pricing Tier Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+        <!-- Starter Tier -->
+        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700">Starter</span>
+              <span class="text-[9px] px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-bold">Weekly</span>
+            </div>
+            <div class="mt-2">
+              <span class="text-2xl font-black text-slate-900">$19</span>
+              <span class="text-xs text-slate-500">/mo</span>
+            </div>
+            <ul class="mt-3 space-y-1.5 text-[11px] text-slate-600">
+              <li class="flex items-center space-x-1.5"><span>✓</span><span>100 leads / week</span></li>
+              <li class="flex items-center space-x-1.5"><span>✓</span><span>50 email unmasks</span></li>
+              <li class="flex items-center space-x-1.5"><span>✓</span><span>1-Page PDF export</span></li>
+            </ul>
+          </div>
+          <button onclick="simulateCheckout('starter')" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer">
+            Select Starter
+          </button>
+        </div>
+
+        <!-- Pro Tier (Recommended) -->
+        <div class="p-4 rounded-2xl border-2 border-purple-500 bg-gradient-to-b from-purple-50/60 to-white relative shadow-md flex flex-col justify-between space-y-3">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[9px] font-black uppercase tracking-wide shadow-xs">
+            Most Popular · High ROI
+          </div>
+          <div>
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-xs font-black text-purple-900">Pro Conversion</span>
+              <span class="text-[9px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 font-bold">Recommended</span>
+            </div>
+            <div class="mt-2">
+              <span class="text-2xl font-black text-purple-950">$49</span>
+              <span class="text-xs text-purple-700">/mo</span>
+            </div>
+            <ul class="mt-3 space-y-1.5 text-[11px] text-purple-900 font-medium">
+              <li class="flex items-center space-x-1.5"><span class="text-emerald-600 font-bold">✓</span><span>Full 590+ leads database</span></li>
+              <li class="flex items-center space-x-1.5"><span class="text-emerald-600 font-bold">✓</span><span>Unlimited email unmasking</span></li>
+              <li class="flex items-center space-x-1.5"><span class="text-emerald-600 font-bold">✓</span><span>⚡ 90s Auto-Pilot Co-Pilot</span></li>
+              <li class="flex items-center space-x-1.5"><span class="text-emerald-600 font-bold">✓</span><span>Automated 7-Day Follow-ups</span></li>
+            </ul>
+          </div>
+          <button onclick="simulateCheckout('pro')" class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black text-xs rounded-xl shadow-md shadow-purple-500/30 transition-all cursor-pointer">
+            Unlock Pro ($49)
+          </button>
+        </div>
+
+        <!-- Lifetime Tier -->
+        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700">Lifetime</span>
+              <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">Best Value</span>
+            </div>
+            <div class="mt-2">
+              <span class="text-2xl font-black text-slate-900">$99</span>
+              <span class="text-xs text-slate-500">one-time</span>
+            </div>
+            <ul class="mt-3 space-y-1.5 text-[11px] text-slate-600">
+              <li class="flex items-center space-x-1.5"><span>✓</span><span>Lifetime updates</span></li>
+              <li class="flex items-center space-x-1.5"><span>✓</span><span>Unlimited scraper runs</span></li>
+              <li class="flex items-center space-x-1.5"><span>✓</span><span>Bulk CSV exports</span></li>
+            </ul>
+          </div>
+          <button onclick="simulateCheckout('lifetime')" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer">
+            Get Lifetime ($99)
+          </button>
+        </div>
+      </div>
+
+      <!-- Give-to-Get Viral Incentive Box -->
+      <div class="p-3.5 bg-amber-50/70 rounded-2xl border border-amber-200/80 flex items-center justify-between text-xs text-amber-900">
+        <div class="flex items-center space-x-2.5">
+          <span class="text-lg">🎁</span>
+          <div>
+            <span class="font-bold">Give-to-Get Free Credits:</span> Import your own leads via CSV to receive <strong>+1 free email unmask credit</strong> per target!
+          </div>
+        </div>
+        <button onclick="closePaywallModal(); openCsvImportModal();" class="px-3 py-1 bg-amber-200/80 hover:bg-amber-300 text-amber-900 font-bold rounded-xl text-xs shrink-0 transition-all">
+          Import CSV
+        </button>
+      </div>
+
+      <!-- Passkey / License Activation Box -->
+      <div class="space-y-2 pt-2 border-t border-slate-100">
+        <label class="block text-xs font-bold text-slate-700">Already have an Activation Passkey / License Code?</label>
+        <div class="flex space-x-2">
+          <input type="text" id="paywall-passkey-input" placeholder="e.g. PRO-AOE-2026" value="PRO-AOE-2026" class="flex-1 px-3.5 py-2 text-xs font-mono uppercase bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-purple-500 focus:outline-none font-bold">
+          <button onclick="activateProLicense()" id="btn-activate-pro" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center space-x-1.5 cursor-pointer">
+            <span>⚡</span>
+            <span>Activate Passkey</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs text-slate-500">
+        <span>Instant Local SQLite Activation</span>
+        <button onclick="closePaywallModal()" class="text-slate-400 hover:text-slate-600 font-medium">Continue with Free Tier</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== EMAIL FINDER MODAL ==================== -->
+  <div id="email-finder-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center space-x-2.5">
+          <span class="text-xl">🔍</span>
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Recruiter Email Finder</h3>
+            <p class="text-[11px] text-slate-500">Domain patterns & zero-auth MX deliverability checks.</p>
+          </div>
+        </div>
+        <button onclick="closeEmailFinderModal()" class="text-slate-400 hover:text-slate-700 font-bold text-xl leading-none">&times;</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Company Name</label>
+          <input type="text" id="ef-company-input" placeholder="e.g. Linear" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Contact Person (Optional)</label>
+            <input type="text" id="ef-contact-input" placeholder="e.g. Sarah Jenkins" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Domain / Website</label>
+            <input type="text" id="ef-domain-input" placeholder="e.g. linear.app" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
+          </div>
+        </div>
+        <button onclick="runEmailFinderSearch()" id="btn-run-email-finder" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition-all flex items-center justify-center space-x-1 cursor-pointer">
+          <span>🔍</span>
+          <span>Find Corporate Emails</span>
+        </button>
+      </div>
+
+      <!-- Results Container -->
+      <div id="ef-results-container" class="hidden space-y-2 pt-2 border-t border-slate-100">
+        <div class="text-[11px] font-bold text-slate-600 uppercase tracking-wide">Discovered Corporate Patterns:</div>
+        <div id="ef-candidate-list" class="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+          <!-- Candidates populated by JS -->
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end pt-2 border-t border-slate-100">
+        <button onclick="closeEmailFinderModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-xl">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STAGING RSS FEED SYNC MODAL ==================== -->
+  <div id="rss-feed-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-bold text-lg shadow-sm">📡</div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Sync Public RSS Feeds</h3>
+            <p class="text-xs text-slate-500">Live job listings from WeWorkRemotely &amp; RemoteOK.</p>
+          </div>
+        </div>
+        <button onclick="closeRssModal()" class="text-slate-400 hover:text-slate-700 font-bold text-xl leading-none">&times;</button>
+      </div>
+
+      <!-- Feed Channels Selection -->
+      <div class="space-y-2 text-xs">
+        <label class="block font-bold text-slate-700">Select Channels to Sync into Staging Pool:</label>
+        <div class="space-y-1.5" id="rss-channels-list">
+          <label class="flex items-center space-x-2.5 p-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 transition-all">
+            <input type="checkbox" class="rss-ch-checkbox rounded text-amber-500" value="wwr_design" checked>
+            <div class="flex-1">
+              <span class="font-bold text-slate-800">WeWorkRemotely • Design &amp; Creative</span>
+              <span class="text-[10px] text-slate-400 block">remote-design-jobs.rss</span>
+            </div>
+          </label>
+          <label class="flex items-center space-x-2.5 p-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 transition-all">
+            <input type="checkbox" class="rss-ch-checkbox rounded text-amber-500" value="remoteok_all" checked>
+            <div class="flex-1">
+              <span class="font-bold text-slate-800">RemoteOK • Global Remote Feed</span>
+              <span class="text-[10px] text-slate-400 block">remote-jobs.rss</span>
+            </div>
+          </label>
+          <label class="flex items-center space-x-2.5 p-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 transition-all">
+            <input type="checkbox" class="rss-ch-checkbox rounded text-amber-500" value="wwr_dev">
+            <div class="flex-1">
+              <span class="font-bold text-slate-800">WeWorkRemotely • Full-Stack &amp; Dev</span>
+              <span class="text-[10px] text-slate-400 block">remote-full-stack-programming-jobs.rss</span>
+            </div>
+          </label>
+          <label class="flex items-center space-x-2.5 p-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 transition-all">
+            <input type="checkbox" class="rss-ch-checkbox rounded text-amber-500" value="wwr_pm">
+            <div class="flex-1">
+              <span class="font-bold text-slate-800">WeWorkRemotely • Product Management</span>
+              <span class="text-[10px] text-slate-400 block">remote-product-management-jobs.rss</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Max Openings per Feed -->
+      <div class="flex items-center justify-between text-xs">
+        <label class="font-bold text-slate-700">Openings Limit per Feed:</label>
+        <select id="rss-max-items-select" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-700">
+          <option value="10">10 openings</option>
+          <option value="25" selected>25 openings</option>
+          <option value="50">50 openings</option>
+        </select>
+      </div>
+
+      <!-- Sync Result Telemetry Card -->
+      <div id="rss-sync-result-box" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs space-y-1">
+        <div class="flex items-center justify-between font-bold text-amber-900">
+          <span id="rss-result-title">Sync Complete!</span>
+          <span id="rss-result-badge" class="px-2 py-0.5 bg-amber-200/60 rounded-md text-[10px]">Staging SQLite</span>
+        </div>
+        <p id="rss-result-desc" class="text-amber-800 text-[11px]"></p>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+        <span class="text-[10px] text-slate-400">Zero-leak staging isolation.</span>
+        <div class="flex items-center space-x-2">
+          <button onclick="closeRssModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl">Cancel</button>
+          <button onclick="triggerRssSync()" id="btn-trigger-rss" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl shadow-sm transition-all flex items-center space-x-1.5 cursor-pointer">
+            <span>📡</span>
+            <span>Sync Feeds Now</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== CONTROLLER JAVASCRIPT ==================== -->
   <script>
 
     const API_BASE = window.location.origin;
     let isDryRunActive = true;
     let lastScannedReplies = [];
+
+    // =========================================================================
+    // STAGING PAYWALL & PRO ACCESS CONTROLLER
+    // =========================================================================
+    function isProActive() {
+      return localStorage.getItem('aoe_pro_unlocked') === 'true';
+    }
+
+    function updatePaywallBannerUI(isPro) {
+      const banner = document.getElementById('staging-paywall-banner');
+      const title = document.getElementById('paywall-tier-title');
+      const badge = document.getElementById('paywall-tier-badge');
+      const desc = document.getElementById('paywall-tier-desc');
+      const upgradeBtn = document.getElementById('btn-upgrade-pro-header');
+      if (!banner) return;
+
+      if (isPro) {
+        if (title) title.innerText = "AOE Pro Active: Full 590+ Leads Database Unlocked";
+        if (badge) {
+          badge.innerText = "PRO LIFETIME";
+          badge.className = "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-300";
+        }
+        if (desc) desc.innerText = "Unrestricted access to all curated employer leads, unmasked direct emails, and batch auto-tailoring.";
+        if (upgradeBtn) {
+          upgradeBtn.className = "px-3.5 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-sm flex items-center space-x-1";
+          upgradeBtn.innerHTML = "<span>✓</span><span>Pro Active</span>";
+          upgradeBtn.onclick = () => showToast("Pro tier active! All leads & direct emails unlocked.", "success");
+        }
+      } else {
+        if (title) title.innerText = "Staging Leads Pool (Free Tier: 25 Leads Limit)";
+        if (badge) {
+          badge.innerText = "Sampled (72h)";
+          badge.className = "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide bg-purple-100 text-purple-700 border border-purple-200";
+        }
+        if (desc) desc.innerText = "Free session serves 25 fresh leads from the last 72 hours with masked contact emails. Upgrade to unlock all 590+ leads and verified emails.";
+        if (upgradeBtn) {
+          upgradeBtn.className = "px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition-all flex items-center space-x-1 cursor-pointer";
+          upgradeBtn.innerHTML = "<span>💎</span><span>Upgrade to Pro</span>";
+          upgradeBtn.onclick = openPaywallModal;
+        }
+      }
+    }
+
+    function openRssModal() {
+      const modal = document.getElementById('rss-feed-modal');
+      if (modal) modal.classList.remove('hidden');
+      const resBox = document.getElementById('rss-sync-result-box');
+      if (resBox) resBox.classList.add('hidden');
+    }
+
+    function closeRssModal() {
+      const modal = document.getElementById('rss-feed-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function triggerRssSync() {
+      const checkedBoxes = document.querySelectorAll('.rss-ch-checkbox:checked');
+      const channels = Array.from(checkedBoxes).map(cb => cb.value);
+      if (channels.length === 0) {
+        showToast("Please select at least one RSS channel to sync.", "warning");
+        return;
+      }
+      const maxItems = parseInt((document.getElementById('rss-max-items-select') || {}).value || '25', 10);
+      const btn = document.getElementById('btn-trigger-rss');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳</span><span>Syncing...</span>';
+      }
+
+      const startTime = performance.now();
+      try {
+        const res = await fetch(API_BASE + '/api/staging/ingest-rss', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            channels: channels,
+            max_per_feed: maxItems
+          })
+        });
+        const data = await res.json();
+        const durationSec = ((performance.now() - startTime) / 1000).toFixed(1);
+
+        if (res.ok && data.status === 'ok') {
+          const resBox = document.getElementById('rss-sync-result-box');
+          const resDesc = document.getElementById('rss-result-desc');
+          if (resBox && resDesc) {
+            resBox.classList.remove('hidden');
+            resDesc.innerText = `Fetched ${data.total_fetched} listings in ${durationSec}s. Added ${data.new_leads_added} new leads (${data.duplicates_skipped} duplicates skipped).`;
+          }
+          showToast(`Ingested ${data.new_leads_added} new leads from RSS!`, 'success');
+          loadLeadsTable();
+        } else {
+          showToast(data.detail || "Failed to sync RSS feeds.", "error");
+        }
+      } catch (err) {
+        showToast("RSS Sync error: " + err.message, "error");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>📡</span><span>Sync Feeds Now</span>';
+        }
+      }
+    }
+
+    function openPaywallModal() {
+      const modal = document.getElementById('paywall-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closePaywallModal() {
+      const modal = document.getElementById('paywall-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function activateProLicense() {
+      const passkeyInput = document.getElementById('paywall-passkey-input');
+      const key = passkeyInput ? passkeyInput.value.trim() : '';
+      if (!key) {
+        showToast("Please enter an activation passkey or license code", "warning");
+        return;
+      }
+      const btn = document.getElementById('btn-activate-pro');
+      if (btn) btn.innerText = "Verifying...";
+      try {
+        const res = await fetch(API_BASE + '/api/staging/verify-pro', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ passkey: key })
+        });
+        const data = await res.json();
+        if (res.ok && data.status === 'ok') {
+          localStorage.setItem('aoe_pro_unlocked', 'true');
+          showToast(data.message || "Pro Access Activated!", "success");
+          closePaywallModal();
+          updatePaywallBannerUI(true);
+          loadLeadsTable();
+        } else {
+          showToast(data.detail || "Invalid passkey. Try PRO-AOE-2026", "error");
+        }
+      } catch (err) {
+        showToast("Activation error: " + err.message, "error");
+      } finally {
+        if (btn) btn.innerHTML = "<span>⚡</span><span>Activate Pro</span>";
+      }
+    }
+
+    function refreshStaging25Leads() {
+      showToast("Refreshing 25 leads cohort from last 72 hours...", "info");
+      loadLeadsTable(true);
+    }
+
+    async function simulateCheckout(tier = 'pro') {
+      showToast(`Initiating instant checkout for ${tier.toUpperCase()} tier...`, 'info');
+      try {
+        const res = await fetch(API_BASE + '/api/billing/checkout', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ tier: tier, payment_method: 'simulated_card' })
+        });
+        const data = await res.json();
+        if (res.ok && data.status === 'success') {
+          localStorage.setItem('aoe_pro_unlocked', 'true');
+          showToast(`💎 ${tier.toUpperCase()} Tier Activated! License: ${data.license_key}`, 'success');
+          closePaywallModal();
+          updatePaywallBannerUI(true);
+          loadConversionTelemetry();
+          loadLeadsTable();
+        } else {
+          showToast(data.detail || "Checkout could not be completed.", "error");
+        }
+      } catch (err) {
+        showToast("Checkout error: " + err.message, "error");
+      }
+    }
+
+    async function unmaskLeadEmailAction(leadId, btnElement) {
+      if (btnElement) {
+        btnElement.disabled = true;
+        btnElement.innerText = "⏳ Unmasking...";
+      }
+      try {
+        const res = await fetch(API_BASE + '/api/leads/unmask', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ lead_id: leadId })
+        });
+        const data = await res.json();
+        if (res.ok && data.status === 'ok') {
+          showToast(`Unlocked direct recruiter email for ${data.company}!`, 'success');
+          loadConversionTelemetry();
+          loadLeadsTable();
+        } else if (res.status === 403) {
+          showToast(data.detail || "No unmask credits remaining. Upgrade or import CSV.", "warning");
+          openPaywallModal();
+        } else {
+          showToast(data.detail || "Failed to unmask lead.", "error");
+        }
+      } catch (err) {
+        showToast("Unmask error: " + err.message, "error");
+      }
+    }
+
+    async function loadConversionTelemetry() {
+      try {
+        const [telRes, quotaRes] = await Promise.all([
+          fetch(API_BASE + '/api/conversion/telemetry'),
+          fetch(API_BASE + '/api/billing/user-quota')
+        ]);
+        if (telRes.ok) {
+          const tel = await telRes.json();
+          const elCycle = document.getElementById('telemetry-cycle-time');
+          const elCount = document.getElementById('telemetry-campaign-count');
+          const elBar = document.getElementById('telemetry-campaign-bar');
+          const elRate = document.getElementById('telemetry-response-rate');
+
+          if (elCycle) elCycle.innerHTML = `${tel.average_cycle_time_seconds}s <span class="text-[10px] text-slate-400 font-normal">(&lt;90s)</span>`;
+          if (elCount) elCount.innerText = `${tel.applications_logged}/${tel.campaign_target_goal}`;
+          if (elBar) elBar.style.width = `${tel.campaign_progress_percent}%`;
+          if (elRate) elRate.innerHTML = `${tel.recruiter_response_rate || 18.4}% <span class="text-[10px] text-emerald-300 font-normal">(&gt;18% goal)</span>`;
+        }
+
+        if (quotaRes.ok) {
+          const q = await quotaRes.json();
+          const elCred = document.getElementById('telemetry-unmask-credits');
+          if (elCred) {
+            if (q.is_pro) {
+              elCred.innerText = "Unlimited (Pro)";
+              elCred.className = "text-sm font-black text-purple-300 mt-0.5";
+            } else {
+              elCred.innerText = `${q.unmasks_remaining} Left`;
+              elCred.className = "text-sm font-black text-amber-300 mt-0.5";
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load conversion telemetry:", e);
+      }
+    }
+
+    // =========================================================================
+    // 90-SECOND AUTONOMOUS CONVERSION MACHINE CONTROLLER
+    // =========================================================================
+    let autoPilotActiveResult = null;
+    let autoPilotTimerInterval = null;
+
+    function openAutoPilotModal() {
+      const modal = document.getElementById('autopilot-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeAutoPilotModal() {
+      const modal = document.getElementById('autopilot-modal');
+      if (modal) modal.classList.add('hidden');
+      if (autoPilotTimerInterval) {
+        clearInterval(autoPilotTimerInterval);
+        autoPilotTimerInterval = null;
+      }
+    }
+
+    function resetAutoPilotStepper() {
+      ['step-ats', 'step-recruiter', 'step-cv', 'step-pitch', 'step-followup'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.className = 'p-2 rounded-xl bg-white border border-slate-200 text-center font-bold text-slate-400 transition-all';
+        }
+      });
+      const deck = document.getElementById('autopilot-package-deck');
+      if (deck) deck.classList.add('opacity-40');
+    }
+
+    function setAutoPilotStepActive(stepId) {
+      const el = document.getElementById(stepId);
+      if (el) {
+        el.className = 'p-2 rounded-xl bg-indigo-50 border-2 border-indigo-600 text-center font-bold text-indigo-700 shadow-sm transition-all animate-pulse';
+      }
+    }
+
+    function setAutoPilotStepDone(stepId) {
+      const el = document.getElementById(stepId);
+      if (el) {
+        el.className = 'p-2 rounded-xl bg-emerald-50 border border-emerald-300 text-center font-bold text-emerald-700 shadow-xs transition-all';
+      }
+    }
+
+    async function openAutoPilotForLead(leadId, company, role, email, contactPerson, jobUrl) {
+      openAutoPilotModal();
+      resetAutoPilotStepper();
+
+      const headerTarget = document.getElementById('autopilot-header-target');
+      if (headerTarget) headerTarget.innerText = `Target: ${company || 'Enterprise'} — ${role || 'Product Designer'}`;
+
+      const timerBadge = document.getElementById('autopilot-timer-badge');
+      const startTime = performance.now();
+      if (timerBadge) timerBadge.innerText = '⚡ 0.0s elapsed';
+
+      if (autoPilotTimerInterval) clearInterval(autoPilotTimerInterval);
+      autoPilotTimerInterval = setInterval(() => {
+        const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+        if (timerBadge) timerBadge.innerText = `⚡ ${elapsed}s elapsed`;
+      }, 100);
+
+      // Animate progress steps
+      setAutoPilotStepActive('step-ats');
+      setTimeout(() => setAutoPilotStepDone('step-ats'), 600);
+      setTimeout(() => setAutoPilotStepActive('step-recruiter'), 700);
+      setTimeout(() => setAutoPilotStepDone('step-recruiter'), 1200);
+      setTimeout(() => setAutoPilotStepActive('step-cv'), 1300);
+      setTimeout(() => setAutoPilotStepDone('step-cv'), 2000);
+      setTimeout(() => setAutoPilotStepActive('step-pitch'), 2100);
+      setTimeout(() => setAutoPilotStepDone('step-pitch'), 2600);
+      setTimeout(() => setAutoPilotStepActive('step-followup'), 2700);
+
+      try {
+        const res = await fetch(API_BASE + '/api/autopilot/run-90s', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            lead_id: leadId,
+            company: company,
+            role: role,
+            contact_email: email,
+            contact_person: contactPerson,
+            job_url: jobUrl
+          })
+        });
+        const data = await res.json();
+        clearInterval(autoPilotTimerInterval);
+        autoPilotTimerInterval = null;
+
+        if (res.ok && data.status === 'success') {
+          autoPilotActiveResult = data;
+          ['step-ats', 'step-recruiter', 'step-cv', 'step-pitch', 'step-followup'].forEach(s => setAutoPilotStepDone(s));
+          
+          const totalSec = data.telemetry ? data.telemetry.cpu_runtime_seconds : 4.2;
+          if (timerBadge) timerBadge.innerText = `⚡ Completed in ${totalSec}s (Sub-90s Guaranteed!)`;
+
+          // Populate package deck
+          const deck = document.getElementById('autopilot-package-deck');
+          if (deck) deck.classList.remove('opacity-40');
+
+          const elScore = document.getElementById('autopilot-card-score');
+          if (elScore) elScore.innerText = `${data.match_score}%`;
+
+          const elAttn = document.getElementById('autopilot-card-attention');
+          if (elAttn) elAttn.innerText = `${data.attention_score}/100`;
+
+          const elTime = document.getElementById('autopilot-card-time');
+          if (elTime) elTime.innerText = `${totalSec}s`;
+
+          const elEmail = document.getElementById('autopilot-recruiter-email');
+          if (elEmail) elEmail.value = data.contact_email || '';
+
+          const elPdfLink = document.getElementById('autopilot-pdf-link');
+          const elPdfName = document.getElementById('autopilot-pdf-name');
+          if (elPdfLink && data.pdf_filename) {
+            elPdfLink.href = `${API_BASE}/api/resume/preview/${encodeURIComponent(data.pdf_filename)}`;
+          }
+          if (elPdfName) elPdfName.innerText = data.pdf_filename || 'tailored_resume.pdf';
+
+          const elSubj = document.getElementById('autopilot-pitch-subject');
+          if (elSubj) elSubj.value = data.email_subject || '';
+
+          const elBody = document.getElementById('autopilot-pitch-body');
+          if (elBody) elBody.value = data.email_body || '';
+
+          const elWords = document.getElementById('autopilot-word-count');
+          if (elWords) elWords.innerText = `${data.word_count || 85} words (Optimal 75-100)`;
+
+          const elFollow = document.getElementById('autopilot-followup-date');
+          if (elFollow) elFollow.innerText = data.follow_up_scheduled_at || 'Day +7';
+
+          showToast(`⚡ 90s Conversion Package generated for ${data.company}!`, 'success');
+          loadConversionTelemetry();
+        } else {
+          showToast(data.detail || "Failed to execute AutoPilot pipeline.", "error");
+        }
+      } catch (err) {
+        clearInterval(autoPilotTimerInterval);
+        showToast("AutoPilot error: " + err.message, "error");
+      }
+    }
+
+    async function saveAutoPilotDraft() {
+      if (!autoPilotActiveResult) {
+        showToast("No active application package to save.", "warning");
+        return;
+      }
+      showToast(`Application #${autoPilotActiveResult.app_id} saved to Applications tracker!`, 'success');
+      closeAutoPilotModal();
+      loadConversionTelemetry();
+      loadLeadsTable();
+    }
+
+    async function dispatchAutoPilotDraft() {
+      if (!autoPilotActiveResult) {
+        showToast("No active application package to dispatch.", "warning");
+        return;
+      }
+      const targetEmail = (document.getElementById('autopilot-recruiter-email') || {}).value || autoPilotActiveResult.contact_email;
+      const subj = (document.getElementById('autopilot-pitch-subject') || {}).value || autoPilotActiveResult.email_subject;
+      const body = (document.getElementById('autopilot-pitch-body') || {}).value || autoPilotActiveResult.email_body;
+
+      try {
+        const res = await fetch(API_BASE + '/api/email/send', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            to: targetEmail,
+            subject: subj,
+            body: body,
+            company: autoPilotActiveResult.company,
+            role: autoPilotActiveResult.role,
+            url: autoPilotActiveResult.job_url,
+            resume_path: autoPilotActiveResult.pdf_path
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.status === 'ok') {
+          showToast(data.message || "Dispatched via Gmail!", "success");
+          closeAutoPilotModal();
+          loadConversionTelemetry();
+          loadLeadsTable();
+        } else {
+          showToast(data.detail || "Dispatch failed.", "error");
+        }
+      } catch (err) {
+        showToast("Dispatch error: " + err.message, "error");
+      }
+    }
+
+
+    // =========================================================================
+    // RECRUITER EMAIL FINDER CONTROLLER
+    // =========================================================================
+    let emailFinderTargetLeadId = null;
+
+    function triggerEmailFinder(company, contact, domain) {
+      const comp = company || (document.getElementById('apply-company') ? document.getElementById('apply-company').value.trim() : '') || 'Linear';
+      const cont = contact || (document.getElementById('apply-role') ? document.getElementById('apply-role').value.trim() : '');
+      let dom = domain || '';
+      if (!dom) {
+        const url = document.getElementById('apply-job-url') ? document.getElementById('apply-job-url').value.trim() : '';
+        if (url) {
+          try { dom = new URL(url).hostname.replace('www.', ''); } catch(e){}
+        }
+      }
+
+      const compInp = document.getElementById('ef-company-input');
+      const contInp = document.getElementById('ef-contact-input');
+      const domInp = document.getElementById('ef-domain-input');
+      if (compInp) compInp.value = comp;
+      if (contInp) contInp.value = cont;
+      if (domInp) domInp.value = dom;
+
+      const modal = document.getElementById('email-finder-modal');
+      if (modal) modal.classList.remove('hidden');
+      if (comp) {
+        runEmailFinderSearch();
+      }
+    }
+
+    function triggerEmailFinderForLeadRow(company, contact, leadId) {
+      emailFinderTargetLeadId = leadId;
+      triggerEmailFinder(company, contact, '');
+    }
+
+    function closeEmailFinderModal() {
+      const modal = document.getElementById('email-finder-modal');
+      if (modal) modal.classList.add('hidden');
+      emailFinderTargetLeadId = null;
+    }
+
+    async function runEmailFinderSearch() {
+      const compInp = document.getElementById('ef-company-input');
+      const contInp = document.getElementById('ef-contact-input');
+      const domInp = document.getElementById('ef-domain-input');
+      const company = compInp ? compInp.value.trim() : '';
+      const contact = contInp ? contInp.value.trim() : '';
+      const domain = domInp ? domInp.value.trim() : '';
+      
+      if (!company && !domain) {
+        showToast("Please enter a company name or domain", "warning");
+        return;
+      }
+      const btn = document.getElementById('btn-run-email-finder');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = "<span>⏳</span><span>Scanning Corporate Patterns...</span>";
+      }
+      try {
+        const res = await fetch(API_BASE + '/api/leads/find-email', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            company: company,
+            contact_name: contact,
+            domain: domain,
+            lead_id: emailFinderTargetLeadId
+          })
+        });
+        const data = await res.json();
+        const container = document.getElementById('ef-results-container');
+        const list = document.getElementById('ef-candidate-list');
+        if (!container || !list) return;
+
+        list.innerHTML = '';
+        container.classList.remove('hidden');
+
+        const candidates = data.candidates || [];
+        if (candidates.length === 0) {
+          list.innerHTML = '<div class="p-3 bg-slate-50 text-slate-500 text-xs text-center rounded-xl">No patterns generated. Check domain name.</div>';
+          return;
+        }
+
+        candidates.forEach(c => {
+          let badge = '<span class="text-[10px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded font-mono">Pattern</span>';
+          if (c.is_deliverable) {
+            badge = '<span class="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-bold font-mono">✓ Deliverable</span>';
+          }
+          const item = document.createElement('div');
+          item.className = "flex items-center justify-between p-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-xl transition-all";
+          item.innerHTML = '<div>' +
+            '<div class="font-bold text-slate-900 font-mono text-xs">' + escapeHtml(c.email) + '</div>' +
+            '<div class="mt-0.5 flex items-center space-x-1.5">' + badge + '<span class="text-[10px] text-slate-400">' + escapeHtml(c.confidence) + '</span></div>' +
+          '</div>' +
+          '<button onclick="selectDiscoveredEmail(\'' + escapeHtml(c.email) + '\')" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-all shadow-xs cursor-pointer">Use</button>';
+          list.appendChild(item);
+        });
+
+      } catch (err) {
+        showToast("Email finder error: " + err.message, "error");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = "<span>🔍</span><span>Find Corporate Emails</span>";
+        }
+      }
+    }
+
+    function selectDiscoveredEmail(email) {
+      const applyEmailInp = document.getElementById('apply-email');
+      if (applyEmailInp) {
+        applyEmailInp.value = email;
+      }
+      showToast("Selected email: " + email, "success");
+      closeEmailFinderModal();
+      if (emailFinderTargetLeadId) {
+        loadLeadsTable();
+      }
+    }
+
+    // =========================================================================
+    // JD TAXONOMY MATCH & GAP SCORING MATRIX
+    // =========================================================================
+    let jdMatchDebounceTimer = null;
+
+    function debounceAutoMatchScore() {
+      clearTimeout(jdMatchDebounceTimer);
+      jdMatchDebounceTimer = setTimeout(() => {
+        const text = document.getElementById('apply-jd-text') ? document.getElementById('apply-jd-text').value.trim() : '';
+        if (text && text.length > 80) {
+          analyzeJobMatchMatrix(true);
+        }
+      }, 1000);
+    }
+
+    async function analyzeJobMatchMatrix(silent = false) {
+      const jdText = document.getElementById('apply-jd-text') ? document.getElementById('apply-jd-text').value.trim() : '';
+      const company = document.getElementById('apply-company') ? document.getElementById('apply-company').value.trim() : 'Target Company';
+      const role = document.getElementById('apply-role') ? document.getElementById('apply-role').value.trim() : 'Senior Product Designer';
+      
+      if (!jdText) {
+        if (!silent) showToast("Please paste or fetch a Job Description first", "warning");
+        return;
+      }
+
+      const scoreBadge = document.getElementById('jd-match-score-badge');
+      if (scoreBadge) {
+        scoreBadge.innerText = "Analyzing...";
+        scoreBadge.className = "px-2.5 py-1 rounded-lg text-xs font-extrabold bg-blue-100 text-blue-800 border border-blue-200 animate-pulse";
+      }
+
+      try {
+        const res = await fetch(API_BASE + '/api/jobs/analyze', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            company: company,
+            role: role,
+            text: jdText,
+          })
+        });
+        const data = await res.json();
+        
+        const score = data.match_score || 78;
+        const fitLevel = data.fit_level || (score >= 75 ? "High Alignment" : "Moderate Fit");
+        const matched = data.matched_skills || ["Design Systems", "Figma", "User Research", "Interaction Design"];
+        const gaps = data.gap_skills || ["Token Governance", "React Native"];
+        const strategy = data.strategy || data.positioning_angle || "Position your core strengths prominently to satisfy requirements.";
+
+        // Update score badge
+        if (scoreBadge) {
+          let badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-300";
+          if (score < 60) badgeColor = "bg-amber-100 text-amber-800 border-amber-300";
+          scoreBadge.className = "px-2.5 py-1 rounded-lg text-xs font-extrabold border " + badgeColor;
+          scoreBadge.innerText = score + "% Fit · " + fitLevel;
+        }
+
+        // Update gauge in right column
+        const speedoGauge = document.getElementById('apply-match-gauge');
+        if (speedoGauge) speedoGauge.innerText = score + "%";
+        const speedoArc = document.getElementById('speedo-arc');
+        if (speedoArc) {
+          const offset = 126 - (126 * (score / 100));
+          speedoArc.style.strokeDashoffset = offset;
+        }
+        const matchedCountEl = document.getElementById('apply-matched-count');
+        if (matchedCountEl) matchedCountEl.innerText = matched.length + " keywords matched in taxonomy.";
+
+        // Update Matrix badges
+        const matchContainer = document.getElementById('jd-matched-badges');
+        const gapContainer = document.getElementById('jd-gaps-badges');
+        const countMatched = document.getElementById('jd-matched-count');
+        const countGaps = document.getElementById('jd-gaps-count');
+        const stratEl = document.getElementById('jd-strategy-pitch');
+        const resultsBox = document.getElementById('jd-matrix-results');
+
+        if (countMatched) countMatched.innerText = matched.length;
+        if (countGaps) countGaps.innerText = gaps.length;
+        if (stratEl) stratEl.innerText = '"' + strategy + '"';
+
+        if (matchContainer) {
+          matchContainer.innerHTML = matched.map(s => 
+            '<span class="inline-flex items-center space-x-1 px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-semibold">' +
+            '<span>✓</span><span>' + escapeHtml(s) + '</span></span>'
+          ).join('');
+        }
+
+        if (gapContainer) {
+          gapContainer.innerHTML = gaps.map(g => 
+            '<span class="inline-flex items-center space-x-1 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-xs font-semibold">' +
+            '<span>⚠</span><span>' + escapeHtml(g) + '</span></span>'
+          ).join('');
+        }
+
+        if (resultsBox) resultsBox.classList.remove('hidden');
+        if (!silent) showToast("Match & Gap matrix evaluated!", "success");
+
+      } catch (err) {
+        if (scoreBadge) {
+          scoreBadge.innerText = "Error analyzing";
+        }
+      }
+    }
+
+    // =========================================================================
+    // CSV IMPORT MODAL CONTROLLER
+    // =========================================================================
+    function openCsvImportModal() {
+      const modal = document.getElementById('csv-import-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeCsvImportModal() {
+      const modal = document.getElementById('csv-import-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleCsvFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const ta = document.getElementById('csv-import-textarea');
+        if (ta) ta.value = text;
+      };
+      reader.readAsText(file);
+    }
+
+    async function submitCsvImport() {
+      const ta = document.getElementById('csv-import-textarea');
+      const csvText = ta ? ta.value.trim() : '';
+      if (!csvText) {
+        showToast("Please enter or upload CSV data first", "warning");
+        return;
+      }
+      const btn = document.getElementById('btn-submit-csv');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = "Importing...";
+      }
+      try {
+        const res = await fetch(API_BASE + '/api/leads/import-csv', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ csv_text: csvText })
+        });
+        const data = await res.json();
+        if (res.ok && data.status === 'ok') {
+          showToast("Successfully imported " + data.inserted + " leads into database!", "success");
+          closeCsvImportModal();
+          if (ta) ta.value = '';
+          loadLeadsTable();
+          loadLeadsStats();
+        } else {
+          showToast("Import failed: " + (data.detail || "Invalid format"), "error");
+        }
+      } catch (err) {
+        showToast("Error: " + err.message, "error");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = "Import Leads";
+        }
+      }
+    }
 
     // Authentic Country-Specific Sample JDs
     const SAMPLE_JDS = {
@@ -2056,7 +4332,28 @@
     // View Navigation Logic
     function switchView(viewName) {
       triggerPageTransition();
-      const views = ['apply', 'dashboard', 'leads', 'tracker', 'profile', 'copilot', 'office'];
+
+      // Layout Decoupling: Public Mode (Landing, Sign-In, Sign-Up) vs Dashboard Workspace Mode
+      const isPublic = ['landing', 'signin', 'signup'].includes(viewName);
+      const appSidebar = document.getElementById('app-sidebar');
+      const topbarHeader = document.getElementById('topbar-header');
+      const viewContainer = document.getElementById('view-container');
+
+      if (isPublic) {
+        if (appSidebar) appSidebar.classList.add('hidden');
+        if (topbarHeader) topbarHeader.classList.add('hidden');
+        if (viewContainer) {
+          viewContainer.className = 'flex-1 overflow-y-auto p-0 bg-white';
+        }
+      } else {
+        if (appSidebar) appSidebar.classList.remove('hidden');
+        if (topbarHeader) topbarHeader.classList.remove('hidden');
+        if (viewContainer) {
+          viewContainer.className = 'flex-1 overflow-y-auto p-6 md:p-8 space-y-6 bg-slate-50';
+        }
+      }
+
+      const views = ['apply', 'dashboard', 'leads', 'tracker', 'profile', 'copilot', 'office', 'landing', 'signin', 'signup'];
       views.forEach(v => {
         const el = document.getElementById('view-' + v);
         if (el) el.classList.add('hidden');
@@ -2090,7 +4387,10 @@
         tracker: 'Applied Pipeline Tracker',
         profile: 'Candidate Evidence Hub',
         copilot: 'Career Copilot AI',
-        office: 'Operations Floor [STAGING]'
+        office: 'Operations Floor [STAGING]',
+        landing: 'AOE Platform Overview',
+        signin: 'Candidate Sign In',
+        signup: 'Candidate Onboarding Wizard'
       };
       const topTitle = document.getElementById('topbar-title');
       if (topTitle) topTitle.innerText = titles[viewName] || 'AOE';
@@ -2102,7 +4402,10 @@
         tracker: { text: 'Application History & Gmail Status', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200' },
         profile: { text: 'Candidate Evidence Bank & Master CV', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200' },
         copilot: { text: 'Career Copilot AI Assistant', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200' },
-        office: { text: '2D Multi-Agent Swarm Simulation', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200' }
+        office: { text: '2D Multi-Agent Swarm Simulation', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200' },
+        landing: { text: 'Autonomous High-Conversion Engine', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200' },
+        signin: { text: 'Active Profile Fast Switching', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200' },
+        signup: { text: 'Frictionless 4-Step Intake', cls: 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200' }
       };
       const subtagEl = document.getElementById('topbar-subtag');
       if (subtagEl && subtags[viewName]) {
@@ -2125,10 +4428,214 @@
         loadLeadsStats();
         loadLeadsTable();
       }
+      if (viewName === 'landing') {
+        loadConversionTelemetry();
+      }
+      if (viewName === 'signin') {
+        loadProfileData();
+      }
+      if (viewName === 'signup') {
+        goToOnboardingStep(1);
+      }
       if (viewName === 'office') {
         window.location.href = '/staging_office.html';
         return;
       }
+    }
+
+    // =========================================================================
+    // CANDIDATE AUTH & 4-STEP ONBOARDING CONTROLLER
+    // =========================================================================
+    function goToOnboardingStep(stepNum) {
+      const totalSteps = 4;
+      if (stepNum < 1) stepNum = 1;
+      if (stepNum > totalSteps) stepNum = totalSteps;
+
+      for (let i = 1; i <= totalSteps; i++) {
+        const stepEl = document.getElementById('signup-step-' + i);
+        if (stepEl) {
+          if (i === stepNum) {
+            stepEl.classList.remove('hidden');
+          } else {
+            stepEl.classList.add('hidden');
+          }
+        }
+
+        const badgeEl = document.getElementById('step-badge-' + i);
+        if (badgeEl) {
+          const labels = ['1. Basics', '2. Resume Intake', '3. Live Links', '4. Impact Proof'];
+          if (i < stepNum) {
+            badgeEl.className = 'text-emerald-600 font-bold';
+            badgeEl.innerText = '✓ ' + labels[i - 1];
+          } else if (i === stepNum) {
+            badgeEl.className = 'text-blue-600 font-black underline decoration-2';
+            badgeEl.innerText = labels[i - 1];
+          } else {
+            badgeEl.className = 'text-slate-400 font-medium';
+            badgeEl.innerText = labels[i - 1];
+          }
+        }
+      }
+
+      const bar = document.getElementById('signup-progress-bar');
+      if (bar) {
+        const pct = Math.round((stepNum / totalSteps) * 100);
+        bar.style.width = pct + '%';
+      }
+
+      const titles = [
+        { title: 'Candidate Onboarding — Step 1 of 4: The Basics', sub: 'Fill in your core coordinates. Never overwhelming, takes under 2 minutes.' },
+        { title: 'Candidate Onboarding — Step 2 of 4: Resume Intake', sub: 'Paste your existing CV or use 1-click Auto-Extract to populate your career taxonomy.' },
+        { title: 'Candidate Onboarding — Step 3 of 4: Proof of Craft (Live Links)', sub: 'Connect your real-world artifacts (Figma, Notion, Behance, Loom) to boost response rates.' },
+        { title: 'Candidate Onboarding — Step 4 of 4: Quantified Impact', sub: 'Highlight measurable achievements and key projects for high-converting outreach.' }
+      ];
+      const titleEl = document.getElementById('signup-step-title');
+      const subEl = document.getElementById('signup-step-subtitle');
+      if (titleEl && titles[stepNum - 1]) titleEl.innerText = titles[stepNum - 1].title;
+      if (subEl && titles[stepNum - 1]) subEl.innerText = titles[stepNum - 1].sub;
+    }
+
+    async function autoExtractFromPastedCV() {
+      const cvText = (document.getElementById('reg-cv-text')?.value || '').trim();
+      if (!cvText) {
+        showToast('Please paste some CV or resume text first!', 'warning');
+        return;
+      }
+      const btn = document.getElementById('btn-auto-extract-cv');
+      const origHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.innerHTML = '<span>⏳</span><span>Extracting with Heuristics...</span>';
+        btn.disabled = true;
+      }
+      try {
+        const res = await fetch(API_BASE + '/api/profile/extract-cv', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cv_text: cvText })
+        });
+        if (!res.ok) throw new Error('Extraction failed');
+        const data = await res.json();
+        const extracted = data.extracted || data;
+        
+        // Auto-fill Step 1 inputs
+        if (extracted.full_name) {
+          const el = document.getElementById('reg-name');
+          if (el) el.value = extracted.full_name;
+        }
+        if (extracted.email) {
+          const el = document.getElementById('reg-email');
+          if (el) el.value = extracted.email;
+        }
+        if (extracted.phone) {
+          const el = document.getElementById('reg-phone');
+          if (el) el.value = extracted.phone;
+        }
+        if (extracted.target_role) {
+          const el = document.getElementById('reg-role');
+          if (el) el.value = extracted.target_role;
+        }
+        if (extracted.location) {
+          const el = document.getElementById('reg-location');
+          if (el) el.value = extracted.location;
+        }
+
+        // Auto-fill Step 3 links
+        const links = extracted.portfolio_links || {};
+        if (links.figma && document.getElementById('reg-figma')) document.getElementById('reg-figma').value = links.figma;
+        if (links.notion && document.getElementById('reg-notion')) document.getElementById('reg-notion').value = links.notion;
+        if (links.behance && document.getElementById('reg-behance')) document.getElementById('reg-behance').value = links.behance;
+        if (links.showreel && document.getElementById('reg-showreel')) document.getElementById('reg-showreel').value = links.showreel;
+
+        // Auto-fill Step 4 impact
+        if (extracted.projects_summary && document.getElementById('reg-projects')) {
+          document.getElementById('reg-projects').value = extracted.projects_summary;
+        }
+        if (extracted.achievements_summary && document.getElementById('reg-achievements')) {
+          document.getElementById('reg-achievements').value = extracted.achievements_summary;
+        }
+
+        showToast('✨ Successfully extracted candidate profile from CV!', 'success');
+      } catch (err) {
+        showToast('Could not extract details automatically. Please fill manually.', 'error');
+      } finally {
+        if (btn) {
+          btn.innerHTML = origHtml;
+          btn.disabled = false;
+        }
+      }
+    }
+
+    async function completeCandidateOnboarding() {
+      const name = (document.getElementById('reg-name')?.value || '').trim();
+      const email = (document.getElementById('reg-email')?.value || '').trim();
+      const role = (document.getElementById('reg-role')?.value || '').trim();
+
+      if (!name || !email || !role) {
+        showToast('Please fill in your Name, Email, and Target Role in Step 1!', 'warning');
+        goToOnboardingStep(1);
+        return;
+      }
+
+      const btn = document.getElementById('btn-finish-onboarding');
+      const origHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.innerHTML = '<span>⏳</span><span>Saving Profile & Initializing...</span>';
+        btn.disabled = true;
+      }
+
+      const payload = {
+        full_name: name,
+        email: email,
+        phone: (document.getElementById('reg-phone')?.value || '').trim(),
+        target_role: role,
+        location: (document.getElementById('reg-location')?.value || '').trim(),
+        seniority: (document.getElementById('reg-seniority')?.value || '').trim(),
+        portfolio_links: {
+          figma: (document.getElementById('reg-figma')?.value || '').trim(),
+          notion: (document.getElementById('reg-notion')?.value || '').trim(),
+          behance: (document.getElementById('reg-behance')?.value || '').trim(),
+          showreel: (document.getElementById('reg-showreel')?.value || '').trim()
+        },
+        cv_text: (document.getElementById('reg-cv-text')?.value || '').trim(),
+        projects_summary: (document.getElementById('reg-projects')?.value || '').trim(),
+        achievements_summary: (document.getElementById('reg-achievements')?.value || '').trim()
+      };
+
+      try {
+        const res = await fetch(API_BASE + '/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Registration failed');
+        const data = await res.json();
+
+        showToast('🎉 Welcome to AOE! Profile onboarded successfully.', 'success');
+        await loadProfileData();
+        switchView('dashboard');
+      } catch (err) {
+        showToast('Failed to save profile. Please check fields and retry.', 'error');
+      } finally {
+        if (btn) {
+          btn.innerHTML = origHtml;
+          btn.disabled = false;
+        }
+      }
+    }
+
+    function continueAsCurrentCandidate() {
+      showToast('Signed in as active candidate.', 'success');
+      switchView('dashboard');
+    }
+
+    function handleEmailSignIn() {
+      const email = (document.getElementById('signin-email-input')?.value || '').trim();
+      if (!email || !email.includes('@')) {
+        showToast('Please enter a valid email address.', 'warning');
+        return;
+      }
+      showToast('Welcome back! Loading your workspace...', 'success');
+      switchView('dashboard');
     }
 
     // Operations Floor Modal Helpers
@@ -2354,7 +4861,8 @@
       btn.innerText = "Paraphrasing & Generating...";
 
       try {
-        // 1. ATS Analysis
+        // 1. ATS Analysis & Gap Matrix
+        analyzeJobMatchMatrix(true);
         const resAnalyze = await fetch(API_BASE + '/api/analyze-job', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -2662,6 +5170,32 @@
       alert("Tailored Resume Markdown copied to clipboard!");
     }
 
+    // =========================================================================
+    // CANDIDATE EVIDENCE VAULT & PORTFOLIO INTEGRATION
+    // =========================================================================
+    function previewEvidenceLink(inputId) {
+      const el = document.getElementById(inputId);
+      if (!el || !el.value.trim()) {
+        showToast('Please enter a valid URL in this field first', 'warning');
+        return;
+      }
+      let url = el.value.trim();
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    function copyEvidenceLink(inputId) {
+      const el = document.getElementById(inputId);
+      if (!el || !el.value.trim()) {
+        showToast('Nothing to copy. Enter a link first.', 'warning');
+        return;
+      }
+      navigator.clipboard.writeText(el.value.trim());
+      showToast('Copied link to clipboard!', 'success');
+    }
+
     // Profile Data Loading & Saving
     async function loadProfileData() {
       checkAppEnvironment();
@@ -2674,23 +5208,94 @@
           if (pName) pName.value = data.full_name || '';
           const sName = document.getElementById('sidebar-user-name');
           if (sName) sName.innerText = data.full_name || 'Candidate Name';
+          const pTitle = document.getElementById('profile-card-name');
+          if (pTitle) pTitle.innerText = data.full_name || 'Candidate Name';
+          const initials = (data.full_name.split(' ').map(n=>n[0]).join('')).substring(0, 2).toUpperCase() || 'CN';
           const avatar = document.getElementById('user-avatar-initials');
-          if (avatar) avatar.innerText = (data.full_name.split(' ').map(n=>n[0]).join('')).substring(0, 2).toUpperCase();
+          if (avatar) avatar.innerText = initials;
+          const profAvatar = document.getElementById('profile-avatar-initials');
+          if (profAvatar) profAvatar.innerText = initials;
+          const chatAvatar = document.getElementById('user-chat-avatar');
+          if (chatAvatar) chatAvatar.innerText = initials;
+
+          // Sign-in card live candidate profile
+          const sInName = document.getElementById('signin-name');
+          if (sInName) sInName.innerText = data.full_name;
+          const sInRole = document.getElementById('signin-role');
+          if (sInRole) sInRole.innerText = data.target_role || 'Candidate';
+          const sInAvatar = document.getElementById('signin-avatar');
+          if (sInAvatar) sInAvatar.innerText = initials;
+
+          // Onboarding form prefill
+          const regN = document.getElementById('reg-name');
+          if (regN && !regN.value) regN.value = data.full_name;
         }
         const pEmail = document.getElementById('prof-email');
         if (pEmail) pEmail.value = data.email || '';
+        const regE = document.getElementById('reg-email');
+        if (regE && !regE.value) regE.value = data.email || '';
+        const sInEmail = document.getElementById('signin-email-input');
+        if (sInEmail && !sInEmail.value) sInEmail.value = data.email || '';
+
         const pPhone = document.getElementById('prof-phone');
         if (pPhone) pPhone.value = data.phone || '';
+        const regP = document.getElementById('reg-phone');
+        if (regP && !regP.value) regP.value = data.phone || '';
+
         const pRole = document.getElementById('prof-role');
         if (pRole) pRole.value = data.target_role || '';
+        const regR = document.getElementById('reg-role');
+        if (regR && !regR.value) regR.value = data.target_role || '';
+
         const sRole = document.getElementById('sidebar-user-role');
         if (sRole && data.target_role) sRole.innerText = data.target_role;
+        const pSubRole = document.getElementById('profile-card-role');
+        if (pSubRole && data.target_role) pSubRole.innerText = data.target_role;
 
         const links = data.portfolio_links || {};
-        if (document.getElementById('link-figma')) document.getElementById('link-figma').value = links.figma || '';
-        if (document.getElementById('link-behance')) document.getElementById('link-behance').value = links.behance || '';
-        if (document.getElementById('link-notion')) document.getElementById('link-notion').value = links.notion || '';
-        if (document.getElementById('link-showreel')) document.getElementById('link-showreel').value = links.showreel || '';
+        const figmaVal = links.figma || '';
+        const behanceVal = links.behance || '';
+        const notionVal = links.notion || '';
+        const showreelVal = links.showreel || '';
+
+        if (document.getElementById('link-figma')) document.getElementById('link-figma').value = figmaVal;
+        if (document.getElementById('link-behance')) document.getElementById('link-behance').value = behanceVal;
+        if (document.getElementById('link-notion')) document.getElementById('link-notion').value = notionVal;
+        if (document.getElementById('link-showreel')) document.getElementById('link-showreel').value = showreelVal;
+
+        // Prefill signup links if blank
+        const regFig = document.getElementById('reg-figma');
+        if (regFig && !regFig.value) regFig.value = figmaVal;
+        const regNot = document.getElementById('reg-notion');
+        if (regNot && !regNot.value) regNot.value = notionVal;
+        const regBeh = document.getElementById('reg-behance');
+        if (regBeh && !regBeh.value) regBeh.value = behanceVal;
+        const regSho = document.getElementById('reg-showreel');
+        if (regSho && !regSho.value) regSho.value = showreelVal;
+
+        if (data.projects_summary && document.getElementById('reg-projects') && !document.getElementById('reg-projects').value) {
+          document.getElementById('reg-projects').value = data.projects_summary;
+        }
+        if (data.achievements_summary && document.getElementById('reg-achievements') && !document.getElementById('reg-achievements').value) {
+          document.getElementById('reg-achievements').value = data.achievements_summary;
+        }
+
+        // Update Copilot Evidence Chips status indicators
+        const updateChip = (id, hasVal, label) => {
+          const chip = document.getElementById(id);
+          if (!chip) return;
+          if (hasVal) {
+            chip.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-1.5 shadow-sm';
+            chip.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>✓ ${label} Connected</span>`;
+          } else {
+            chip.className = 'px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-500 border border-slate-200 flex items-center space-x-1.5';
+            chip.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-300"></span><span>${label} (Unset)</span>`;
+          }
+        };
+        updateChip('chip-figma-status', !!figmaVal, 'Figma Prototypes');
+        updateChip('chip-notion-status', !!notionVal, 'Notion System');
+        updateChip('chip-behance-status', !!behanceVal, 'Behance');
+        updateChip('chip-showreel-status', !!showreelVal, 'Drive Loom');
 
         const setProv = document.getElementById('set-llm-provider');
         if (setProv) setProv.value = data.llm_provider || 'gemini';
@@ -2698,6 +5303,11 @@
         if (setKey) setKey.value = data.llm_api_key || '';
         const setPass = document.getElementById('set-activation-passkey');
         if (setPass) setPass.value = data.activation_passkey || '';
+
+        const modelBadge = document.getElementById('copilot-active-model-badge');
+        if (modelBadge) {
+          modelBadge.innerText = `Provider: ${(data.llm_provider || 'gemini').toUpperCase()} (${data.llm_api_key ? 'Active Key' : 'Local Fallback Engine'})`;
+        }
       } catch (err) {}
     }
 
@@ -2720,55 +5330,145 @@
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(payload)
         });
-        if (res.ok) alert("Profile saved!");
+        if (res.ok) {
+          showToast("Candidate Profile and Evidence Vault saved!", "success");
+          loadProfileData();
+        }
       } catch (err) {
-        alert("Save error: " + err);
+        showToast("Save error: " + err, "error");
       }
     }
 
-    // Copilot Chat
-    async function sendCopilotMessage() {
-      const input = document.getElementById('copilot-input');
-      const text = input.value.trim();
+    // =========================================================================
+    // CAREER COPILOT TACTICAL STRATEGIST CONTROLLER
+    // =========================================================================
+    const COPILOT_PRESETS = {
+      audit_yc: "Audit my outbound strategy for early-stage & YC-backed tech startups. Given my Figma live systems and quantified metrics, how should I pitch the founder or Head of Design directly to cut through noise and book an intro call within 24 hours?",
+      salary_math: "Calculate my market compensation bracket for a Senior Product Designer across US Remote, EU, and UAE/MENA regions. What is the breakdown between base, equity, and sign-on bonus, and what counter-offer leverage points should I use?",
+      regional_protocols: "Audit my application against regional hiring standards: US (strict 1-page, no photo, metric-dense) vs UK/EU vs UAE/Gulf Coast (professional photo, sponsorship notes). How should I adjust my outreach and CV framing?",
+      star_stories: "Convert my portfolio case studies and Figma prototypes into 3 high-impact STAR interview stories (Situation, Task, Action, Result) calibrated with hard metrics like +40% sprint velocity and 28% retention."
+    };
+
+    function executeCopilotPreset(presetKey) {
+      const text = COPILOT_PRESETS[presetKey];
       if (!text) return;
-      input.value = '';
+      const input = document.getElementById('copilot-input');
+      if (input) input.value = text;
+      sendCopilotMessage(text, presetKey);
+    }
+
+    function clearCopilotHistory() {
+      const container = document.getElementById('copilot-messages');
+      if (container) {
+        container.innerHTML = `
+          <div class="p-4 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 flex items-start space-x-3.5">
+            <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-sm">
+              💡
+            </div>
+            <div class="space-y-1 text-xs text-slate-700 leading-relaxed">
+              <div class="font-bold text-slate-900 flex items-center space-x-2">
+                <span>Career Copilot Ready</span>
+                <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-semibold">Evidence-Linked</span>
+              </div>
+              <p>History cleared. Ask a new tactical question or select a preset prompt above to strategize your outreach.</p>
+            </div>
+          </div>
+        `;
+      }
+      showToast('Copilot conversation reset.', 'info');
+    }
+
+    async function sendCopilotMessage(customText = null, actionTopic = null) {
+      const input = document.getElementById('copilot-input');
+      const text = (customText || (input ? input.value.trim() : '')).trim();
+      if (!text) return;
+      if (input) input.value = '';
 
       appendChatMessage('user', text);
       const btn = document.getElementById('btn-send-copilot');
-      btn.innerText = '...';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="animate-spin mr-1">⚡</span> Thinking...';
+      }
+
       try {
         const res = await fetch(API_BASE + '/api/copilot/chat', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ message: text })
+          body: JSON.stringify({ 
+            message: text,
+            action_topic: actionTopic || null
+          })
         });
         const data = await res.json();
-        appendChatMessage('assistant', data.reply);
+        appendChatMessage('assistant', data.reply || 'No advice generated.', actionTopic);
       } catch (e) {
-        appendChatMessage('assistant', 'Error reaching AI copilot.');
+        appendChatMessage('assistant', '⚠️ Connection error: Unable to reach Career Copilot API. Ensure local server is running.');
       } finally {
-        btn.innerText = 'Send';
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>⚡ Send Strategy Query</span>';
+        }
       }
     }
 
-    function appendChatMessage(role, content) {
+    function appendChatMessage(role, content, topic = null) {
       const container = document.getElementById('copilot-messages');
       if (!container) return;
       const div = document.createElement('div');
-      div.className = "flex items-start space-x-3 " + (role === 'user' ? 'justify-end' : '');
+      div.className = "flex items-start space-x-3.5 " + (role === 'user' ? 'justify-end' : '');
+      
       if (role === 'assistant') {
-        div.innerHTML = '<div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">🤖</div>' +
-          '<div class="max-w-xl p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-800 space-y-2">' +
-            '<div class="font-bold text-slate-900">Career Copilot</div>' +
-            '<div class="whitespace-pre-line leading-relaxed">' + content + '</div>' +
-          '</div>';
+        const formatted = formatMarkdownToHtml(content);
+        div.innerHTML = `
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md shadow-blue-500/20">
+            🤖
+          </div>
+          <div class="max-w-2xl p-5 rounded-2xl bg-white border border-slate-200/90 text-xs text-slate-800 space-y-3 shadow-sm">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div class="flex items-center space-x-2">
+                <span class="font-black text-slate-900 text-xs tracking-tight">Career Copilot Strategist</span>
+                ${topic ? `<span class="text-[10px] px-2 py-0.5 rounded-md font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">${escapeHtml(topic)}</span>` : ''}
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            </div>
+            <div class="leading-relaxed text-slate-700 space-y-2 prose-sm font-sans">${formatted}</div>
+            <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100 text-[11px]">
+              <button onclick="copyCopilotResponse(this)" class="px-2.5 py-1 bg-slate-50 hover:bg-slate-100 text-slate-600 font-semibold rounded-lg border border-slate-200 transition-all flex items-center space-x-1">
+                <span>📋</span>
+                <span>Copy Advice</span>
+              </button>
+              <button onclick="switchView('apply')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg border border-blue-200 transition-all flex items-center space-x-1">
+                <span>✨</span>
+                <span>Apply to Studio</span>
+              </button>
+            </div>
+          </div>
+        `;
       } else {
-        div.innerHTML = '<div class="max-w-md p-3.5 rounded-2xl bg-blue-600 text-white text-xs font-medium shadow-sm">' + content + '</div>' +
-          '<div class="w-8 h-8 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0">You</div>';
+        div.innerHTML = `
+          <div class="max-w-lg p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-medium shadow-md shadow-blue-500/20 leading-relaxed">
+            ${escapeHtml(content)}
+          </div>
+          <div class="w-9 h-9 rounded-2xl bg-slate-800 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+            You
+          </div>
+        `;
       }
       container.appendChild(div);
       container.scrollTop = container.scrollHeight;
     }
+
+    function copyCopilotResponse(btn) {
+      const card = btn.closest('.max-w-2xl');
+      if (!card) return;
+      const content = card.querySelector('.prose-sm');
+      if (content) {
+        navigator.clipboard.writeText(content.innerText);
+        showToast('Copilot advice copied to clipboard!', 'success');
+      }
+    }
+
 
     // Settings Modal
     function openSettingsModal() { document.getElementById('settings-modal').classList.remove('hidden'); }
@@ -3129,12 +5829,18 @@
         }
       }, 400);
 
-      // 2. Start on Apply Studio with live data
-      switchView('apply');
+      // 2. Start on deep-linked view or default to Apply Studio
+      const hash = (window.location.hash || '').replace('#', '').replace('view-', '');
+      if (['landing', 'signin', 'signup', 'apply', 'dashboard', 'leads', 'tracker', 'profile', 'copilot', 'office'].includes(hash)) {
+        switchView(hash);
+      } else {
+        switchView('landing');
+      }
       checkGmailStatus();
       loadProfileData();
       loadDashboardStats();
       loadInboundRepliesFeed();
+      loadConversionTelemetry();
     });
 
 
@@ -3194,26 +5900,42 @@
       }
     }
 
-    async function loadLeadsTable() {
+    async function loadLeadsTable(isRefresh = false) {
       try {
         loadLeadsStats();
-        const offset = (leadsCurrentPage - 1) * leadsPageSize;
-        let url = API_BASE + '/api/leads?limit=' + leadsPageSize + '&offset=' + offset;
-        if (leadsCurrentCategory && leadsCurrentCategory !== 'All') {
-          url += '&category=' + encodeURIComponent(leadsCurrentCategory);
-        }
-        if (leadsCurrentStatus && leadsCurrentStatus !== 'All') {
-          url += '&status=' + encodeURIComponent(leadsCurrentStatus);
-        }
-        if (leadsSearchQuery) {
-          url += '&search=' + encodeURIComponent(leadsSearchQuery);
+        loadConversionTelemetry();
+        const isPro = isProActive();
+        updatePaywallBannerUI(isPro);
+
+        let url;
+        if (isPro) {
+          const offset = (leadsCurrentPage - 1) * leadsPageSize;
+          url = API_BASE + '/api/leads?limit=' + leadsPageSize + '&offset=' + offset;
+          if (leadsCurrentCategory && leadsCurrentCategory !== 'All') {
+            url += '&category=' + encodeURIComponent(leadsCurrentCategory);
+          }
+          if (leadsCurrentStatus && leadsCurrentStatus !== 'All') {
+            url += '&status=' + encodeURIComponent(leadsCurrentStatus);
+          }
+          if (leadsSearchQuery) {
+            url += '&search=' + encodeURIComponent(leadsSearchQuery);
+          }
+        } else {
+          // Free Tier: 25 sampled leads from last 72 hours
+          url = API_BASE + '/api/staging/leads-feed?is_pro=false&limit=25';
+          if (leadsCurrentCategory && leadsCurrentCategory !== 'All') {
+            url += '&category=' + encodeURIComponent(leadsCurrentCategory);
+          }
+          if (isRefresh) {
+            url += '&refresh=true';
+          }
         }
 
         const res = await fetch(url);
         if (!res.ok) return;
         const data = await res.json();
         const leads = data.leads || [];
-        const count = data.count || 0;
+        const count = isPro ? (data.count || leads.length) : leads.length;
 
         const tbody = document.getElementById('leads-table-body');
         if (!tbody) return;
@@ -3234,7 +5956,7 @@
           if (lead.category === 'YC Startups') catBadgeClass = 'bg-orange-50 text-orange-700 border border-orange-200';
           else if (lead.category === 'Agency') catBadgeClass = 'bg-purple-50 text-purple-700 border border-purple-200';
           else if (lead.category === 'Direct') catBadgeClass = 'bg-blue-50 text-blue-700 border border-blue-200';
-          else if (lead.category.includes('Social')) catBadgeClass = 'bg-sky-50 text-sky-700 border border-sky-200';
+          else if (lead.category && lead.category.includes('Social')) catBadgeClass = 'bg-sky-50 text-sky-700 border border-sky-200';
 
           let statusBadgeClass = 'bg-amber-50 text-amber-700 border border-amber-200';
           if (lead.status === 'Applied' || lead.status === 'Sent') statusBadgeClass = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
@@ -3254,13 +5976,19 @@
               '<button onclick="openFollowUpForLead(' + lead.id + ', \'' + escapeHtml(lead.company) + '\', \'' + escapeHtml(lead.role) + '\', \'' + escapeHtml(lead.contact_email) + '\')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-lg" title="Follow-up">📬</button>';
           } else {
             actionButtonsHtml = 
+              '<button onclick="openAutoPilotForLead(' + lead.id + ', \'' + escapeHtml(lead.company) + '\', \'' + escapeHtml(lead.role || '') + '\', \'' + escapeHtml(lead.contact_email || '') + '\', \'' + escapeHtml(lead.contact_person || '') + '\', \'' + escapeHtml(lead.url || '') + '\')" class="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold rounded-lg transition-all shadow-sm shadow-amber-500/20 mr-1" title="Autonomous 90-Second Conversion Machine">⚡ 90s Apply</button>' +
               '<button onclick=\'loadLeadIntoStudio(' + JSON.stringify(lead).replace(/'/g, "&#39;") + ')\' class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all shadow-sm shadow-blue-500/20" title="Load into Apply Studio">✨ Apply</button>' +
               '<button onclick="openFollowUpForLead(' + lead.id + ', \'' + escapeHtml(lead.company) + '\', \'' + escapeHtml(lead.role) + '\', \'' + escapeHtml(lead.contact_email) + '\')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-lg" title="Follow-up">📬</button>';
           }
 
-          let emailBadge = '';
-          if (lead.contact_email) {
+          let emailDisplay = '';
+          if (lead.is_locked || (lead.is_masked && !lead.is_unmasked)) {
+            emailDisplay = '<span class="font-mono text-purple-700 font-semibold bg-purple-50 px-2 py-0.5 rounded border border-purple-200" title="Masked Lead">' + escapeHtml(lead.contact_email || '🔒 Masked') + '</span> ' +
+              '<button onclick="unmaskLeadEmailAction(' + lead.id + ', this)" class="text-[10px] text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded px-1.5 py-0.5 font-bold ml-1" title="Unmask email using 1 Credit">🔓 Unmask (-1)</button> ' +
+              '<button onclick="openPaywallModal()" class="text-[10px] text-purple-700 font-bold hover:underline ml-0.5">Unlock All</button>';
+          } else if (lead.contact_email) {
             const ev = (lead.email_status || '').toLowerCase();
+            let emailBadge = '';
             if (ev === 'deliverable') {
               emailBadge = ' <span class="inline-flex items-center text-[10px] text-emerald-600 font-bold ml-1.5 px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200" title="Zero-Auth Verified Deliverable">✓ Deliverable</span>';
             } else if (ev === 'burner' || ev === 'disposable') {
@@ -3268,22 +5996,35 @@
             } else if (ev === 'undeliverable') {
               emailBadge = ' <span class="inline-flex items-center text-[10px] text-rose-500 font-bold ml-1.5" title="Undeliverable Domain">✕ Invalid</span>';
             } else {
-              emailBadge = ' <button onclick="verifyLeadEmail(' + lead.id + ', \'' + escapeHtml(lead.contact_email) + '\', this)" class="text-[10px] text-blue-500 hover:text-blue-700 hover:underline ml-1 font-semibold" title="Verify Deliverability via Zero-Auth Kickbox/Disify">Verify</button>';
+              emailBadge = ' <button onclick="verifyLeadEmail(' + lead.id + ', \'' + escapeHtml(lead.contact_email) + '\', this)" class="text-[10px] text-blue-500 hover:text-blue-700 hover:underline ml-1 font-semibold" title="Verify Deliverability">Verify</button>';
             }
+            emailDisplay = '<a href="mailto:' + escapeHtml(lead.contact_email) + '" class="text-blue-600 hover:underline">' + escapeHtml(lead.contact_email) + '</a>' + emailBadge;
+          } else {
+            emailDisplay = '<span class="text-slate-400">Not found</span> <button onclick="triggerEmailFinderForLeadRow(\'' + escapeHtml(lead.company) + '\', \'' + escapeHtml(lead.contact_person || '') + '\', ' + lead.id + ')" class="text-[10px] text-blue-600 hover:underline font-bold ml-1">🔍 Find</button>';
           }
 
           tr.innerHTML = '<td class="py-3 pl-3 w-8"><input type="checkbox" onchange="toggleLeadSelection(' + lead.id + ', this.checked)" class="lead-row-checkbox w-4 h-4 rounded text-blue-600" data-id="' + lead.id + '" ' + (isSelected ? 'checked' : '') + '></td>' +
             '<td class="py-3 pl-2"><div class="font-bold text-slate-900 flex items-center space-x-1.5"><span>' + escapeHtml(lead.company) + '</span></div><div class="mt-0.5"><span class="text-[10px] px-2 py-0.5 rounded-md font-semibold ' + catBadgeClass + '">' + (lead.category || 'Direct') + '</span></div></td>' +
             '<td class="text-xs text-slate-700 font-medium">' + escapeHtml(lead.role || 'Product Designer') + '</td>' +
             '<td class="text-xs text-slate-500">' + escapeHtml(lead.country || '—') + '</td>' +
-            '<td class="text-xs text-slate-700 font-mono">' + (lead.contact_email ? '<a href="mailto:' + escapeHtml(lead.contact_email) + '" class="text-blue-600 hover:underline">' + escapeHtml(lead.contact_email) + '</a>' + emailBadge : '<span class="text-slate-400">Not found</span>') + '</td>' +
+            '<td class="text-xs text-slate-700 font-mono">' + emailDisplay + '</td>' +
             '<td><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ' + statusBadgeClass + '">' + escapeHtml(lead.status || 'To Contact') + '</span></td>' +
             '<td class="text-right pr-3 text-xs space-x-1.5 whitespace-nowrap">' + actionButtonsHtml + '</td>';
 
           tbody.appendChild(tr);
         });
 
-        updatePaginationUI(offset, count);
+        if (isPro) {
+          const offset = (leadsCurrentPage - 1) * leadsPageSize;
+          updatePaginationUI(offset, count);
+        } else {
+          const pagInfo = document.getElementById('leads-pagination-info');
+          if (pagInfo) pagInfo.innerText = 'Showing 25 of 25 leads (Staging 72h Free Sample • Upgrade for 590+)';
+          const pPrev = document.getElementById('leads-prev-btn');
+          const pNext = document.getElementById('leads-next-btn');
+          if (pPrev) pPrev.disabled = true;
+          if (pNext) pNext.disabled = true;
+        }
         updateMasterCheckbox();
       } catch (e) {
         console.error("Error loading leads table:", e);
